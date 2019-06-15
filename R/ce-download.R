@@ -4,7 +4,7 @@
 #'     U.S. Bureau of Labor Statistics website to the path (zp) designated by
 #'     the user.
 #'
-#' @param year The year corresponding to the data to download.
+#' @param year A year between 1996 and the last year of available CE PUMD.
 #' @param survey One of either "interview" or "diary" as a string or symbol.
 #' @param zp A string indicating the path where you'd like to save the zip file
 #' (must end in ".zip").
