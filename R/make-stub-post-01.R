@@ -51,17 +51,17 @@ make.stub.post.01 <- function(year, stub_type_name) {
     dplyr::mutate(
       rnum = row_number(),
       title = case_when(
-        rnum == max(rnum) & linenum == 1 ~ title,
+        rnum == max(rnum) & .data$linenum == 1 ~ title,
         dplyr::lead(linenum == 2) ~ paste(title, dplyr::lead(title)),
         TRUE ~ title
       ) %>%
         stringr::str_replace(" #$", "")
     ) %>%
     dplyr::filter(
-      !linenum %in% "2",
-      group %in% c("FOOD", "EXPEND")
+      !.data$linenum %in% "2",
+      .data$group %in% c("FOOD", "EXPEND")
     ) %>%
-    dplyr::select(level, title, ucc, factor)
+    dplyr::select(.data$level, .data$title, .data$ucc, .data$factor)
 
   return(stub)
 }

@@ -7,24 +7,26 @@
 ce_mean(ce_data)
 }
 \arguments{
-\item{ce_data}{A data frame containing a finlwt21 column, 44 replicate weight
-columns (wtrep01-44), and a cost column. All data must be numeric.}
+\item{ce_data}{A data frame containing at least a finlwt21 column,
+44 replicate weight columns (wtrep01-44), and a cost column. All of these
+columns must be numeric.}
 }
 \value{
 A 1-row dataframe containing the following columns:
-agg_exp - The estimated aggregate expenditure
-mean_exp - The estimated mean expenditure
-se - The estimated standard error of the estimated mean expenditure
-cv - The coefficient of variation of the estimated mean expenditure
+\itemize{
+  \item agg_exp - The estimated aggregate expenditure
+  \item mean_exp - The estimated mean expenditure
+  \item se - The estimated standard error of the estimated mean expenditure
+  \item cv - The coefficient of variation of the estimated mean expenditure
+}
 }
 \description{
 Calculate a CE weighted, estimated mean
 }
 \examples{
-# The following workflow will prepare a dataset for calculating integrated
-# pet expenditures for 2017 and calculate the estimated mean expenditure and
-# related summary statistics.
-
-# Calculate the mean pet expenditure
-ce_mean(ce_pets17)
+# Calculate the mean pet expenditure using only Diary expenditures
+ce_mean(ce_diary_pets17)
+}
+\seealso{
+\code{\link{ce_median}}
 }

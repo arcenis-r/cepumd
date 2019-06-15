@@ -1,9 +1,13 @@
-#' Data for calculating weighted, estimated mean pet expenditures.
+#' 2017 CE Diary data containing expenditures on pets.
 #'
 #' Data containing weights, adjusted weights, ucc's, expenditure value columns
-#' prepared for calculating weighted, estimated mean pet expenditures.
+#' prepared for calculating integrated, weighted, estimated mean pet
+#' expenditures. The data come from the 2017 Diary survey.
 #'
-#' @format A data frame with 42943 rows and 52 variables:
+#' @docType data
+#' @usage data(ce_diary_pets17)
+#'
+#' @format A data frame with 12153 rows and 52 variables:
 #' \describe{
 #'   \item{newid}{A consumer unit (CU), or household, identifier}
 #'   \item{finlwt21}{CU weight variable}
@@ -52,13 +56,11 @@
 #'   \item{wtrep43}{CU replicate weight 43}
 #'   \item{wtrep44}{CU replicate weight 44}
 #'   \item{sex_ref}{Sex of the CU reference person}
-#'   \item{mo_scope}{ Months in scope}
-#'   \item{popwt}{An adjusted weight meant to account for the fact that a CU's
-#'     value of finlwt21 is meant to be representative of only 1 quarter of
-#'     data}
+#'   \item{mo_scope}{Months in scope}
+#'   \item{popwt}{\eqn{(finlwt21 * mo_scope) / 4}}
 #'   \item{aggwt}{The sum of popwt (used for calculating estimated means)}
 #'   \item{ucc}{The UCC for a given expenditure}
 #'   \item{cost}{The value of the expenditure (in U.S. Dollars)}
 #' }
 #' @source \url{http://www.bls.gov/cex/pumd_data.htm}
-"ce_pets17"
+"ce_diary_pets17"

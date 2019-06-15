@@ -12,26 +12,27 @@
 #' default is NULL.
 #' @param integrate_data A logical indicating whether to prepare the data to
 #' calculate an integrated mean or median. The default is TRUE. (See details)
-#' below.
 #' @param stub A data frame that has, at least, the title, level, ucc, and
-#' factor columns of a CE stub file. Calling \link{ce_stub} will generate a
-#' valid stub file.
+#' factor columns of a CE stub file. Calling \code{\link{ce_stub}} will generate
+#' a valid stub file.
 #' @param ... Variables to include in the dataset from the family
 #' characteristics file. This is intended to allow the user to calculate
 #' estimates for subsets of the data.
 #'
 #' @return A data frame containing the following columns:
-#' newid - A consumer unit (CU), or household, identifier
-#' finlwt21 - CU weight variable
-#' wtrep01 through wtrep44 - CU replicate weight variables (see details)
-#' ... - Any family characteristics variables that were kept
-#' mo_scope - Months in scope (see details)
-#' popwt - An adjusted weight meant to account for the fact that a CU's value
-#'   of finlwt21 is meant to be representative of only 1 quarter of data
-#'   (see details)
-#' aggwt - The sum of popwt (used for calculating estimated means)
-#' ucc - The UCC for a given expenditure
-#' cost - The value of the expenditure (in U.S. Dollars)
+#' \itemize{
+#'   \item newid - A consumer unit (CU), or household, identifier
+#'   \item finlwt21 - CU weight variable
+#'   \item wtrep01 through wtrep44 - CU replicate weight variables (see details)
+#'   \item ... - Any family characteristics variables that were kept
+#'   \item mo_scope - Months in scope (see details)
+#'   \item popwt - An adjusted weight meant to account for the fact that a CU's
+#'         value of finlwt21 is meant to be representative of only 1 quarter of
+#'         data (see details)
+#'   \item aggwt - The sum of popwt (used for calculating estimated means)
+#'   \item ucc - The UCC for a given expenditure
+#'   \item cost - The value of the expenditure (in U.S. Dollars)
+#' }
 #'
 #' @details
 #' CE data include 45 weights. The primary weight that is used for calculating

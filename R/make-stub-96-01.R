@@ -13,7 +13,7 @@
 #' @importFrom tidyr drop_na
 
 make.stub.96.01 <- function(year, stub_type_name) {
-  if (year %in% 2001) {
+  if (.data$year %in% 2001) {
     crosswalk_path <- paste0(
       "https://www.bls.gov/cex/pumd/", year, "/pumd_", stub_type_name,
       "_labels.txt"
@@ -41,35 +41,35 @@ make.stub.96.01 <- function(year, stub_type_name) {
   ) %>%
     rlang::set_names("linenum", "header") %>%
     dplyr::slice(
-      grep("[Aa]nnual expenditures", header):(
-        grep("Money income before taxes", header) - 1
+      grep("[Aa]nnual expenditures", .data$header):(
+        grep("Money income before taxes", .data$header) - 1
       )
     ) %>%
     dplyr::mutate(
-      header = stringr::str_pad(header, width = 50, "left") %>%
+      header = stringr::str_pad(.data$header, width = 50, "left") %>%
         stringr::str_replace(" \\.+$", "") %>%
         stringr::str_trim("right"),
       level = ceiling(
         (
-          stringr::str_count(header) - stringr::str_count(
-            stringr::str_trim(header, "left")
+          stringr::str_count(.data$header) - stringr::str_count(
+            stringr::str_trim(.data$header, "left")
           )
         ) / 3
       ) + 1,
-      linenum = as.numeric(linenum)
+      linenum = as.numeric(.data$linenum)
     )
 
   stub_labels <- read_table(labels_path, col_names = FALSE) %>%
     rlang::set_names("ucc", "x", "linenum") %>%
-    dplyr::select(-x) %>%
+    dplyr::select(-.data$x) %>%
     unique() %>%
-    dplyr::filter(linenum <= max(crosswalk$linenum)) %>%
-    dplyr::group_by(ucc) %>%
-    dplyr::summarise(linenum = max(linenum)) %>%
+    dplyr::filter(.data$linenum <= max(crosswalk$linenum)) %>%
+    dplyr::group_by(.data$ucc) %>%
+    dplyr::summarise(linenum = max(.data$linenum)) %>%
     dplyr::mutate(
       linenum = ifelse(
-        !linenum %in% crosswalk$linenum, floor(linenum / 100) * 100,
-        linenum
+        !.data$linenum %in% crosswalk$linenum, floor(.data$linenum / 100) * 100,
+        .data$linenum
       )
     )
 
@@ -78,17 +78,18 @@ make.stub.96.01 <- function(year, stub_type_name) {
   stub <- dplyr::full_join(
     crosswalk, stub_labels, by = "linenum"
   ) %>%
-    dplyr::arrange(linenum) %>%
-    tidyr::drop_na(header, level) %>%
+    dplyr::arrange(.data$linenum) %>%
+    tidyr::drop_na(.data$header, .data$level) %>%
     dplyr::left_join(
       ucc_data,
       by = "ucc"
     ) %>%
-    dplyr::filter(!(!is.na(ucc) & is.na(title))) %>%
+    dplyr::filter(!(!is.na(.data$ucc) & is.na(.data$title))) %>%
     dplyr::mutate(
-      title = ifelse(is.na(ucc), header, title) %>% stringr::str_trim(.)
+      title = ifelse(is.na(.data$ucc), .data$header, .data$title) %>%
+        stringr::str_trim(.)
     ) %>%
-    dplyr::select(level, title, ucc, factor)
+    dplyr::select(.data$level, .data$title, .data$ucc, .data$factor)
 
   return(stub)
 }

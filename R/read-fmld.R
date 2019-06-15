@@ -30,16 +30,22 @@ read.fmld <- function(fp, zp, grp_var_names) {
     }
 
     df <- df %>%
-      dplyr::select(newid, finlwt21, dplyr::contains("wtrep"), grp_var_names)
+      dplyr::select(
+        .data$newid, .data$finlwt21, dplyr::contains("wtrep"), grp_var_names
+      )
   } else {
-    df <- df %>% dplyr::select(newid, finlwt21, dplyr::contains("wtrep"))
+    df <- df %>% dplyr::select(
+      .data$newid, .data$finlwt21, dplyr::contains("wtrep")
+    )
   }
 
   df <- df %>%
     dplyr::mutate(
-      newid = stringr::str_pad(newid, width = 8, side = "left", pad = "0"),
+      newid = stringr::str_pad(
+        .data$newid, width = 8, side = "left", pad = "0"
+      ),
       mo_scope = 3,
-      popwt = (finlwt21 / 4) * (mo_scope / 3)
+      popwt = (.data$finlwt21 / 4) * (.data$mo_scope / 3)
     )
 
   return(df)

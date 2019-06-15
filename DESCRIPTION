@@ -22,3 +22,5 @@ Imports:
     readr,
     purrr,
     utils
+Suggests: 
+    testthat (>= 2.1.0)

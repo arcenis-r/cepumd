@@ -26,25 +26,31 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, stub) {
 
   if (year >= 1996 & year <= 2011) {
     df <- df %>%
-      dplyr::mutate(expnyr = as.integer(stringr::str_sub(qredate, 7, 10)))
+      dplyr::mutate(expnyr = as.integer(stringr::str_sub(.data$qredate, 7, 10)))
   }
 
   df <- df %>%
-    dplyr::select(newid, expnyr, ucc, cost, pub_flag) %>%
+    dplyr::select(
+      .data$newid, .data$expnyr, .data$ucc, .data$cost, .data$pub_flag
+    ) %>%
     dplyr::mutate(
-      newid = stringr::str_pad(newid, width = 8, side = "left", pad = "0"),
-      ucc = stringr::str_pad(ucc, width = 6, side = "left", pad = "0"),
-      cost = cost * 13
+      newid = stringr::str_pad(
+        .data$newid, width = 8, side = "left", pad = "0"
+      ),
+      ucc = stringr::str_pad(.data$ucc, width = 6, side = "left", pad = "0"),
+      cost = .data$cost * 13
     )
 
-  if (integrate_data) df <- df %>% filter(pub_flag %in% "2")
+  if (integrate_data) df <- df %>% filter(.data$pub_flag %in% "2")
 
   df <- df %>%
-    filter(ucc %in% uccs) %>%
-    left_join(stub %>% select(ucc, factor), by = "ucc") %>%
-    dplyr::mutate(cost = cost * as.numeric(as.character(factor))) %>%
-    dplyr::group_by(newid, ucc) %>%
-    dplyr::summarise(cost = sum(cost)) %>%
+    filter(.data$ucc %in% uccs) %>%
+    left_join(stub %>% select(.data$ucc, .data$factor), by = "ucc") %>%
+    dplyr::mutate(
+      cost = .data$cost * as.numeric(as.character(.data$factor))
+    ) %>%
+    dplyr::group_by(.data$newid, .data$ucc) %>%
+    dplyr::summarise(cost = sum(.data$cost)) %>%
     dplyr::ungroup()
 
   return(df)
