@@ -7,10 +7,11 @@
 ce_stub(year, stub_type)
 }
 \arguments{
-\item{year}{The year corresponding to the stub file of interest.}
+\item{year}{A year between 1996 and the last year of available CE PUMD.}
 
 \item{stub_type}{The type of stub file, i.e., interview, diary, or
-integrated. Accepted as a string or symbol (quotes or no quotes).}
+integrated. Accepted as a string or symbol (quotes or no quotes). Integrated
+stub files are only available starting in the year 2002 (see details).}
 }
 \value{
 A data frame containing the following columns:
@@ -35,6 +36,10 @@ the given year of data. I have copied those sections of the documentation
 into data files contained in this package, e.g., "interview_uccs_1996."
 This function pulls the crosswalk and labels from the CE website, merges
 them, then merges in the UCC level titles from the data files.
+
+Also, because of the above mentioned issue, integrated stub files between
+1996 and 2001 do not exist, so entering a combination of year <= 2001 and
+stub_type = "integrated" will throw an error.
 }
 \examples{
 # 'stub_type' can be entered as a string

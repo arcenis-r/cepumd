@@ -7,7 +7,7 @@
 ce_download(year, survey, zp)
 }
 \arguments{
-\item{year}{The year corresponding to the data to download.}
+\item{year}{A year between 1996 and the last year of available CE PUMD.}
 
 \item{survey}{One of either "interview" or "diary" as a string or symbol.}
 

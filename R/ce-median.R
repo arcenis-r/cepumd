@@ -33,7 +33,7 @@ ce_median <- function(ce_data) {
   }
 
   df <- ce_data %>%
-    dplyr::select(.data$newid, .data$finlwt21, .data$cost, .data$ucc) %>%
+    dplyr::select(.data$newid, .data$finlwt21, .data$cost) %>%
     group_by(.data$newid) %>%
     summarise(cost = sum(.data$cost), finlwt21 = mean(.data$finlwt21)) %>%
     dplyr::arrange(.data$cost)
@@ -46,7 +46,7 @@ ce_median <- function(ce_data) {
 
   if (sum(below$finlwt21) == sum(above$finlwt21)) {
     ce_median <- sum(
-      below %>% dplyr::slice(n()) %>% dplyr::pull(.data$cost),
+      below %>% dplyr::slice(.data$n()) %>% dplyr::pull(.data$cost),
       above %>% dplyr::slice(1) %>% dplyr::pull(.data$cost)
     ) / 2
   } else {

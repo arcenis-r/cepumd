@@ -4,7 +4,7 @@
 #' tabulation (MTBI/EXPD) files and merges the relevant data for calculating an
 #' estimated mean or median.
 #'
-#' @param year The year corresponding to the data being used in the estimate.
+#' @param year A year between 1996 and the last year of available CE PUMD.
 #' @param survey One of either "interview" or "diary" as a string or symbol.
 #' @param uccs A character vector of UCC's corresponding to expenditure
 #' categories in the stub file for a given year and survey
