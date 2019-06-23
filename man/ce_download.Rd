@@ -11,8 +11,9 @@ ce_download(year, survey, zp)
 
 \item{survey}{One of either "interview" or "diary" as a string or symbol.}
 
-\item{zp}{A string indicating the path where you'd like to save the zip file
-(must end in ".zip").}
+\item{zp}{A string indicating the path where you'd like to save the zip file.
+This argment gets passed to 'destfile' in
+\code{\link[utils]{download.file}}}
 }
 \value{
 Stores a zip file containing CE data in the designated location.
@@ -23,9 +24,9 @@ Downloads zip files directly from the CE PUMD page on the
     the user.
 }
 \examples{
-# 'survey' can be entered as a string
-ce_download(2017, "interview", "./interview17.zip")
+# 'survey' can be entered as a string (not run)
+# ce_download(2017, "diary", "./diary17.zip")
 
-# 'survey' can also be entered as a symbol
-ce_download(2017, interview, "./interview17.zip")
+# 'survey' can also be entered as a symbol (not run)
+# ce_download(2017, interview, "./interview17.zip")
 }

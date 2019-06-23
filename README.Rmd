@@ -56,7 +56,7 @@ The following is an example of how someone might go about using cepumd to calcul
 
 The first step is to find out what UCC's represent the detailed expenditure categories that make up pet expenditures by downloading the stub and reviewing those categories.
 
-```{r, read_stub, cache = TRUE}
+```{r, read_stub}
 # install.packages(c("cepumd", "dplyr", "tidyr", "purrr", "ggplot2"))
 library(cepumd)
 library(dplyr)
@@ -68,7 +68,7 @@ pet_stub %>% slice(grep("[P|p]ets", pet_stub$title))
 
 We see that there are two categories containing the word "Pets,", though the "level" column indicates that "Pets", level 4, falls under "Pets, toys, hobbies, and playground equipment," level 3. We're only interested strictly in "Pet" expenditures and not toys, hobbies, or playground equipment.
 
-```{r, view_uccs, cache = TRUE}
+```{r, view_uccs}
 pet_uccs <- ce_uccs(pet_stub, "Pets")
 pet_uccs
 
@@ -77,7 +77,7 @@ pet_stub %>% filter(ucc %in% pet_uccs)
 
 We can see that there are 4 detailed expenditure categories under the category of pet expenditures. Next we'll want to prepare a dataset to calculate an integrated weighted mean expenditure estimate. To do that, though, we'll need both the Diary and Interview data for pet expenditures. We will include the "bls_urbn" variable to calculate estimated means by group later.
 
-```{r, prep_data, cache = TRUE, echo = TRUE, results = 'hide', message = FALSE, warning = FALSE}
+```{r, prep_data, echo = TRUE, results = 'hide', message = FALSE, warning = FALSE}
 pet_int <- ce_prepdata(
   year = 2017, survey = interview, uccs = pet_uccs, zp = NULL, 
   integrate_data = TRUE, stub = pet_stub, bls_urbn
@@ -93,13 +93,13 @@ pet_integrated <- bind_rows(pet_int, pet_dia)
 
 The Interview and Diary datasets have each been prepared and combined. Next we'll calculate estimated, weighted, mean pet expenditures for 2017.
 
-```{r, calc_means, cache = TRUE}
+```{r, calc_means}
 pet_mean <- ce_mean(pet_integrated)
 knitr::kable(pet_mean)
 ```
 
 The median expenditure on pets We can also calculate estimated, weighted, means by group. In this case we'll use the bls_urbn variable. We'll also generate a plot of the those means.
-```{r, calc_means_by_urbn, cache = TRUE}
+```{r, calc_means_by_urbn}
 pet_mean_by_urbn <- pet_integrated %>%
   group_by(bls_urbn) %>%
   tidyr::nest() %>%
@@ -132,7 +132,7 @@ ggplot(pet_mean_by_urbn, aes(x = bls_urbn, y = mean_exp, fill = bls_urbn)) +
 ```
 
 We can also calculate estimated, weighted median expenditures. Because the integrated data come from both the Interview and Diary surveys, we'll display them by UCC.
-```{r calc_median, cache = TRUE}
+```{r calc_median}
 pet_mean_by_ucc <- pet_integrated %>%
   group_by(ucc) %>%
   tidyr::nest() %>%
@@ -141,26 +141,4 @@ pet_mean_by_ucc <- pet_integrated %>%
   tidyr::unnest(ce_med_df)
 
 knitr::kable(pet_mean_by_ucc)
-```
-
-Another option is to use unintegrated data from only 1 survey instrument.
-```{r calc_median_diary, cache = TRUE}
-pet_dia_only <- ce_prepdata(
-  year = 2017, survey = diary, uccs = pet_uccs, zp = NULL, 
-  integrate_data = FALSE, stub = pet_stub, bls_urbn
-)
-
-ce_median(pet_dia_only)
-```
-
-We can also use data from the Diary only to calculate medians by bls_urbn.
-```{r calc_median_diary_by_group, cache = TRUE}
-pet_median_by_urbn <- pet_dia_only %>%
-  group_by(bls_urbn) %>%
-  tidyr::nest() %>%
-  mutate(ce_med_df = purrr::map(data, ce_median)) %>% 
-  select(-data) %>% 
-  tidyr::unnest(ce_med_df)
-
-knitr::kable(pet_median_by_urbn)
 ```

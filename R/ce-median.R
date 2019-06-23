@@ -16,20 +16,12 @@ ce_median <- function(ce_data) {
 
   check_cols <- c("finlwt21", "cost")
 
-  if (length(setdiff(check_cols, names(ce_data))) == 0) {
-    if (length(setdiff(sapply(ce_data[, check_cols], class), "numeric")) > 0) {
-      stop(
-        paste(
-          "'finlwt21' and the 'cost' variable must be numeric."
-        )
-      )
-    }
-  } else {
-    stop(
-      paste(
-        "Your dataset needs to include 'finlwt21' and the 'cost' variable"
-      )
-    )
+  if (length(setdiff(check_cols, names(ce_data))) > 0) {
+    stop("Your dataset needs to include 'finlwt21' and the 'cost' variable")
+  } else if (
+    length(setdiff(sapply(ce_data[, check_cols], class), "numeric")) > 0
+  ) {
+    stop("'finlwt21' and the 'cost' variable must be numeric.")
   }
 
   df <- ce_data %>%

@@ -6,8 +6,9 @@
 #'
 #' @param year A year between 1996 and the last year of available CE PUMD.
 #' @param survey One of either "interview" or "diary" as a string or symbol.
-#' @param zp A string indicating the path where you'd like to save the zip file
-#' (must end in ".zip").
+#' @param zp A string indicating the path where you'd like to save the zip file.
+#'   This argment gets passed to 'destfile' in
+#'   \code{\link[utils]{download.file}}
 #'
 #' @return Stores a zip file containing CE data in the designated location.
 #'
@@ -20,11 +21,11 @@
 #' @importFrom utils download.file unzip
 #'
 #' @examples
-#' # 'survey' can be entered as a string
-#' ce_download(2017, "interview", "./interview17.zip")
+#' # 'survey' can be entered as a string (not run)
+#' # ce_download(2017, "diary", "./diary17.zip")
 #'
-#' # 'survey' can also be entered as a symbol
-#' ce_download(2017, interview, "./interview17.zip")
+#' # 'survey' can also be entered as a symbol (not run)
+#' # ce_download(2017, interview, "./interview17.zip")
 
 ce_download <- function(year, survey, zp) {
   survey <- rlang::enquo(survey)
@@ -35,25 +36,17 @@ ce_download <- function(year, survey, zp) {
     stop("'year' must be a number between 1996 and 2017")
   }
 
-  if (
-    !survey_name %in% c("interview", "diary")
-  ) {
-    stop("'survey' must be one of interview or diary")
+  if (!survey_name %in% c("interview", "diary")) {
+    stop("'survey' must be one of 'interview' or 'diary'")
   }
 
-  if (is.character(zp)) {
-    if (!nzchar(zp)) stop("'zp' must be non-empty string.")
-  } else {
-    "'zp' must be a valid file path."
-  }
-
-  svy <- ifelse(
+  survey_name <- ifelse(
     survey_name %in% "interview", "intrvw", "diary"
   )
 
   zip_link <- paste0(
     "https://www.bls.gov/cex/pumd/data/comma/",
-    svy, stringr::str_sub(year, 3, 4),
+    survey_name, stringr::str_sub(year, 3, 4),
     ".zip"
   )
 

@@ -32,20 +32,20 @@ ce_mean <- function(ce_data) {
     "cost"
   )
 
-  if (length(setdiff(check_cols, names(ce_data))) == 0) {
-    if (length(setdiff(sapply(ce_data[, check_cols], class), "numeric")) > 0) {
-      stop(
-        paste(
-          "'finlwt21', all replicate weight variables, i.e., 'wtrep01' to",
-          "'wtrep44', and the 'cost' variable must be numeric."
-        )
-      )
-    }
-  } else {
+  if (length(setdiff(check_cols, names(ce_data))) > 0) {
     stop(
       paste(
         "Your dataset needs to include 'finlwt21', all 44 replicate weights,",
         "i.e., 'wtrep01' to 'wtrep44', and the 'cost' variable"
+      )
+    )
+  } else if (
+    length(setdiff(sapply(ce_data[, check_cols], class), "numeric")) > 0
+  ) {
+    stop(
+      paste(
+        "'finlwt21', all replicate weight variables, i.e., 'wtrep01' to",
+        "'wtrep44', and the 'cost' variable must be numeric."
       )
     )
   }

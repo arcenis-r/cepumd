@@ -15,15 +15,18 @@ ce_prepdata(year, survey, uccs, zp = NULL, integrate_data = TRUE,
 \item{uccs}{A character vector of UCC's corresponding to expenditure
 categories in the stub file for a given year and survey}
 
-\item{zp}{A string indicating the zip file path where data are stored. The
-default is NULL.}
+\item{zp}{A string indicating the path where you'd like to save the zip file.
+This argment gets passed to 'destfile' in
+\code{\link[utils]{download.file}}. The default is \code{NULL} which
+causes the zip file to be stored in temporary memory during function
+operation.}
 
 \item{integrate_data}{A logical indicating whether to prepare the data to
 calculate an integrated mean or median. The default is TRUE. (See details)}
 
 \item{stub}{A data frame that has, at least, the title, level, ucc, and
-factor columns of a CE stub file. Calling \code{\link{ce_stub}} will generate
-a valid stub file.}
+factor columns of a CE stub file. Calling \code{\link{ce_stub}} will
+generate a valid stub file.}
 
 \item{...}{Variables to include in the dataset from the family
 characteristics file. This is intended to allow the user to calculate
@@ -84,19 +87,19 @@ the Interview. Please download the CE Source Selection Document for a
 complete listing: \url{https://www.bls.gov/cex/ce_source_integrate.xlsx}.
 }
 \examples{
-# The following workflow will prepare a dataset for calculating integrated
+# The following workflow will prepare a dataset for calculating diary
 # pet expenditures for 2017 keep the "sex_ref" variable in the data to
 # potentially calculate means by sex of the reference person.
 
 # First generate a stub file
-mystub <- ce_stub(2017, interview)
+mystub <- ce_stub(2017, diary)
 
 # Store a vector of UCC's in the "Pets" category
 pet_uccs <- ce_uccs(mystub, "Pets")
 
-# Store the interview data
-pets_int <- ce_prepdata(
-  year = 2017, survey = interview, uccs = pet_uccs, zp = NULL,
-  integrate_data = TRUE, stub = NULL, sex_ref
-)
+# Store the diary data (not run)
+# pets_dia <- ce_prepdata(
+# year = 2017, survey = diary, uccs = pet_uccs, zp = NULL,
+# integrate_data = TRUE, stub = NULL, sex_ref
+#)
 }

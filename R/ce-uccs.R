@@ -21,7 +21,8 @@
 
 ce_uccs <- function(stub, expenditure) {
   if (
-    !is.data.frame(stub) | !all(c("title", "level", "ucc") %in% names(stub))
+    !is.data.frame(stub) |
+    !all(c("title", "level", "ucc", "factor") %in% names(stub))
   ) {
     stop(
       paste(

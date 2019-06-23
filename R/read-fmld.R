@@ -8,10 +8,12 @@
 
 read.fmld <- function(fp, zp, grp_var_names) {
 
-  df <- readr::read_csv(
-    unzip(zp, files = fp, exdir = tempdir()),
-    na = c("NA", "", " ", "."),
-    progress = FALSE
+  df <- suppressWarnings(
+    readr::read_csv(
+      unzip(zp, files = fp, exdir = tempdir()),
+      na = c("NA", "", " ", "."),
+      progress = FALSE
+    )
   ) %>%
     set_names(tolower(names(.)))
 

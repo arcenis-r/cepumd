@@ -167,33 +167,3 @@ knitr::kable(pet_mean_by_ucc)
 | 620410 |        90.00|
 | 610310 |       170.30|
 | 620420 |      1593.67|
-
-Another option is to use unintegrated data from only 1 survey instrument.
-
-``` r
-pet_dia_only <- ce_prepdata(
-  year = 2017, survey = diary, uccs = pet_uccs, zp = NULL, 
-  integrate_data = FALSE, stub = pet_stub, bls_urbn
-)
-
-ce_median(pet_dia_only)
-#> [1] 0
-```
-
-We can also use data from the Diary only to calculate medians by bls\_urbn.
-
-``` r
-pet_median_by_urbn <- pet_dia_only %>%
-  group_by(bls_urbn) %>%
-  tidyr::nest() %>%
-  mutate(ce_med_df = purrr::map(data, ce_median)) %>% 
-  select(-data) %>% 
-  tidyr::unnest(ce_med_df)
-
-knitr::kable(pet_median_by_urbn)
-```
-
-|  bls\_urbn|  ce\_med\_df|
-|----------:|------------:|
-|          1|            0|
-|          2|            0|

@@ -19,10 +19,12 @@ read.mtbi <- function(fp, zp, year, uccs, integrate_data, stub) {
     stub <- ce_stub(year, "interview")
   }
 
-  df <- readr::read_csv(
-    unzip(zp, files = fp, exdir = tempdir()),
-    na = c("NA", "", " ", "."),
-    progress = FALSE
+  df <- suppressWarnings(
+    readr::read_csv(
+      unzip(zp, files = fp, exdir = tempdir()),
+      na = c("NA", "", " ", "."),
+      progress = FALSE
+    )
   ) %>%
     rlang::set_names(tolower(names(.))) %>%
     dplyr::select(
