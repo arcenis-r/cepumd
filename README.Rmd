@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 # cepumd
 
 <!-- badges: start -->
+[![Travis build status](https://travis-ci.org/arcenis-r/cepumd.svg?branch=master)](https://travis-ci.org/arcenis-r/cepumd)
 <!-- badges: end -->
 
 cepumd facilitates the calculation of Consumer Expenditure Survey (CE) annual, weighted, estimated mean expenditures using CE Public-Use Microdata (PUMD) by addressing some unique challenges that exist in working with CE PUMD. Some examples are:
