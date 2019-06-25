@@ -2,7 +2,8 @@
 output: github_document
 ---
 
-[![CRAN status](https://cran.r-project.org/package=cepumd)](https://www.r-pkg.org/badges/version/cepumd)
+[![Travis build status](https://travis-ci.org/arcenis-r/cepumd.svg?branch=master)](https://travis-ci.org/arcenis-r/cepumd)
+[![Codecov test coverage](https://codecov.io/gh/arcenis-r/cepumd/branch/master/graph/badge.svg)](https://codecov.io/gh/arcenis-r/cepumd?branch=master)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
