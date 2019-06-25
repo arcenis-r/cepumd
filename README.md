@@ -1,12 +1,11 @@
 
+[![CRAN status](https://cran.r-project.org/package=cepumd)](https://www.r-pkg.org/badges/version/cepumd)
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 cepumd
 ======
 
-<!-- badges: start -->
-[![Travis build status](https://travis-ci.org/arcenis-r/cepumd.svg?branch=master)](https://travis-ci.org/arcenis-r/cepumd) <!-- badges: end -->
-
-cepumd facilitates the calculation of Consumer Expenditure Survey (CE) annual, weighted, estimated mean expenditures using CE Public-Use Microdata (PUMD) by addressing some unique challenges that exist in working with CE PUMD. Some examples are:
+`cepumd` facilitates the calculation of Consumer Expenditure Survey (CE) annual, weighted, estimated mean expenditures using CE Public-Use Microdata (PUMD) by addressing some unique challenges that exist in working with CE PUMD. Some examples are:
 
 -   Downloading CE PUMD from within R
 -   Converting stub files to data tables
@@ -32,7 +31,7 @@ There are 2 functions that the user can use to calculate CE summary statistics:
 Installation
 ------------
 
-You can install the released version of cepumd from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of `cepumd` from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 install.packages("cepumd")
@@ -41,7 +40,7 @@ install.packages("cepumd")
 Example Workflow
 ----------------
 
-The following is an example of how someone might go about using cepumd to calculate a 2017 annual, weighted estimate of mean expenditures on pets using CE integrated data.
+The following is an example of how someone might go about using `cepumd` to calculate a 2017 annual, weighted estimate of mean expenditures on pets using CE integrated data.
 
 The first step is to find out what UCC's represent the detailed expenditure categories that make up pet expenditures by downloading the stub and reviewing those categories.
 

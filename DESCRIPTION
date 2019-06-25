@@ -1,6 +1,6 @@
 Package: cepumd
 Type: Package
-Title: Facilitates Calculating Summary Statistics With Consumer Expenditure 
+Title: Facilitates Calculating Summary Statistics with Consumer Expenditure 
     Survey (CE) Public-Use Microdata (PUMD)
 Version: 0.1.1
 Author: Arcenis Rojas <arcenis.rojas@gmail.com>
