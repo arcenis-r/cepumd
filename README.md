@@ -1,5 +1,5 @@
 
-[![Travis build status](https://travis-ci.org/arcenis-r/cepumd.svg?branch=master)](https://travis-ci.org/arcenis-r/cepumd) [![Codecov test coverage](https://codecov.io/gh/arcenis-r/cepumd/branch/master/graph/badge.svg)](https://codecov.io/gh/arcenis-r/cepumd?branch=master)
+[![Travis build status](https://travis-ci.com/arcenis-r/cepumd.svg?branch=master)](https://travis-ci.com/arcenis-r/cepumd) [![Codecov test coverage](https://codecov.io/gh/arcenis-r/cepumd/branch/master/graph/badge.svg)](https://codecov.io/gh/arcenis-r/cepumd?branch=master)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 cepumd
@@ -31,10 +31,11 @@ There are 2 functions that the user can use to calculate CE summary statistics:
 Installation
 ------------
 
-You can install the released version of `cepumd` from [CRAN](https://CRAN.R-project.org) with:
+You can install the development version of `cepumd` from [GitHub](https://github.com) with:
 
 ``` r
-install.packages("cepumd")
+if (!require(devtools)) install.packages("devtools")
+devtools::install_github("/arcenis-r/cepumd")
 ```
 
 Example Workflow

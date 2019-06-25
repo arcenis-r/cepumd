@@ -1,4 +1,7 @@
-#' Calculate a CE weighted, estimated mean
+#' Calculate a CE weighted mean
+#'
+#' @description Calculate a weighted mean using the method used to produce
+#' official CE estimates.
 #'
 #' @param ce_data A data frame containing at least a finlwt21 column,
 #' 44 replicate weight columns (wtrep01-44), and a cost column. All of these
@@ -22,6 +25,15 @@
 #' @examples
 #' # Calculate the mean pet expenditure using only Diary expenditures
 #' ce_mean(ce_diary_pets17)
+#'
+#' @note
+#' Estimates produced using PUMD, which is topcoded by the CE and has some
+#' records suppressed to protect respondent confidentiality, will not match the
+#' published estimates released by the CE in most cases. The CE's published
+#' estimates are based on data that are not topcoded nor have records
+#' suppressed. You can learn more at
+#' \href{https://www.bls.gov/cex/pumd_disclosure.htm}{CE Protection of
+#' Respondent Confidentiality}
 
 ce_mean <- function(ce_data) {
 

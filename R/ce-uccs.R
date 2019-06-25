@@ -1,9 +1,9 @@
-#' Find the UCC's that correspond to expenditure categories
+#' Find UCCs for expenditure categories
 #'
 #' @param stub A data frame that has, at least, the title, level, and ucc
 #' columns of a CE stub file.
-#' @param expenditure An expenditure category exactly matching the way it is
-#' written in a CE stub file (as a string).
+#' @param expenditure A string that is an expenditure category contained in a
+#' CE stub file (exact match required).
 #'
 #' @return A vector of Universal Classification Codes (UCC's) corresponding to
 #' the lowest hierarchical level for that category.

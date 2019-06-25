@@ -1,9 +1,9 @@
-#' Calculate a CE weighted, estimated median
+#' Calculate a CE weighted median
 #'
 #' @param ce_data A data frame containing at least a finlwt21 column and a cost
 #' column. Both columns must be numeric.
 #'
-#' @return A weighted, estimated median (numeric)
+#' @return A weighted median (numeric)
 #' @export
 #'
 #' @seealso \code{\link{ce_mean}}

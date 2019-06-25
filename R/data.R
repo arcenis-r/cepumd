@@ -59,7 +59,8 @@
 #'   \item{mo_scope}{Months in scope}
 #'   \item{popwt}{\eqn{(finlwt21 * mo_scope) / 4}}
 #'   \item{aggwt}{The sum of popwt (used for calculating estimated means)}
-#'   \item{ucc}{The UCC for a given expenditure}
+#'   \item{ucc}{The 6-digit Universal Classification Code (UCC) that identifies
+#'     an expenditure category}
 #'   \item{cost}{The value of the expenditure (in U.S. Dollars)}
 #' }
 #' @source \url{http://www.bls.gov/cex/pumd_data.htm}

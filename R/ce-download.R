@@ -6,9 +6,9 @@
 #'
 #' @param year A year between 1996 and the last year of available CE PUMD.
 #' @param survey One of either "interview" or "diary" as a string or symbol.
-#' @param zp A string indicating the path where you'd like to save the zip file.
-#'   This argment gets passed to 'destfile' in
-#'   \code{\link[utils]{download.file}}
+#' @param zp A string indicating the file path where you'd like to save the zip
+#' file. This argment gets passed to 'destfile' in
+#' \code{\link[utils]{download.file}}
 #'
 #' @return Stores a zip file containing CE data in the designated location.
 #'
