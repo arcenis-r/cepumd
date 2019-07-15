@@ -23,8 +23,9 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, stub) {
       na = c("NA", "", " ", "."),
       progress = FALSE
     )
-  ) %>%
-    rlang::set_names(tolower(names(.)))
+  )
+
+  names(df) <- tolower(names(df))
 
   if (year >= 1996 & year <= 2011) {
     df <- df %>%

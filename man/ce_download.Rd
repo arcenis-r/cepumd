@@ -11,8 +11,8 @@ ce_download(year, survey, zp)
 
 \item{survey}{One of either "interview" or "diary" as a string or symbol.}
 
-\item{zp}{A string indicating the path where you'd like to save the zip file.
-This argment gets passed to 'destfile' in
+\item{zp}{A string indicating the file path where you'd like to save the zip
+file. This argment gets passed to 'destfile' in
 \code{\link[utils]{download.file}}}
 }
 \value{

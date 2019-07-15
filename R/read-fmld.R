@@ -14,8 +14,9 @@ read.fmld <- function(fp, zp, grp_var_names) {
       na = c("NA", "", " ", "."),
       progress = FALSE
     )
-  ) %>%
-    set_names(tolower(names(.)))
+  )
+
+  names(df) <- tolower(names(df))
 
   if (length(grp_var_names) > 0) {
 

@@ -19,8 +19,9 @@ read.fmli <- function(fp, zp, year, grp_var_names) {
       na = c("NA", "", " ", "."),
       progress = FALSE
     )
-  ) %>%
-    rlang::set_names(tolower(names(.)))
+  )
+
+  names(df) <- tolower(names(df))
 
   if (length(grp_var_names) > 0) {
 

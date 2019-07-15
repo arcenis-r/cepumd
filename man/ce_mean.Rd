@@ -2,7 +2,7 @@
 % Please edit documentation in R/ce-mean.R
 \name{ce_mean}
 \alias{ce_mean}
-\title{Calculate a CE weighted, estimated mean}
+\title{Calculate a CE weighted mean}
 \usage{
 ce_mean(ce_data)
 }
@@ -21,12 +21,23 @@ A 1-row dataframe containing the following columns:
 }
 }
 \description{
-Calculate a CE weighted, estimated mean
+Calculate a weighted mean using the method used to produce
+official CE estimates.
+}
+\note{
+Estimates produced using PUMD, which is topcoded by the CE and has some
+records suppressed to protect respondent confidentiality, will not match the
+published estimates released by the CE in most cases. The CE's published
+estimates are based on data that are not topcoded nor have records
+suppressed. You can learn more at
+\href{https://www.bls.gov/cex/pumd_disclosure.htm}{CE Protection of
+Respondent Confidentiality}
 }
 \examples{
 # Calculate the mean pet expenditure using only Diary expenditures
 ce_mean(ce_diary_pets17)
+
 }
 \seealso{
-\code{\link{ce_median}}
+\code{\link{ce_quantiles}}
 }

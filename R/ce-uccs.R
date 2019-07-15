@@ -4,6 +4,11 @@
 #' columns of a CE stub file.
 #' @param expenditure A string that is an expenditure category contained in a
 #' CE stub file (exact match required).
+#' @param uccs_only A logical indicating whether to return only the expenditure
+#' category's component ucc's. If TRUE (default), a vector of UCC's will be
+#' returned. If FALSE, a dataframe will be returned containing the section of
+#' the stub file containing the expenditure category and its component sub-
+#' categories
 #'
 #' @return A vector of Universal Classification Codes (UCC's) corresponding to
 #' the lowest hierarchical level for that category.
@@ -19,7 +24,7 @@
 #' pet_uccs
 #' # [1] "610320" "620410" "620420"
 
-ce_uccs <- function(stub, expenditure) {
+ce_uccs <- function(stub, expenditure, uccs_only = TRUE) {
   if (
     !is.data.frame(stub) |
     !all(c("title", "level", "ucc", "factor") %in% names(stub))
@@ -54,6 +59,6 @@ ce_uccs <- function(stub, expenditure) {
   uccs <- stub$ucc[title_row:stop_row]
   uccs <- suppressWarnings(uccs[!is.na(as.numeric(uccs))])
 
-  return(uccs)
+  if (uccs_only) return(uccs) else return(stub[title_row:stop_row, ])
 }
 

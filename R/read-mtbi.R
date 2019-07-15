@@ -25,8 +25,11 @@ read.mtbi <- function(fp, zp, year, uccs, integrate_data, stub) {
       na = c("NA", "", " ", "."),
       progress = FALSE
     )
-  ) %>%
-    rlang::set_names(tolower(names(.))) %>%
+  )
+
+  names(df) <- tolower(names(df))
+
+  df <- df %>%
     dplyr::select(
       .data$newid, .data$ref_yr, .data$ucc, .data$cost, .data$pubflag
     ) %>%

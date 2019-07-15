@@ -27,7 +27,7 @@ knitr::opts_chunk$set(
 * Accounting for the "months in scope" of a given consumer unit (CU)
 * Annualizing expenditures for either Diary or Interview expenditures
 * Integrating Interview and Diary data as necessary
-* Calculating weighted CE medians
+* Calculating weighted CE quantiles
 
 There are 4 functions that help the user download and wrangle the data and necessary documentation, such as the stub files:
 
@@ -132,14 +132,14 @@ ggplot(pet_mean_by_urbn, aes(x = bls_urbn, y = mean_exp, fill = bls_urbn)) +
   )
 ```
 
-We can also calculate estimated, weighted median expenditures. Because the integrated data come from both the Interview and Diary surveys, we'll display them by UCC.
+We can also calculate weighted median expenditures. Because the integrated data come from both the Interview and Diary surveys, we'll display them by UCC.
 ```{r calc_median}
-pet_mean_by_ucc <- pet_integrated %>%
+pet_median_by_ucc <- pet_integrated %>%
   group_by(ucc) %>%
   tidyr::nest() %>%
-  mutate(ce_med_df = purrr::map(data, ce_median)) %>% 
+  mutate(ce_med_df = purrr::map(data, ce_quantiles)) %>% 
   select(-data) %>% 
   tidyr::unnest(ce_med_df)
 
-knitr::kable(pet_mean_by_ucc)
+knitr::kable(pet_median_by_ucc)
 ```

@@ -22,8 +22,9 @@ A data frame containing the following columns:
   of estimated means / medians
 }
 \description{
-Reads in a CE stub file for the given year and stub type
-as data frame.
+A CE stub file shows the levels of aggregation for expenditure
+categories used to produce official CE expenditure estimates. This function
+reads in a CE stub file for the given year and stub type as data frame.
 }
 \details{
 The CE did not have publicly available stub files between 1996 and 2001.
@@ -40,6 +41,14 @@ them, then merges in the UCC level titles from the data files.
 Also, because of the above mentioned issue, integrated stub files between
 1996 and 2001 do not exist, so entering a combination of year <= 2001 and
 stub_type = "integrated" will throw an error.
+
+Finally, the output will contain only expenditure UCCs and not UCCs related
+to household characteristics, income, assets, or liabilities. The scope of
+the functions in this package is limited to expenditures. Income, for
+example, is imputed and calculation of income means goes through a different
+process than do expenditure means. Please see
+\url{https://www.bls.gov/cex/csxguide.pdf}{User's Guide to Income Imputation
+in the CE}
 }
 \examples{
 # 'stub_type' can be entered as a string

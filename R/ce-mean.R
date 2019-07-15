@@ -20,7 +20,7 @@
 #' @importFrom graphics title
 #' @importFrom dplyr bind_rows
 #'
-#' @seealso \code{\link{ce_median}}
+#' @seealso \code{\link{ce_quantiles}}
 #'
 #' @examples
 #' # Calculate the mean pet expenditure using only Diary expenditures
@@ -62,29 +62,25 @@ ce_mean <- function(ce_data) {
     )
   }
 
+  wtrep_vars <- grep("wtrep", names(ce_data), value = TRUE)
+
   estimates <- ce_data %>%
 
     # Generate an aggregate expenditure column by multiplying the cost by the
     # consumer unit's weight
-    dplyr::mutate(agg_exp = .data$finlwt21 * .data$cost) %>%
+    dplyr::mutate(agg_exp = .data$finlwt21 * .data$cost)
 
-    # Adjust each of the weight variables by multiplying it by the expenditure
-    # and dividing by the aggregate weight variable, which represents the
-    # population weight. This has the effect of converting each observation of
-    # the consumer unit weight and associated replicate weights into the ratio
-    # of the expenditures of the population representation by a given consumer
-    # unit to the total population
-    dplyr::mutate_at(
-      dplyr::vars(.data$finlwt21, dplyr::contains("wtrep")),
-      list(~(cost * (. / .data$aggwt)))
-    ) %>%
+  # Adjust each of the weight variables by multiplying it by the expenditure
+  # and dividing by the aggregate weight variable, which represents the
+  # population weight. This has the effect of converting each observation of
+  # the consumer unit weight and associated replicate weights into the ratio
+  # of the expenditures of the population representation by a given consumer
+  # unit to the total population
+  for (i in c("finlwt21", wtrep_vars)) {
+    estimates[i] = (estimates[i] * estimates$cost) / estimates$aggwt
+  }
 
-    # Rename each of the weight variables with the prefix "adj_" to reflect that
-    # they've been adjusted
-    dplyr::rename_at(
-      dplyr::vars(dplyr::contains("wtrep"), .data$finlwt21),
-      list(~paste0("adj_", .))
-    ) %>%
+  estimates <- estimates %>%
 
     # Group by UCC
     dplyr::group_by(.data$ucc) %>%
@@ -93,7 +89,8 @@ ce_mean <- function(ce_data) {
     # an aggregate expenditure, a mean expenditure, and 44 replicate mean
     # expenditures for each UCC.
     dplyr::summarise_at(
-      dplyr::vars(dplyr::contains("adj_"), .data$agg_exp), list(~sum(.))
+      dplyr::vars(dplyr::contains("wtrep"), .data$finlwt21, .data$agg_exp),
+      sum
     ) %>%
 
     # Drop the observation that accounts for households not having reported any
@@ -107,26 +104,28 @@ ce_mean <- function(ce_data) {
     dplyr::select(-.data$ucc) %>%
 
     # Get the sum of the mean and each of the squared differences from the mean
-    dplyr::summarise_all(sum) %>%
+    dplyr::summarise_all(sum)
 
-    # For each UCC, get the differences between the mean and each of its
-    # replicate means then square those differences. Upon running the next
-    # command, the values in the "adj_finlwt21" column will represent the
-    # estimated means for each of the UCCs.
-    dplyr::mutate_at(
-      dplyr::vars(
-        dplyr::contains("adj_wtrep")), list(~(.data$adj_finlwt21 - .) ^ 2
-      )
-    ) %>%
+  # For each UCC, get the differences between the mean and each of its
+  # replicate means then square those differences. Upon running the next
+  # command, the values in the "adj_finlwt21" column will represent the
+  # estimated means for each of the UCCs.
+  for (i in wtrep_vars) {
+    (estimates$finlwt21 - estimates[i]) ^ 2
+  }
+
+  # Sum up the 44 squared differences
+  estimates$sum_sqrs <- rowSums(estimates[, wtrep_vars])
+
+  estimates <- estimates  %>%
 
     # Generate a standard error column by taking the sum of the 44 squared
     # differences, dividing it by 44, then taking the square root of the result
     dplyr::mutate(
-      sum_sqrs = dplyr::select(., dplyr::contains("adj_wtrep")) %>% rowSums(),
       se = (.data$sum_sqrs / 44) %>% sqrt(),
-      cv = .data$se / .data$adj_finlwt21
+      cv = .data$se / .data$finlwt21
     ) %>%
-    dplyr::select(.data$agg_exp, mean_exp = "adj_finlwt21", .data$se, .data$cv)
+    dplyr::select(.data$agg_exp, mean_exp = "finlwt21", .data$se, .data$cv)
 
   return(estimates)
 }

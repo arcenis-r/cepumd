@@ -87,9 +87,12 @@ make.stub.96.01 <- function(year, stub_type_name) {
     dplyr::filter(!(!is.na(.data$ucc) & is.na(.data$title))) %>%
     dplyr::mutate(
       title = ifelse(is.na(.data$ucc), .data$header, .data$title) %>%
-        stringr::str_trim(.)
+        stringr::str_trim()
     ) %>%
-    dplyr::select(.data$level, .data$title, .data$ucc, .data$factor)
+    dplyr::mutate(survey = ifelse(stub_type_name == "diary", "D", "I")) %>%
+    dplyr::select(
+      .data$level, .data$title, .data$ucc, .data$survey, .data$factor
+    )
 
   return(stub)
 }

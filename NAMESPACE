@@ -2,8 +2,8 @@
 
 export(ce_download)
 export(ce_mean)
-export(ce_median)
 export(ce_prepdata)
+export(ce_quantiles)
 export(ce_stub)
 export(ce_uccs)
 importFrom(dplyr,"%>%")

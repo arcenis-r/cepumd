@@ -12,7 +12,7 @@ ce_prepdata(year, survey, uccs, zp = NULL, integrate_data = TRUE,
 
 \item{survey}{One of either "interview" or "diary" as a string or symbol.}
 
-\item{uccs}{A character vector of UCC's corresponding to expenditure
+\item{uccs}{A character vector of UCCs corresponding to expenditure
 categories in the stub file for a given year and survey}
 
 \item{zp}{A string indicating the path where you'd like to save the zip file.
@@ -40,7 +40,7 @@ A data frame containing the following columns:
   \item wtrep01 through wtrep44 - CU replicate weight variables (see details)
   \item ... - Any family characteristics variables that were kept
   \item mo_scope - Months in scope (see details)
-  \item popwt - An adjusted weight meant to account for the fact that a CU's
+  \item popwt - An adjusted weight meant to account for the fact that a CUs
         value of finlwt21 is meant to be representative of only 1 quarter of
         data (see details)
   \item aggwt - The sum of popwt (used for calculating estimated means)
@@ -50,8 +50,8 @@ A data frame containing the following columns:
 }
 \description{
 Reads in the family characteristics (FMLI/-D) and expenditure
-tabulation (MTBI/EXPD) files and merges the relevant data for calculating an
-estimated mean or median.
+tabulation (MTBI/EXPD) files and merges the relevant data for calculating a
+weighted mean or median.
 }
 \details{
 CE data include 45 weights. The primary weight that is used for calculating

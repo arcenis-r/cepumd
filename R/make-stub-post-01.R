@@ -43,7 +43,7 @@ make.stub.post.01 <- function(year, stub_type_name) {
   ) %>%
     dplyr::select(1:7) %>%
     rlang::set_names(
-      c("linenum", "level", "title", "ucc", "type", "factor", "group")
+      c("linenum", "level", "title", "ucc", "survey", "factor", "group")
     ) %>%
     dplyr::mutate_all(
       list(~(stringr::str_trim(.) %>% stringr::str_squish()))
@@ -61,7 +61,9 @@ make.stub.post.01 <- function(year, stub_type_name) {
       !.data$linenum %in% "2",
       .data$group %in% c("FOOD", "EXPEND")
     ) %>%
-    dplyr::select(.data$level, .data$title, .data$ucc, .data$factor)
+    dplyr::select(
+      .data$level, .data$title, .data$ucc, .data$survey, .data$factor
+    )
 
   return(stub)
 }

@@ -2,23 +2,29 @@
 % Please edit documentation in R/ce-uccs.R
 \name{ce_uccs}
 \alias{ce_uccs}
-\title{Find the UCC's that correspond to expenditure categories}
+\title{Find UCCs for expenditure categories}
 \usage{
-ce_uccs(stub, expenditure)
+ce_uccs(stub, expenditure, uccs_only = TRUE)
 }
 \arguments{
 \item{stub}{A data frame that has, at least, the title, level, and ucc
 columns of a CE stub file.}
 
-\item{expenditure}{An expenditure category exactly matching the way it is
-written in a CE stub file (as a string).}
+\item{expenditure}{A string that is an expenditure category contained in a
+CE stub file (exact match required).}
+
+\item{uccs_only}{A logical indicating whether to return only the expenditure
+category's component ucc's. If TRUE (default), a vector of UCC's will be
+returned. If FALSE, a dataframe will be returned containing the section of
+the stub file containing the expenditure category and its component sub-
+categories}
 }
 \value{
 A vector of Universal Classification Codes (UCC's) corresponding to
 the lowest hierarchical level for that category.
 }
 \description{
-Find the UCC's that correspond to expenditure categories
+Find UCCs for expenditure categories
 }
 \examples{
 # First generate a stub file
