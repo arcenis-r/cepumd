@@ -79,9 +79,6 @@ ce_mean <- function(ce_data) {
         dplyr::ungroup(),
       by = "survey"
     ) %>%
-    dplyr::group_by(.data$survey) %>%
-    dplyr::mutate(aggwt = sum(.data$popwt)) %>%
-    dplyr::ungroup() %>%
 
     # Generate an aggregate expenditure column by multiplying the cost by the
     # consumer unit's weight
