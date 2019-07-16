@@ -68,6 +68,17 @@ ce_mean <- function(ce_data) {
   estimates <- ce_data %>%
 
     # Calculate an aggregate population by survey
+    left_join(
+      ce_data %>%
+        dplyr::select(survey, newid, popwt) %>%
+        dplyr::group_by(survey, newid, popwt) %>%
+        dplyr::slice(1) %>%
+        dplyr::ungroup() %>%
+        dplyr::group_by(survey) %>%
+        dplyr::summarise(aggwt = sum(popwt)) %>%
+        dplyr::ungroup(),
+      by = "survey"
+    ) %>%
     dplyr::group_by(.data$survey) %>%
     dplyr::mutate(aggwt = sum(.data$popwt)) %>%
     dplyr::ungroup() %>%
