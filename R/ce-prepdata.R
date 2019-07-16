@@ -32,9 +32,10 @@
 #'   \item popwt - An adjusted weight meant to account for the fact that a CUs
 #'         value of finlwt21 is meant to be representative of only 1 quarter of
 #'         data (see details)
-#'   \item aggwt - The sum of popwt (used for calculating estimated means)
 #'   \item ucc - The UCC for a given expenditure
 #'   \item cost - The value of the expenditure (in U.S. Dollars)
+#'   \item survey - An indicator of which survey the data come from: "I" for
+#'         Interview and "D" for Diary.
 #' }
 #'
 #' @details
@@ -166,8 +167,7 @@ ce_prepdata <- function(
       dplyr::bind_rows() %>%
       dplyr::mutate_at(
         dplyr::vars(dplyr::contains("wtrep")), list(~ replace(., is.na(.), 0))
-      ) %>%
-      dplyr::mutate(aggwt = sum(.data$popwt))
+      )
 
     mtbi <- purrr::map_df(
       mtbi_files, read.mtbi, zp = zp, year = year, uccs = uccs,
@@ -176,7 +176,8 @@ ce_prepdata <- function(
       dplyr::bind_rows()
 
     dat <- dplyr::left_join(fmli, mtbi, by = "newid") %>%
-      dplyr::mutate(cost = replace(.data$cost, is.na(.data$cost), 0))
+      dplyr::mutate(cost = replace(.data$cost, is.na(.data$cost), 0)) %>%
+      dplyr::mutate(survey = "I")
   }
 
   if (survey_name %in% "diary") {
@@ -198,8 +199,7 @@ ce_prepdata <- function(
       dplyr::bind_rows() %>%
       dplyr::mutate_at(
         dplyr::vars(dplyr::contains("wtrep")), list(~ replace(., is.na(.), 0))
-      ) %>%
-      dplyr::mutate(aggwt = sum(.data$popwt))
+      )
 
     expd <- purrr::map_df(
       expd_files, read.expd, zp = zp, year = year, uccs = uccs,
@@ -208,7 +208,8 @@ ce_prepdata <- function(
       dplyr::bind_rows()
 
     dat <- dplyr::left_join(fmld, expd, by = "newid") %>%
-      dplyr::mutate(cost = replace(.data$cost, is.na(.data$cost), 0))
+      dplyr::mutate(cost = replace(.data$cost, is.na(.data$cost), 0)) %>%
+      dplyr::mutate(survey = "D")
   }
 
   if (unlink_zp) unlink(zp)

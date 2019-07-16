@@ -8,8 +8,8 @@ ce_mean(ce_data)
 }
 \arguments{
 \item{ce_data}{A data frame containing at least a finlwt21 column,
-44 replicate weight columns (wtrep01-44), and a cost column. All of these
-columns must be numeric.}
+44 replicate weight columns (wtrep01-44), a cost column, and a survey
+indicator column. All but the survey column must be numeric.}
 }
 \value{
 A 1-row dataframe containing the following columns:

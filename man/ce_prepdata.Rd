@@ -43,9 +43,10 @@ A data frame containing the following columns:
   \item popwt - An adjusted weight meant to account for the fact that a CUs
         value of finlwt21 is meant to be representative of only 1 quarter of
         data (see details)
-  \item aggwt - The sum of popwt (used for calculating estimated means)
   \item ucc - The UCC for a given expenditure
   \item cost - The value of the expenditure (in U.S. Dollars)
+  \item survey - An indicator of which survey the data come from: "I" for
+        Interview and "D" for Diary.
 }
 }
 \description{
