@@ -70,7 +70,7 @@ The first step is to load the necessary packages into the environment.
 ``` r
 
 # Store a vector of names of packages to be used
-pkgs <- c("dplyr", "tidyr", "purrr", "ggplot2", "devtools")
+pkgs <- c("dplyr", "tidyr", "purrr", "rlang", "ggplot2", "devtools")
 
 # Install packages from CRAN
 sapply(pkgs, function(x) if (!x %in% installed.packages()) install.packages(x))
@@ -81,6 +81,9 @@ sapply(pkgs, function(x) if (!x %in% installed.packages()) install.packages(x))
 #> NULL
 #> 
 #> $purrr
+#> NULL
+#> 
+#> $rlang
 #> NULL
 #> 
 #> $ggplot2
@@ -133,6 +136,54 @@ pet_stub <- ce_uccs(stub_file, "Pets", uccs_only = FALSE)
 | 5     | Pet services                     | 620410 | I      | 1      |
 | 5     | Vet services                     | 620420 | D      | 1      |
 
+Next we’ll download both the 2017 Interview and Diary files to temporary
+file paths.
+
+``` r
+tmp_interview <- tempfile()
+ce_download(2017, interview, tmp_interview)
+
+tmp_diary <- tempfile()
+ce_download(2017, diary, tmp_diary)
+```
+
+We also will want to download the CE dictionary to replace variable
+codes with more meaningful labels. More specifically, we’ll want to
+download a named vector of the labels for the “BLS\_URBN” variable,
+which we’ll use in later analyses. This step is not absolutely
+necessary, but can be helpful for interpreting results.
+
+``` r
+tmp <- tempfile()
+
+download.file(
+  "https://www.bls.gov/cex/pumd/ce_pumd_interview_diary_dictionary.xlsx",
+  tmp,
+  mode = "wb"
+)
+
+ce_dict17 <- readxl::read_excel(tmp, sheet = "Codes") %>%
+  rlang::set_names(
+    names(.) %>% stringr::str_replace_all(" ", "_") %>% tolower()
+  ) %>%
+  filter(first_year <= 2017 & (last_year >= 2017 | is.na(last_year)))
+
+urbn_codes_df <- ce_dict17 %>%
+  filter(
+    survey %in% "INTERVIEW",
+    file %in% "FMLI",
+    variable_name %in% "BLS_URBN"
+  ) %>%
+  select(code_value, code_description)
+
+urbn_codes <- urbn_codes_df$code_description
+names(urbn_codes) <- urbn_codes_df$code_value
+
+urbn_codes
+#>       1       2 
+#> "Urban" "Rural"
+```
+
 Next we’ll want to prepare a dataset to calculate an integrated weighted
 mean expenditure estimate. To do that, though, we’ll need both the Diary
 and Interview data for pet expenditures. We will include the “bls\_urbn”
@@ -143,21 +194,29 @@ pets_interview <- ce_prepdata(
   year = 2017, 
   survey = interview, 
   uccs = ce_uccs(pet_stub, "Pets", uccs_only = TRUE),
-  zp = NULL, 
+  zp = tmp_interview, 
   integrate_data = TRUE, 
   stub = pet_stub, 
   bls_urbn
-)
+) %>%
+  mutate(
+    bls_urbn = recode(as.character(bls_urbn), !!!urbn_codes) %>% 
+      forcats::fct_infreq(.)
+  )
 
 pets_diary <- ce_prepdata(
   year = 2017, 
   survey = diary, 
   uccs = ce_uccs(pet_stub, "Pets", uccs_only = TRUE), 
-  zp = NULL, 
+  zp = tmp_diary, 
   integrate_data = TRUE,
   stub = pet_stub,
   bls_urbn
-)
+) %>%
+  mutate(
+    bls_urbn = recode(as.character(bls_urbn), !!!urbn_codes) %>% 
+      forcats::fct_infreq(.)
+  )
 
 pets_integrated <- bind_rows(pets_interview, pets_diary)
 ```
@@ -181,10 +240,7 @@ we’ll use the “bls\_urbn” variable.
 pet_mean_by_urbn <- pets_integrated %>%
   group_by(bls_urbn) %>%
   tidyr::nest() %>%
-  mutate(
-    ce_mn_df = purrr::map(data, ce_mean),
-    bls_urbn = ifelse(bls_urbn %in% 1, "Urban", "Rural")
-  ) %>% 
+  mutate(ce_mn_df = purrr::map(data, ce_mean)) %>% 
   select(-data) %>% 
   tidyr::unnest(ce_mn_df) %>%
   mutate(
@@ -224,17 +280,17 @@ without preparing it for integration to look at only Interview survey
 medians. We’ll look at the 25%, 50%, 75%, 90%, and 95% quantiles.
 
 ``` r
-pets_interview_only <- ce_prepdata(
+pets_diary_only <- ce_prepdata(
   year = 2017, 
-  survey = interview, 
+  survey = diary, 
   uccs = ce_uccs(pet_stub, "Pets", uccs_only = TRUE),
-  zp = NULL, 
+  zp = tmp_diary, 
   integrate_data = FALSE, 
   stub = pet_stub, 
   bls_urbn
 )
 
-pet_quantiles_by_urbn <- pets_interview_only %>%
+pet_quantiles_by_urbn <- pets_diary_only %>%
   tidyr::nest(-bls_urbn) %>%
   mutate(
     ce_quant_df = purrr::map(data, ce_quantiles, c(0.25, 0.5, 0.75, 0.9, 0.95))
@@ -245,13 +301,13 @@ pet_quantiles_by_urbn <- pets_interview_only %>%
 
 | bls\_urbn | probs | quantile |
 | --------: | :---- | -------: |
-|         1 | 25%   |        0 |
-|         1 | 50%   |        0 |
-|         1 | 75%   |        0 |
-|         1 | 90%   |      180 |
-|         1 | 95%   |      360 |
-|         2 | 25%   |        0 |
-|         2 | 50%   |        0 |
-|         2 | 75%   |        0 |
-|         2 | 90%   |      180 |
-|         2 | 95%   |      400 |
+|         1 | 25%   |   0.0000 |
+|         1 | 50%   |   0.0000 |
+|         1 | 75%   |   0.0000 |
+|         1 | 90%   | 274.4300 |
+|         1 | 95%   | 661.4400 |
+|         2 | 25%   |   0.0000 |
+|         2 | 50%   |   0.0000 |
+|         2 | 75%   |  77.8700 |
+|         2 | 90%   | 403.3933 |
+|         2 | 95%   | 970.0600 |

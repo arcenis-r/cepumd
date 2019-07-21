@@ -34,8 +34,32 @@ suppressed. You can learn more at
 Respondent Confidentiality}
 }
 \examples{
-# Calculate the mean pet expenditure using only Diary expenditures
-ce_mean(ce_diary_pets17)
+\dontrun{
+# Download the stub file keeping the section for expenditures on utilities
+utils_stub <- ce_stub(2017, interview) \%>\%
+  ce_uccs("Utilities, fuels, and public services", uccs_only = FALSE)
+
+# Download and prepare interview data
+utils_interview <- ce_prepdata(
+  2017,
+  interview,
+  uccs = ce_uccs(utils_stub, "Utilities, fuels, and public services"),
+  zp = NULL,
+  integrate_data = FALSE,
+  stub = utils_stub,
+  bls_urbn
+)
+
+# Calculate the mean expenditure on utilities
+ce_mean(utils_interview)
+
+# Calculate the mean expenditure on utilities by urbanicity
+utils_interview \%>\%
+  tidyr::nest(-bls_urbn) \%>\%
+  mutate(mean_utils = purrr::map(data, ce_mean)) \%>\%
+  select(-data) \%>\%
+  unnest(mean_utils)
+}
 
 }
 \seealso{

@@ -22,8 +22,33 @@ quantiles in the second column.
 Calculate a CE weighted quantiles
 }
 \examples{
-# Calculate the median pet expenditure
-ce_quantiles(ce_diary_pets17, c(0.25, 0.5, 0.75))
+\dontrun{
+# Download the stub file keeping the section for expenditures on utilities
+utils_stub <- ce_stub(2017, interview) \%>\%
+  ce_uccs("Utilities, fuels, and public services", uccs_only = FALSE)
+
+# Download and prepare interview data
+utils_interview <- ce_prepdata(
+  2017,
+  interview,
+  uccs = ce_uccs(utils_stub, "Utilities, fuels, and public services"),
+  zp = NULL,
+  integrate_data = FALSE,
+  stub = utils_stub,
+  bls_urbn
+)
+
+# Calculate the 25\%, 50\%, and 75\% utilities expenditure quantiles
+ce_quantiles(utils_interview)
+
+# Calculate the 25\%, 50\%, and 75\% utilities expenditure quantiles by
+# urbanicity
+utils_interview \%>\%
+  tidyr::nest(-bls_urbn) \%>\%
+  mutate(quant_utils = purrr::map(data, ce_quantiles, c(0.25, 0.5, 0.75))) \%>\%
+  select(-data) \%>\%
+  unnest(quant_utils)
+}
 }
 \seealso{
 \code{\link{ce_mean}}
