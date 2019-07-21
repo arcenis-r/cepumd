@@ -28,8 +28,10 @@ and necessary documentation, such as the stub files:
     instrument directly from the CE website
   - `ce_stub()` pulls the requested type of stub file (Interview, Diary,
     or Integrated) for a specified year.
-  - `ce_uccs()` collects the Universal Classification Codes (UCC) for a
-    specified type of expenditure from a specified stub file.
+  - `ce_uccs()` filters the stub file for the specified expenditure
+    category and returns either a data frame with only that section of
+    the stub file or the Universal Classification Codes (UCCs) that make
+    up that expenditure category.
   - `ce_prepdata` merges the household characteristics file (FMLI/-D)
     with the corresponding expenditure tabulation file (MTBI/EXPD) for a
     specified year, adjusts weights for months-in-scope and the number
@@ -43,10 +45,10 @@ statistics:
   - `ce_mean()` calculates a mean expenditure, standard error of the
     mean, coefficient of variation, and an aggregate expenditure.
 
-  - `ce_median()` calculates a median expenditure. It is important to
-    note that calculating means for integrated expenditures is not
-    recommended because the calculation involves using weights from both
-    the Diary and Survey instruments.
+  - `ce_quantiles()` calculates weighted expenditure quantiles. It is
+    important to note that calculating means for integrated expenditures
+    is not recommended because the calculation involves using weights
+    from both the Diary and Survey instruments.
 
 ## Installation
 
@@ -54,7 +56,6 @@ You can install the development version of `cepumd` from
 [GitHub](https://github.com) with:
 
 ``` r
-if (!require(devtools)) install.packages("devtools")
 devtools::install_github("/arcenis-r/cepumd")
 ```
 
@@ -64,24 +65,51 @@ The following is an example of how someone might go about using `cepumd`
 to calculate a 2017 annual, weighted estimate of mean expenditures on
 pets using CE integrated data.
 
-The first step is to find out what UCC’s represent the detailed
-expenditure categories that make up pet expenditures by downloading the
-stub and reviewing those categories.
+The first step is to load the necessary packages into the environment.
 
 ``` r
-# install.packages(c("cepumd", "dplyr", "tidyr", "purrr", "ggplot2"))
+
+# Store a vector of names of packages to be used
+pkgs <- c("dplyr", "tidyr", "purrr", "ggplot2", "devtools")
+
+# Install packages from CRAN
+sapply(pkgs, function(x) if (!x %in% installed.packages()) install.packages(x))
+#> $dplyr
+#> NULL
+#> 
+#> $tidyr
+#> NULL
+#> 
+#> $purrr
+#> NULL
+#> 
+#> $ggplot2
+#> NULL
+#> 
+#> $devtools
+#> NULL
+
+# Load 'cepumd' and 'dplyr' to the workspace
 library(cepumd)
 library(dplyr)
-
-pet_stub <- ce_stub(2017, integrated)
-
-pet_stub %>% slice(grep("[P|p]ets", pet_stub$title))
-#> # A tibble: 2 x 5
-#>   level title                                         ucc    survey factor
-#>   <chr> <chr>                                         <chr>  <chr>  <chr> 
-#> 1 3     Pets, toys, hobbies, and playground equipment PETSPL G      1     
-#> 2 4     Pets                                          PETS   G      1
 ```
+
+Next we’ll find out what titles in the stub contain the word “Pets.”
+
+``` r
+# Download the stub file
+stub_file <- ce_stub(2017, integrated)
+
+# Pull out the titles that contain the word "Pets"
+stub_file %>%
+  slice(grep("[P|p]ets", title)) %>%
+  knitr::kable(booktabs = TRUE)
+```
+
+| level | title                                         | ucc    | survey | factor |
+| :---- | :-------------------------------------------- | :----- | :----- | :----- |
+| 3     | Pets, toys, hobbies, and playground equipment | PETSPL | G      | 1      |
+| 4     | Pets                                          | PETS   | G      | 1      |
 
 We see that there are two categories containing the word “Pets,”, though
 the “level” column indicates that “Pets”, level 4, falls under “Pets,
@@ -89,40 +117,49 @@ toys, hobbies, and playground equipment,” level 3. We’re only interested
 strictly in “Pet” expenditures and not toys, hobbies, or playground
 equipment.
 
-``` r
-pet_uccs <- ce_uccs(pet_stub, "Pets")
-pet_uccs
-#> [1] "610310" "610320" "620410" "620420"
+Now we can look at the section of the stub file containing the UCC’s
+that make up pet expenditures with `ce_uccs()`.
 
-pet_stub %>% filter(ucc %in% pet_uccs)
-#> # A tibble: 4 x 5
-#>   level title                            ucc    survey factor
-#>   <chr> <chr>                            <chr>  <chr>  <chr> 
-#> 1 5     Pet food                         610310 D      1     
-#> 2 5     Pet purchase, supplies, medicine 610320 I      1     
-#> 3 5     Pet services                     620410 I      1     
-#> 4 5     Vet services                     620420 D      1
+``` r
+# Filter the stub file for pet related UCCs
+pet_stub <- ce_uccs(stub_file, "Pets", uccs_only = FALSE)
 ```
 
-We can see that there are 4 detailed expenditure categories under the
-category of pet expenditures. Next we’ll want to prepare a dataset to
-calculate an integrated weighted mean expenditure estimate. To do that,
-though, we’ll need both the Diary and Interview data for pet
-expenditures. We will include the “bls\_urbn” variable to calculate
-estimated means by group later.
+| level | title                            | ucc    | survey | factor |
+| :---- | :------------------------------- | :----- | :----- | :----- |
+| 4     | Pets                             | PETS   | G      | 1      |
+| 5     | Pet food                         | 610310 | D      | 1      |
+| 5     | Pet purchase, supplies, medicine | 610320 | I      | 1      |
+| 5     | Pet services                     | 620410 | I      | 1      |
+| 5     | Vet services                     | 620420 | D      | 1      |
+
+Next we’ll want to prepare a dataset to calculate an integrated weighted
+mean expenditure estimate. To do that, though, we’ll need both the Diary
+and Interview data for pet expenditures. We will include the “bls\_urbn”
+variable to calculate estimated means by group later.
 
 ``` r
-pet_int <- ce_prepdata(
-  year = 2017, survey = interview, uccs = pet_uccs, zp = NULL, 
-  integrate_data = TRUE, stub = pet_stub, bls_urbn
+pets_interview <- ce_prepdata(
+  year = 2017, 
+  survey = interview, 
+  uccs = ce_uccs(pet_stub, "Pets", uccs_only = TRUE),
+  zp = NULL, 
+  integrate_data = TRUE, 
+  stub = pet_stub, 
+  bls_urbn
 )
 
-pet_dia <- ce_prepdata(
-  year = 2017, survey = diary, uccs = pet_uccs, zp = NULL, 
-  integrate_data = TRUE, stub = pet_stub, bls_urbn
+pets_diary <- ce_prepdata(
+  year = 2017, 
+  survey = diary, 
+  uccs = ce_uccs(pet_stub, "Pets", uccs_only = TRUE), 
+  zp = NULL, 
+  integrate_data = TRUE,
+  stub = pet_stub,
+  bls_urbn
 )
 
-pet_integrated <- bind_rows(pet_int, pet_dia)
+pets_integrated <- bind_rows(pets_interview, pets_diary)
 ```
 
 The Interview and Diary datasets have each been prepared and combined.
@@ -130,20 +167,18 @@ Next we’ll calculate estimated, weighted, mean pet expenditures for
 2017.
 
 ``` r
-pet_mean <- ce_mean(pet_integrated)
-knitr::kable(pet_mean)
+pet_mean <- ce_mean(pets_integrated)
 ```
 
 |    agg\_exp | mean\_exp |       se |        cv |
 | ----------: | --------: | -------: | --------: |
-| 92175930043 |  709.7265 | 65.00804 | 0.0915959 |
+| 92175930043 |  709.7265 | 26.73502 | 0.0376695 |
 
-The median expenditure on pets We can also calculate estimated,
-weighted, means by group. In this case we’ll use the bls\_urbn variable.
-We’ll also generate a plot of the those means.
+We can also calculate estimated, weighted, means by group. In this case
+we’ll use the “bls\_urbn” variable.
 
 ``` r
-pet_mean_by_urbn <- pet_integrated %>%
+pet_mean_by_urbn <- pets_integrated %>%
   group_by(bls_urbn) %>%
   tidyr::nest() %>%
   mutate(
@@ -156,17 +191,16 @@ pet_mean_by_urbn <- pet_integrated %>%
     lower = mean_exp - (qnorm(0.975) * se),
     upper = mean_exp + (qnorm(0.975) * se)
   )
-
-knitr::kable(pet_mean_by_urbn)
 ```
 
-| bls\_urbn |    agg\_exp | mean\_exp |       se |        cv |     lower |    upper |
-| :-------- | ----------: | --------: | -------: | --------: | --------: | -------: |
-| Urban     | 84028916748 | 646.99000 | 62.33042 | 0.0963391 | 524.82462 | 769.1554 |
-| Rural     |  8147013295 |  62.73651 | 20.26470 | 0.3230129 |  23.01843 | 102.4546 |
+| bls\_urbn |    agg\_exp | mean\_exp |       se |        cv |    lower |     upper |
+| :-------- | ----------: | --------: | -------: | --------: | -------: | --------: |
+| Urban     | 84028916748 |  691.7015 | 26.36336 | 0.0381138 | 640.0302 |  743.3727 |
+| Rural     |  8147013295 |  968.3518 | 31.58950 | 0.0326219 | 906.4375 | 1030.2661 |
+
+We’ll also generate a plot of the those means.
 
 ``` r
-
 library(ggplot2)
 
 ggplot(pet_mean_by_urbn, aes(x = bls_urbn, y = mean_exp, fill = bls_urbn)) +
@@ -182,27 +216,42 @@ ggplot(pet_mean_by_urbn, aes(x = bls_urbn, y = mean_exp, fill = bls_urbn)) +
   )
 ```
 
-<img src="man/figures/README-calc_means_by_urbn-1.png" width="100%" />
+<img src="man/figures/README-plot_pet_means-1.png" width="100%" />
 
-We can also calculate weighted median expenditures. Because the
-integrated data come from both the Interview and Diary surveys, we’ll
-display them by UCC.
+We can also calculate weighted quantiles. Because the integrated data
+come from both the Interview and Diary surveys, we’ll get Interview data
+without preparing it for integration to look at only Interview survey
+medians. We’ll look at the 25%, 50%, 75%, 90%, and 95% quantiles.
 
 ``` r
-pet_median_by_ucc <- pet_integrated %>%
-  group_by(ucc) %>%
-  tidyr::nest() %>%
-  mutate(ce_med_df = purrr::map(data, ce_quantiles)) %>% 
-  select(-data) %>% 
-  tidyr::unnest(ce_med_df)
+pets_interview_only <- ce_prepdata(
+  year = 2017, 
+  survey = interview, 
+  uccs = ce_uccs(pet_stub, "Pets", uccs_only = TRUE),
+  zp = NULL, 
+  integrate_data = FALSE, 
+  stub = pet_stub, 
+  bls_urbn
+)
 
-knitr::kable(pet_median_by_ucc)
+pet_quantiles_by_urbn <- pets_interview_only %>%
+  tidyr::nest(-bls_urbn) %>%
+  mutate(
+    ce_quant_df = purrr::map(data, ce_quantiles, c(0.25, 0.5, 0.75, 0.9, 0.95))
+  ) %>% 
+  select(-data) %>% 
+  tidyr::unnest(ce_quant_df)
 ```
 
-| ucc    | probs | quantile |
-| :----- | :---- | -------: |
-| NA     | 50%   |     0.00 |
-| 610320 | 50%   |    90.00 |
-| 620410 | 50%   |    90.00 |
-| 610310 | 50%   |   170.30 |
-| 620420 | 50%   |  1593.67 |
+| bls\_urbn | probs | quantile |
+| --------: | :---- | -------: |
+|         1 | 25%   |        0 |
+|         1 | 50%   |        0 |
+|         1 | 75%   |        0 |
+|         1 | 90%   |      180 |
+|         1 | 95%   |      360 |
+|         2 | 25%   |        0 |
+|         2 | 50%   |        0 |
+|         2 | 75%   |        0 |
+|         2 | 90%   |      180 |
+|         2 | 95%   |      400 |

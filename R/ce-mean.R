@@ -63,22 +63,23 @@ ce_mean <- function(ce_data) {
     )
   }
 
+  # Store a vector of replicate weight variable names
   wtrep_vars <- grep("wtrep", names(ce_data), value = TRUE)
+
+  # Calculate aggregate weights by survey type
+  aggwts <- ce_data %>%
+    dplyr::select(.data$survey, .data$newid, .data$popwt) %>%
+    dplyr::group_by(.data$survey, .data$newid, .data$popwt) %>%
+    dplyr::slice(1) %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(.data$survey) %>%
+    dplyr::summarise(aggwt = sum(.data$popwt)) %>%
+    dplyr::ungroup()
 
   estimates <- ce_data %>%
 
     # Calculate an aggregate population by survey
-    left_join(
-      ce_data %>%
-        dplyr::select(survey, newid, popwt) %>%
-        dplyr::group_by(survey, newid, popwt) %>%
-        dplyr::slice(1) %>%
-        dplyr::ungroup() %>%
-        dplyr::group_by(survey) %>%
-        dplyr::summarise(aggwt = sum(popwt)) %>%
-        dplyr::ungroup(),
-      by = "survey"
-    ) %>%
+    dplyr::left_join(aggwts, by = "survey") %>%
 
     # Generate an aggregate expenditure column by multiplying the cost by the
     # consumer unit's weight

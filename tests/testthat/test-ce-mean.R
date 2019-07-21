@@ -3,7 +3,8 @@ test_that("dataset has all required variables", {
     ce_diary_pets17 %>% select(-wtrep04) %>% ce_mean,
     paste(
       "Your dataset needs to include 'finlwt21', all 44 replicate weights,",
-      "i.e., 'wtrep01' to 'wtrep44', and the 'cost' variable"
+      "i.e., 'wtrep01' to 'wtrep44', the 'cost' variable, and the 'survey'",
+      "variable."
     ),
     fixed = TRUE
   )
@@ -21,5 +22,5 @@ test_that("dataset all required variables are numeric", {
 })
 
 test_that("correct mean is calculated", {
-  expect_equal(ce_mean(ce_diary_pets17)$mean_exp, 580.3878)
+  expect_equal(round(ce_mean(ce_diary_pets17)$mean_exp, 2), 688.47)
 })
