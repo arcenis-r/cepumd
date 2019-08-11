@@ -162,7 +162,7 @@ ce_mean <- function(ce_data) {
     # Generate a standard error column by taking the sum of the 44 squared
     # differences, dividing it by 44, then taking the square root of the result
     dplyr::mutate(
-      se = (.data$sum_sqrs / 44) %>% sqrt(),
+      se = sqrt((.data$sum_sqrs / 44)),
       cv = .data$se / .data$finlwt21
     ) %>%
     dplyr::select(.data$agg_exp, mean_exp = "finlwt21", .data$se, .data$cv)
