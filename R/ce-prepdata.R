@@ -200,7 +200,8 @@ ce_prepdata <- function(year,
       )
 
       ce_dict <- readxl::read_excel(tmp_dict, sheet = "Codes")
-      names(ce_dict) <- tolower(names(ce_dict))
+      names(ce_dict) <- tolower(names(ce_dict)) %>%
+        stringr::str_replace(" ", "_")
 
       ce_dict <- ce_dict %>%
         mutate(
@@ -276,7 +277,8 @@ ce_prepdata <- function(year,
       )
 
       ce_dict <- readxl::read_excel(tmp_dict, sheet = "Codes")
-      names(ce_dict) <- tolower(names(ce_dict))
+      names(ce_dict) <- tolower(names(ce_dict)) %>%
+        stringr::str_replace(" ", "_")
 
       ce_dict <- ce_dict %>%
         mutate(
