@@ -10,6 +10,7 @@
 #' @importFrom readr read_csv
 #' @importFrom rlang as_string
 #' @importFrom dplyr contains
+#' @importFrom rlang .data
 
 read.fmli <- function(fp, zp, year, grp_var_names) {
 

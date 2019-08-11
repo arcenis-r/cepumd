@@ -7,6 +7,7 @@
 #'
 #' @importFrom readr read_fwf fwf_widths read_table
 #' @importFrom rlang set_names
+#' @importFrom rlang .data
 #' @importFrom dplyr slice mutate summarise group_by select filter full_join
 #'   left_join arrange
 #' @importFrom stringr str_replace str_trim str_count

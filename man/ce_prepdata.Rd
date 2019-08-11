@@ -4,8 +4,8 @@
 \alias{ce_prepdata}
 \title{Prepare CE data for calculating an estimated mean or median}
 \usage{
-ce_prepdata(year, survey, uccs, zp = NULL, integrate_data = TRUE,
-  stub = NULL, ...)
+ce_prepdata(year, survey, uccs, integrate_data = TRUE,
+  recode_variables = FALSE, zp = NULL, stub = NULL, ...)
 }
 \arguments{
 \item{year}{A year between 1996 and the last year of available CE PUMD.}
@@ -15,14 +15,19 @@ ce_prepdata(year, survey, uccs, zp = NULL, integrate_data = TRUE,
 \item{uccs}{A character vector of UCCs corresponding to expenditure
 categories in the stub file for a given year and survey}
 
+\item{integrate_data}{A logical indicating whether to prepare the data to
+calculate an integrated mean or median. The default is TRUE. (See details)}
+
+\item{recode_variables}{A logical indicating whether to recode all coded
+variables except 'UCC' using the codes in the CE's excel dictionary which can
+be downloaded from the
+\href{https://www.bls.gov/cex/pumd_doc.htm}{CE Documentation Page}}
+
 \item{zp}{A string indicating the path where you'd like to save the zip file.
 This argment gets passed to 'destfile' in
 \code{\link[utils]{download.file}}. The default is \code{NULL} which
 causes the zip file to be stored in temporary memory during function
 operation.}
-
-\item{integrate_data}{A logical indicating whether to prepare the data to
-calculate an integrated mean or median. The default is TRUE. (See details)}
 
 \item{stub}{A data frame that has, at least, the title, level, ucc, and
 factor columns of a CE stub file. Calling \code{\link{ce_stub}} will
@@ -100,7 +105,7 @@ pet_uccs <- ce_uccs(mystub, "Pets")
 
 # Store the diary data (not run)
 # pets_dia <- ce_prepdata(
-# year = 2017, survey = diary, uccs = pet_uccs, zp = NULL,
-# integrate_data = TRUE, stub = NULL, sex_ref
+# year = 2017, survey = diary, uccs = pet_uccs, integrate_data = TRUE,
+# recode_variables, zp = NULL, stub = NULL, sex_ref
 #)
 }

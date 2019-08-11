@@ -19,6 +19,7 @@
 #'
 #' @importFrom graphics title
 #' @importFrom dplyr bind_rows
+#' @importFrom rlang .data
 #'
 #' @seealso \code{\link{ce_quantiles}}
 #'

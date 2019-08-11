@@ -10,6 +10,7 @@
 #' @param stub Stub file data
 #'
 #' @importFrom dplyr ungroup
+#' @importFrom rlang .data
 
 read.mtbi <- function(fp, zp, year, uccs, integrate_data, stub) {
 

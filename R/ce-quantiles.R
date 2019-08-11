@@ -11,6 +11,8 @@
 #'
 #' @export
 #'
+#' @importFrom rlang .data
+#'
 #' @seealso \code{\link{ce_mean}}
 #'
 #' @examples

@@ -7,6 +7,7 @@
 #'
 #' @importFrom readr read_lines write_lines
 #' @importFrom dplyr mutate_all row_number case_when
+#' @importFrom rlang .data
 
 make.stub.post.01 <- function(year, stub_type_name) {
   # Generate a stub for a year after 2001

@@ -8,6 +8,8 @@
 #' @param uccs Vector of UCC's to filter for
 #' @param integrate_data Whether to prepare data for integrated estimates
 #' @param stub Stub file data
+#'
+#' @importFrom rlang .data
 
 read.expd <- function(fp, zp, year, uccs, integrate_data, stub) {
 

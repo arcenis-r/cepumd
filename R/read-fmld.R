@@ -5,6 +5,8 @@
 #' @param fp File to extract from zip file
 #' @param zp Zip file path
 #' @param grp_var_names Variables to keep (intended for grouping)
+#'
+#' @importFrom rlang .data
 
 read.fmld <- function(fp, zp, grp_var_names) {
 

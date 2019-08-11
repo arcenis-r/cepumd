@@ -8,13 +8,17 @@
 #' @param survey One of either "interview" or "diary" as a string or symbol.
 #' @param uccs A character vector of UCCs corresponding to expenditure
 #' categories in the stub file for a given year and survey
+#' @param integrate_data A logical indicating whether to prepare the data to
+#' calculate an integrated mean or median. The default is TRUE. (See details)
+#' @param recode_variables A logical indicating whether to recode all coded
+#' variables except 'UCC' using the codes in the CE's excel dictionary which can
+#' be downloaded from the
+#' \href{https://www.bls.gov/cex/pumd_doc.htm}{CE Documentation Page}
 #' @param zp A string indicating the path where you'd like to save the zip file.
 #'   This argment gets passed to 'destfile' in
 #'   \code{\link[utils]{download.file}}. The default is \code{NULL} which
 #'   causes the zip file to be stored in temporary memory during function
 #'   operation.
-#' @param integrate_data A logical indicating whether to prepare the data to
-#' calculate an integrated mean or median. The default is TRUE. (See details)
 #' @param stub A data frame that has, at least, the title, level, ucc, and
 #' factor columns of a CE stub file. Calling \code{\link{ce_stub}} will
 #' generate a valid stub file.
@@ -88,13 +92,20 @@
 #'
 #' # Store the diary data (not run)
 #' # pets_dia <- ce_prepdata(
-#' # year = 2017, survey = diary, uccs = pet_uccs, zp = NULL,
-#' # integrate_data = TRUE, stub = NULL, sex_ref
+#' # year = 2017, survey = diary, uccs = pet_uccs, integrate_data = TRUE,
+#' # recode_variables, zp = NULL, stub = NULL, sex_ref
 #' #)
 
-ce_prepdata <- function(
-  year, survey, uccs, zp = NULL, integrate_data = TRUE, stub = NULL, ...
-) {
+# !diagnostics suppress = last_year, first_year, variable_name, code_value
+# !diagnostics suppress = code_description
+ce_prepdata <- function(year,
+                        survey,
+                        uccs,
+                        integrate_data = TRUE,
+                        recode_variables = FALSE,
+                        zp = NULL,
+                        stub = NULL,
+                        ...) {
 
   survey <- rlang::ensym(survey)
   survey_name <- rlang::as_string(survey) %>% tolower()
@@ -178,6 +189,50 @@ ce_prepdata <- function(
     dat <- dplyr::left_join(fmli, mtbi, by = "newid") %>%
       dplyr::mutate(cost = replace(.data$cost, is.na(.data$cost), 0)) %>%
       dplyr::mutate(survey = "I")
+
+    if (recode_variables) {
+      tmp_dict <- tempfile()
+
+      download.file(
+        "https://www.bls.gov/cex/pumd/ce_pumd_interview_diary_dictionary.xlsx",
+        tmp_dict,
+        mode = "wb"
+      )
+
+      ce_dict <- readxl::read_excel(tmp_dict, sheet = "Codes")
+      names(ce_dict) <- tolower(names(ce_dict))
+
+      ce_dict <- ce_dict %>%
+        mutate(
+          survey = substr(.data$survey, 1, 1),
+          variable_name = tolower(.data$variable_name),
+          last_year = tidyr::replace_na(
+            .data$last_year,
+            max(.data$last_year, na.rm = TRUE)
+          )
+        ) %>%
+        filter(
+          .data$first_year <= year,
+          .data$last_year >= year,
+          .data$survey == stringr::str_sub(toupper(survey_name), 1, 1)
+        )
+
+      recode_vars <- names(dat)[names(dat) %in% ce_dict$variable_name]
+      recode_vars <- recode_vars[!recode_vars %in% "ucc"]
+
+      for (i in recode_vars) {
+        code_col <- dat[[i]]
+        codes_df <- ce_dict %>%
+          filter(.data$variable_name %in% i) %>%
+          select(.data$code_value, .data$code_description)
+
+        dat[, i] <- factor(
+          code_col,
+          levels = codes_df$code_value,
+          labels = codes_df$code_description
+        )
+      }
+    }
   }
 
   if (survey_name %in% "diary") {
@@ -210,6 +265,50 @@ ce_prepdata <- function(
     dat <- dplyr::left_join(fmld, expd, by = "newid") %>%
       dplyr::mutate(cost = replace(.data$cost, is.na(.data$cost), 0)) %>%
       dplyr::mutate(survey = "D")
+
+    if (recode_variables) {
+      tmp_dict <- tempfile()
+
+      download.file(
+        "https://www.bls.gov/cex/pumd/ce_pumd_interview_diary_dictionary.xlsx",
+        tmp_dict,
+        mode = "wb"
+      )
+
+      ce_dict <- readxl::read_excel(tmp_dict, sheet = "Codes")
+      names(ce_dict) <- tolower(names(ce_dict))
+
+      ce_dict <- ce_dict %>%
+        mutate(
+          survey = substr(.data$survey, 1, 1),
+          variable_name = tolower(.data$variable_name),
+          last_year = tidyr::replace_na(
+            .data$last_year,
+            max(.data$last_year, na.rm = TRUE)
+          )
+        ) %>%
+        filter(
+          .data$first_year <= year,
+          .data$last_year >= year,
+          .data$survey == stringr::str_sub(toupper(survey_name), 1, 1)
+        )
+
+      recode_vars <- names(dat)[names(dat) %in% ce_dict$variable_name]
+      recode_vars <- recode_vars[!recode_vars %in% "ucc"]
+
+      for (i in recode_vars) {
+        code_col <- dat[[i]]
+        codes_df <- ce_dict %>%
+          filter(.data$variable_name %in% i) %>%
+          select(.data$code_value, .data$code_description)
+
+        dat[, i] <- factor(
+          code_col,
+          levels = codes_df$code_value,
+          labels = codes_df$code_description
+        )
+      }
+    }
   }
 
   if (unlink_zp) unlink(zp)

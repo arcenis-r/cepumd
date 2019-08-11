@@ -26,7 +26,7 @@ test_that("'year' accepts only valid years", {
 
 test_that("'grp_vars' only accepts valid variables", {
   expect_error(
-    ce_prepdata(2015, diary, "610310", NULL, TRUE, NULL, sex),
+    ce_prepdata(2015, diary, "610310", TRUE, FALSE, NULL, NULL, sex),
     paste0(
       "'sex' is not a valid variable. ",
       "Please review the CE survey documentation to ensure 'sex'",
@@ -42,8 +42,9 @@ test_that("'stub' is a data.frame", {
       2015,
       diary,
       "610310",
-      NULL,
       TRUE,
+      FALSE,
+      NULL,
       stub = list(a = 45, d = "joe"),
       sex
     ),
@@ -61,8 +62,9 @@ test_that("'stub' is valid data frame", {
       2015,
       diary,
       "610310",
-      NULL,
       TRUE,
+      FALSE,
+      NULL,
       stub = data.frame(a = 1:10, b = letters[1:10]),
       sex
     ),
