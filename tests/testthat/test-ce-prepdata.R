@@ -20,7 +20,7 @@ test_that("'survey' accepts only valid survey titles", {
 test_that("'year' accepts only valid years", {
   expect_error(
     ce_prepdata(1990, intv, "610310"),
-    "'year' must be a number between 1996 and 2017"
+    "'year' must be a number between 1996 and 2018"
   )
 })
 

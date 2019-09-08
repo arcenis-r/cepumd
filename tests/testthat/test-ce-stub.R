@@ -1,7 +1,7 @@
 test_that("'year' accepts only valid years", {
   expect_error(
     ce_stub(1990, "interview"),
-    "'year' must be a number between 1996 and 2017"
+    "'year' must be a number between 1996 and 2018"
   )
 })
 
@@ -15,7 +15,7 @@ test_that("'stub_type' accepts only valid stub types", {
 test_that("integrated stubs not available before 2002", {
   expect_error(
     ce_stub(1999, "integrated"),
-    "Integrated stub files are only available for 2002 through 2017"
+    "Integrated stub files are only available for 2002 through 2018"
   )
 })
 

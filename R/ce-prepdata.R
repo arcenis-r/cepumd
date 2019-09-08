@@ -115,8 +115,8 @@ ce_prepdata <- function(year,
 
   unlink_zp <- is.null(zp)
 
-  if (!year %in% 1996:2017) {
-    stop("'year' must be a number between 1996 and 2017")
+  if (!year %in% 1996:2018) {
+    stop("'year' must be a number between 1996 and 2018")
   }
 
   if (!survey_name %in% c("interview", "diary")) {

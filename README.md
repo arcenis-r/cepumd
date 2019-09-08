@@ -1,8 +1,7 @@
 
 [![Travis build
 status](https://travis-ci.com/arcenis-r/cepumd.svg?branch=master)](https://travis-ci.com/arcenis-r/cepumd)
-[![Codecov test
-coverage](https://codecov.io/gh/arcenis-r/cepumd/branch/master/graph/badge.svg)](https://codecov.io/gh/arcenis-r/cepumd?branch=master)
+[![codecov](https://codecov.io/gh/arcenis-r/cepumd/branch/master/graph/badge.svg)](https://codecov.io/gh/arcenis-r/cepumd)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -20,6 +19,8 @@ working with CE PUMD. Some examples are:
   - Annualizing expenditures for either Diary or Interview expenditures
   - Integrating Interview and Diary data as necessary
   - Calculating weighted CE quantiles
+
+For more information on the CE, please visit <https://www.bls.gov/cex/>.
 
 There are 4 functions that help the user download and wrangle the data
 and necessary documentation, such as the stub files:
@@ -147,76 +148,35 @@ tmp_diary <- tempfile()
 ce_download(2017, diary, tmp_diary)
 ```
 
-We also will want to download the CE dictionary to replace variable
-codes with more meaningful labels. More specifically, we’ll want to
-download a named vector of the labels for the “BLS\_URBN” variable,
-which we’ll use in later analyses. This step is not absolutely
-necessary, but can be helpful for interpreting results.
-
-``` r
-tmp <- tempfile()
-
-download.file(
-  "https://www.bls.gov/cex/pumd/ce_pumd_interview_diary_dictionary.xlsx",
-  tmp,
-  mode = "wb"
-)
-
-ce_dict17 <- readxl::read_excel(tmp, sheet = "Codes") %>%
-  rlang::set_names(
-    names(.) %>% stringr::str_replace_all(" ", "_") %>% tolower()
-  ) %>%
-  filter(first_year <= 2017 & (last_year >= 2017 | is.na(last_year)))
-
-urbn_codes_df <- ce_dict17 %>%
-  filter(
-    survey %in% "INTERVIEW",
-    file %in% "FMLI",
-    variable_name %in% "BLS_URBN"
-  ) %>%
-  select(code_value, code_description)
-
-urbn_codes <- urbn_codes_df$code_description
-names(urbn_codes) <- urbn_codes_df$code_value
-
-urbn_codes
-#>       1       2 
-#> "Urban" "Rural"
-```
-
 Next we’ll want to prepare a dataset to calculate an integrated weighted
 mean expenditure estimate. To do that, though, we’ll need both the Diary
-and Interview data for pet expenditures. We will include the “bls\_urbn”
-variable to calculate estimated means by group later.
+and Interview data for pet expenditures. We will include the “BLS\_URBN”
+variable and replace variable codes with more meaningful labels from the
+CE Dictionary. We will use this variable to calculate estimated means by
+group later.
 
 ``` r
 pets_interview <- ce_prepdata(
   year = 2017, 
   survey = interview, 
-  uccs = ce_uccs(pet_stub, "Pets", uccs_only = TRUE),
+  uccs = ce_uccs(pet_stub, "Pets", uccs_only = TRUE), 
+  integrate_data = TRUE,
+  recode_variables = TRUE,
   zp = tmp_interview, 
-  integrate_data = TRUE, 
   stub = pet_stub, 
   bls_urbn
-) %>%
-  mutate(
-    bls_urbn = recode(as.character(bls_urbn), !!!urbn_codes) %>% 
-      forcats::fct_infreq(.)
-  )
+)
 
 pets_diary <- ce_prepdata(
   year = 2017, 
   survey = diary, 
   uccs = ce_uccs(pet_stub, "Pets", uccs_only = TRUE), 
-  zp = tmp_diary, 
   integrate_data = TRUE,
+  recode_variables = TRUE, 
+  zp = tmp_diary,
   stub = pet_stub,
   bls_urbn
-) %>%
-  mutate(
-    bls_urbn = recode(as.character(bls_urbn), !!!urbn_codes) %>% 
-      forcats::fct_infreq(.)
-  )
+)
 
 pets_integrated <- bind_rows(pets_interview, pets_diary)
 ```
@@ -233,8 +193,10 @@ pet_mean <- ce_mean(pets_integrated)
 | ----------: | --------: | -------: | --------: |
 | 92175930043 |  709.7265 | 26.73502 | 0.0376695 |
 
-We can also calculate estimated, weighted, means by group. In this case
-we’ll use the “bls\_urbn” variable.
+We can also calculate estimated, weighted, means by group using  and .
+In this case we’ll use the “bls\_urbn” variable. We’ll also add “lower”
+and “upper” variables to represent the upper and lower bounds of the 95%
+confidence interval around each mean.
 
 ``` r
 pet_mean_by_urbn <- pets_integrated %>%
@@ -254,7 +216,8 @@ pet_mean_by_urbn <- pets_integrated %>%
 | Urban     | 84028916748 |  691.7015 | 26.36336 | 0.0381138 | 640.0302 |  743.3727 |
 | Rural     |  8147013295 |  968.3518 | 31.58950 | 0.0326219 | 906.4375 | 1030.2661 |
 
-We’ll also generate a plot of the those means.
+We’ll also generate a barplot with error bars of the those means using
+the upper and lower bounds calculated above.
 
 ``` r
 library(ggplot2)
@@ -284,8 +247,9 @@ pets_diary_only <- ce_prepdata(
   year = 2017, 
   survey = diary, 
   uccs = ce_uccs(pet_stub, "Pets", uccs_only = TRUE),
+  recode_variables = TRUE, 
+  integrate_data = FALSE,
   zp = tmp_diary, 
-  integrate_data = FALSE, 
   stub = pet_stub, 
   bls_urbn
 )
@@ -296,18 +260,18 @@ pet_quantiles_by_urbn <- pets_diary_only %>%
     ce_quant_df = purrr::map(data, ce_quantiles, c(0.25, 0.5, 0.75, 0.9, 0.95))
   ) %>% 
   select(-data) %>% 
-  tidyr::unnest(ce_quant_df)
+  tidyr::unnest(ce_quant_df) %>%
+  tidyr::spread(key = bls_urbn, value = quantile)
 ```
 
-| bls\_urbn | probs | quantile |
-| --------: | :---- | -------: |
-|         1 | 25%   |   0.0000 |
-|         1 | 50%   |   0.0000 |
-|         1 | 75%   |   0.0000 |
-|         1 | 90%   | 274.4300 |
-|         1 | 95%   | 661.4400 |
-|         2 | 25%   |   0.0000 |
-|         2 | 50%   |   0.0000 |
-|         2 | 75%   |  77.8700 |
-|         2 | 90%   | 403.3933 |
-|         2 | 95%   | 970.0600 |
+| probs |  Urban |    Rural |
+| :---- | -----: | -------: |
+| 25%   |   0.00 |   0.0000 |
+| 50%   |   0.00 |   0.0000 |
+| 75%   |   0.00 |  77.8700 |
+| 90%   | 274.43 | 403.3933 |
+| 95%   | 661.44 | 970.0600 |
+
+Using these tools allows the user the flexibility to generate weighted
+CE summary statistics for any expenditure variable for just about any
+demographic cross-section possible with the CE demographic variables.

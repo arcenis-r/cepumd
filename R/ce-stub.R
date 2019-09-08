@@ -57,8 +57,8 @@ ce_stub <- function(year, stub_type) {
   stub_type_name <- rlang::as_name(stub_type) %>% tolower
 
   ###### Check for bad arguments ######
-  if (!year %in% 1996:2017) {
-    stop("'year' must be a number between 1996 and 2017")
+  if (!year %in% 1996:2018) {
+    stop("'year' must be a number between 1996 and 2018")
   }
 
   if (
@@ -68,7 +68,7 @@ ce_stub <- function(year, stub_type) {
   }
 
   if (stub_type_name %in% "integrated" & year < 2002) {
-    stop("Integrated stub files are only available for 2002 through 2017")
+    stop("Integrated stub files are only available for 2002 through 2018")
   }
 
   # Generate a stub file depending on the "year" argument

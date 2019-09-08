@@ -19,6 +19,6 @@ test_that("'survey' accepts only valid survey titles", {
 test_that("'year' accepts only valid years", {
   expect_error(
     ce_download(1990, intv, "intv16.zip"),
-    "'year' must be a number between 1996 and 2017"
+    "'year' must be a number between 1996 and 2018"
   )
 })
