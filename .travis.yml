@@ -2,6 +2,17 @@
 
 language: R
 cache: packages
+warnings_are_errors: true
+
+os:
+  - linux
+  - osx
+  - windows
+
+r:
+  - 3.6.1
+  - release
+  - devel
 
 after_success:
   - Rscript -e 'covr::codecov()'
