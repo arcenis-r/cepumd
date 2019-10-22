@@ -104,8 +104,16 @@ mystub <- ce_stub(2017, diary)
 pet_uccs <- ce_uccs(mystub, "Pets")
 
 # Store the diary data (not run)
-# pets_dia <- ce_prepdata(
-# year = 2017, survey = diary, uccs = pet_uccs, integrate_data = TRUE,
-# recode_variables, zp = NULL, stub = NULL, sex_ref
-#)
+\dontrun{
+pets_dia <- ce_prepdata(
+  year = 2017,
+  survey = diary,
+  uccs = pet_uccs,
+  integrate_data = TRUE,
+  recode_variables,
+  zp = NULL,
+  stub = NULL,
+  sex_ref
+)
+}
 }

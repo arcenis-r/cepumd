@@ -25,8 +25,12 @@ Downloads zip files directly from the CE PUMD page on the
 }
 \examples{
 # 'survey' can be entered as a string (not run)
-# ce_download(2017, "diary", "./diary17.zip")
+\dontrun{
+ce_download(2017, "diary", "./diary17.zip")
+}
 
 # 'survey' can also be entered as a symbol (not run)
-# ce_download(2017, interview, "./interview17.zip")
+\dontrun{
+ce_download(2017, interview, "./interview17.zip")
+}
 }
