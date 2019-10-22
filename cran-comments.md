@@ -7,3 +7,8 @@
 ## R CMD check results
 
 0 errors | 0 warnings | 0 note
+
+## Changes in the Oct 22, 2019 submission
+* Added reference hyperlinks to the description
+* Changed title to be less than 65 characters
+* Added "\dontcomment{}" syntax to examples that were previously commented out in the R/ce-download.R, R/ce-prepdata.R, and R/ce-mean.R files.
