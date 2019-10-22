@@ -24,12 +24,15 @@
 #' @seealso \code{\link{ce_quantiles}}
 #'
 #' @examples
-#' \dontrun{
+#'
 #' # Download the stub file keeping the section for expenditures on utilities
+#' \dontrun{
 #' utils_stub <- ce_stub(2017, interview) %>%
 #'   ce_uccs("Utilities, fuels, and public services", uccs_only = FALSE)
+#' }
 #'
 #' # Download and prepare interview data
+#' \dontrun{
 #' utils_interview <- ce_prepdata(
 #'   2017,
 #'   interview,
@@ -39,16 +42,19 @@
 #'   stub = utils_stub,
 #'   bls_urbn
 #' )
+#' }
 #'
 #' # Calculate the mean expenditure on utilities
-#' ce_mean(utils_interview)
+#' \dontrun{ce_mean(utils_interview)}
 #'
 #' # Calculate the mean expenditure on utilities by urbanicity
+#' \dontrun{
 #' utils_interview %>%
 #'   tidyr::nest(-bls_urbn) %>%
 #'   mutate(mean_utils = purrr::map(data, ce_mean)) %>%
 #'   select(-data) %>%
 #'   unnest(mean_utils)
+#' }
 #' }
 #'
 #' @note

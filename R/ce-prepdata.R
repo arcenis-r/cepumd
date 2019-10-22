@@ -91,10 +91,18 @@
 #' pet_uccs <- ce_uccs(mystub, "Pets")
 #'
 #' # Store the diary data (not run)
-#' # pets_dia <- ce_prepdata(
-#' # year = 2017, survey = diary, uccs = pet_uccs, integrate_data = TRUE,
-#' # recode_variables, zp = NULL, stub = NULL, sex_ref
-#' #)
+#' \dontrun{
+#' pets_dia <- ce_prepdata(
+#'   year = 2017,
+#'   survey = diary,
+#'   uccs = pet_uccs,
+#'   integrate_data = TRUE,
+#'   recode_variables,
+#'   zp = NULL,
+#'   stub = NULL,
+#'   sex_ref
+#' )
+#' }
 
 # !diagnostics suppress = last_year, first_year, variable_name, code_value
 # !diagnostics suppress = code_description
