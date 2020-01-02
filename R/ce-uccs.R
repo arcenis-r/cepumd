@@ -50,8 +50,8 @@ ce_uccs <- function(stub, expenditure, uccs_only = TRUE) {
   title_row <- match(expenditure, stub$title)
   title_row_level <- stub$level[title_row]
   stop_row <- match(
-    title_row_level,
-    stub$level[(title_row + 1):(nrow(stub) - 1)]
+    TRUE,
+    title_row_level >= stub$level[(title_row + 1):(nrow(stub))] # all remaining levels
   ) + title_row - 1
 
   if (is.na(stop_row)) stop_row <- nrow(stub)
