@@ -25,9 +25,9 @@
 #'
 #' @examples
 #'
-#' # Download the stub file keeping the section for expenditures on utilities
+#' # Download the HG file keeping the section for expenditures on utilities
 #' \dontrun{
-#' utils_stub <- ce_stub(2017, interview) %>%
+#' utils_hg <- ce_hg(2017, interview) %>%
 #'   ce_uccs("Utilities, fuels, and public services", uccs_only = FALSE)
 #' }
 #'
@@ -36,10 +36,10 @@
 #' utils_interview <- ce_prepdata(
 #'   2017,
 #'   interview,
-#'   uccs = ce_uccs(utils_stub, "Utilities, fuels, and public services"),
+#'   uccs = ce_uccs(utils_hg, "Utilities, fuels, and public services"),
 #'   zp = NULL,
 #'   integrate_data = FALSE,
-#'   stub = utils_stub,
+#'   hg = utils_hg,
 #'   bls_urbn
 #' )
 #' }
@@ -54,7 +54,6 @@
 #'   mutate(mean_utils = purrr::map(data, ce_mean)) %>%
 #'   select(-data) %>%
 #'   unnest(mean_utils)
-#' }
 #' }
 #'
 #' @note
@@ -169,7 +168,7 @@ ce_mean <- function(ce_data) {
     # differences, dividing it by 44, then taking the square root of the result
     dplyr::mutate(
       se = sqrt((.data$sum_sqrs / 44)),
-      cv = .data$se / .data$finlwt21
+      cv = (.data$se * 100) / .data$finlwt21
     ) %>%
     dplyr::select(.data$agg_exp, mean_exp = "finlwt21", .data$se, .data$cv)
 

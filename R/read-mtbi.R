@@ -7,17 +7,17 @@
 #' @param year Year
 #' @param uccs Vector of UCC's to filter for
 #' @param integrate_data Whether to prepare data for integrated estimates
-#' @param stub Stub file data
+#' @param hg Hierarchical grouping data
 #'
 #' @importFrom dplyr ungroup
 #' @importFrom rlang .data
 
-read.mtbi <- function(fp, zp, year, uccs, integrate_data, stub) {
+read.mtbi <- function(fp, zp, year, uccs, integrate_data, hg) {
 
-  if (is.null(stub) & integrate_data & year >= 2002) {
-    stub <- ce_stub(year, "integrated")
-  } else if (is.null(stub)) {
-    stub <- ce_stub(year, "interview")
+  if (is.null(hg) & integrate_data & year >= 2002) {
+    hg <- ce_hg(year, "integrated")
+  } else if (is.null(hg)) {
+    hg <- ce_hg(year, "interview")
   }
 
   df <- suppressWarnings(
@@ -46,7 +46,7 @@ read.mtbi <- function(fp, zp, year, uccs, integrate_data, stub) {
   df <- df %>%
     dplyr::filter(.data$ref_yr %in% year, .data$ucc %in% uccs) %>%
     dplyr::left_join(
-      stub %>% dplyr::select(.data$ucc, .data$factor),
+      hg %>% dplyr::select(.data$ucc, .data$factor),
       by = "ucc"
     ) %>%
     dplyr::mutate(

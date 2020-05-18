@@ -4,7 +4,7 @@
 \alias{read.mtbi}
 \title{Read in and modify MTBI files}
 \usage{
-read.mtbi(fp, zp, year, uccs, integrate_data, stub)
+read.mtbi(fp, zp, year, uccs, integrate_data, hg)
 }
 \arguments{
 \item{fp}{File to extract from zip file}
@@ -17,7 +17,7 @@ read.mtbi(fp, zp, year, uccs, integrate_data, stub)
 
 \item{integrate_data}{Whether to prepare data for integrated estimates}
 
-\item{stub}{Stub file data}
+\item{hg}{Hierarchical grouping data}
 }
 \description{
 Read in and modify MTBI files

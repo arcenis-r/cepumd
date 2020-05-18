@@ -7,16 +7,17 @@
 #' @param year Year
 #' @param uccs Vector of UCC's to filter for
 #' @param integrate_data Whether to prepare data for integrated estimates
-#' @param stub Stub file data
+#' @param hg Hierarchical grouping data
 #'
 #' @importFrom rlang .data
+#' @importFrom dplyr left_join
 
-read.expd <- function(fp, zp, year, uccs, integrate_data, stub) {
+read.expd <- function(fp, zp, year, uccs, integrate_data, hg) {
 
-  if (is.null(stub) & integrate_data & year >= 2002) {
-    stub <- ce_stub(year, "integrated")
-  } else if (is.null(stub)) {
-    stub <- ce_stub(year, "diary")
+  if (is.null(hg) & integrate_data & year >= 2002) {
+    hg <- ce_hg(year, "integrated")
+  } else if (is.null(hg)) {
+    hg <- ce_hg(year, "diary")
   }
 
   df <- suppressWarnings(
@@ -46,11 +47,11 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, stub) {
       cost = .data$cost * 13
     )
 
-  if (integrate_data) df <- df %>% filter(.data$pub_flag %in% "2")
+  if (integrate_data) df <- df %>% dplyr::filter(.data$pub_flag %in% "2")
 
   df <- df %>%
-    filter(.data$ucc %in% uccs) %>%
-    left_join(stub %>% select(.data$ucc, .data$factor), by = "ucc") %>%
+    dplyr::filter(.data$ucc %in% uccs) %>%
+    dplyr::left_join(dplyr::select(hg, .data$ucc, .data$factor), by = "ucc") %>%
     dplyr::mutate(
       cost = .data$cost * as.numeric(as.character(.data$factor))
     ) %>%

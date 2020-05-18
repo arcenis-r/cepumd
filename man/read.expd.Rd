@@ -4,7 +4,7 @@
 \alias{read.expd}
 \title{Read in and modify EXPD files}
 \usage{
-read.expd(fp, zp, year, uccs, integrate_data, stub)
+read.expd(fp, zp, year, uccs, integrate_data, hg)
 }
 \arguments{
 \item{fp}{File to extract from zip file}
@@ -17,7 +17,7 @@ read.expd(fp, zp, year, uccs, integrate_data, stub)
 
 \item{integrate_data}{Whether to prepare data for integrated estimates}
 
-\item{stub}{Stub file data}
+\item{hg}{Hierarchical grouping data}
 }
 \description{
 Read in and modify EXPD files

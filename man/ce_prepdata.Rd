@@ -4,34 +4,39 @@
 \alias{ce_prepdata}
 \title{Prepare CE data for calculating an estimated mean or median}
 \usage{
-ce_prepdata(year, survey, uccs, integrate_data = TRUE,
-  recode_variables = FALSE, zp = NULL, stub = NULL, ...)
+ce_prepdata(year, survey, uccs, recode_variables = FALSE,
+  dict_path = NULL, int_zp = NULL, dia_zp = NULL, hg = NULL, ...)
 }
 \arguments{
-\item{year}{A year between 1996 and the last year of available CE PUMD.}
+\item{year}{A year between 1997 and the last year of available CE PUMD.}
 
-\item{survey}{One of either "interview" or "diary" as a string or symbol.}
+\item{survey}{One of either interview, diary, or integrated as a string or
+symbol.}
 
 \item{uccs}{A character vector of UCCs corresponding to expenditure
-categories in the stub file for a given year and survey}
-
-\item{integrate_data}{A logical indicating whether to prepare the data to
-calculate an integrated mean or median. The default is TRUE. (See details)}
+categories in the hierarchical grouping (HG) for a given year and survey.}
 
 \item{recode_variables}{A logical indicating whether to recode all coded
 variables except 'UCC' using the codes in the CE's excel dictionary which can
 be downloaded from the
 \href{https://www.bls.gov/cex/pumd_doc.htm}{CE Documentation Page}}
 
-\item{zp}{A string indicating the path where you'd like to save the zip file.
-This argment gets passed to 'destfile' in
-\code{\link[utils]{download.file}}. The default is \code{NULL} which
-causes the zip file to be stored in temporary memory during function
-operation.}
+\item{dict_path}{A string indicating the path where the CE PUMD dictionary
+is stored if already stored. If the file does not exist and
+\code{recode_variables = TRUE} the dictionary will be stored in this path.
+The default is \code{NULL} which causes the zip file to be stored in
+temporary memory during function operation.}
 
-\item{stub}{A data frame that has, at least, the title, level, ucc, and
-factor columns of a CE stub file. Calling \code{\link{ce_stub}} will
-generate a valid stub file.}
+\item{int_zp}{String indicating the path of the Interview data zip file if
+already stored. If the file does not exist its corresponding zip file will
+be stored in that path. The default is \code{NULL} which causes the zip file
+to be stored in temporary memory during function operation.}
+
+\item{dia_zp}{Same as \code{int_zip} above, but for Diary data.}
+
+\item{hg}{A data frame that has, at least, the title, level, ucc, and
+factor columns of a CE HG file. Calling \code{\link{ce_hg}} will generate a
+valid HG file.}
 
 \item{...}{Variables to include in the dataset from the family
 characteristics file. This is intended to allow the user to calculate
@@ -60,9 +65,9 @@ tabulation (MTBI/EXPD) files and merges the relevant data for calculating a
 weighted mean or median.
 }
 \details{
-CE data include 45 weights. The primary weight that is used for calculating
-estimated means and medians is finlwt21. The 44 replicate weights are
-computed using Balanced Repeated Replication (BRR) and are used for
+CE microdata include 45 weights. The primary weight that is used for
+calculating estimated means and medians is finlwt21. The 44 replicate weights
+are computed using Balanced Repeated Replication (BRR) and are used for
 calculating weighted standard errors.
 
 "Months in scope" refers to the proportion of the data collection quarter for
@@ -97,11 +102,11 @@ complete listing: \url{https://www.bls.gov/cex/ce_source_integrate.xlsx}.
 # pet expenditures for 2017 keep the "sex_ref" variable in the data to
 # potentially calculate means by sex of the reference person.
 
-# First generate a stub file
-mystub <- ce_stub(2017, diary)
+# First generate an HG file
+my_hg <- ce_hg(2017, diary)
 
 # Store a vector of UCC's in the "Pets" category
-pet_uccs <- ce_uccs(mystub, "Pets")
+pet_uccs <- ce_uccs(my_hg, "Pets")
 
 # Store the diary data (not run)
 \dontrun{
@@ -112,7 +117,7 @@ pets_dia <- ce_prepdata(
   integrate_data = TRUE,
   recode_variables,
   zp = NULL,
-  stub = NULL,
+  hg = my_hg,
   sex_ref
 )
 }

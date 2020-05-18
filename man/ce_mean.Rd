@@ -33,6 +33,40 @@ suppressed. You can learn more at
 \href{https://www.bls.gov/cex/pumd_disclosure.htm}{CE Protection of
 Respondent Confidentiality}
 }
+\examples{
+
+# Download the HG file keeping the section for expenditures on utilities
+\dontrun{
+utils_hg <- ce_hg(2017, interview) \%>\%
+  ce_uccs("Utilities, fuels, and public services", uccs_only = FALSE)
+}
+
+# Download and prepare interview data
+\dontrun{
+utils_interview <- ce_prepdata(
+  2017,
+  interview,
+  uccs = ce_uccs(utils_hg, "Utilities, fuels, and public services"),
+  zp = NULL,
+  integrate_data = FALSE,
+  hg = utils_hg,
+  bls_urbn
+)
+}
+
+# Calculate the mean expenditure on utilities
+\dontrun{ce_mean(utils_interview)}
+
+# Calculate the mean expenditure on utilities by urbanicity
+\dontrun{
+utils_interview \%>\%
+  tidyr::nest(-bls_urbn) \%>\%
+  mutate(mean_utils = purrr::map(data, ce_mean)) \%>\%
+  select(-data) \%>\%
+  unnest(mean_utils)
+}
+
+}
 \seealso{
 \code{\link{ce_quantiles}}
 }

@@ -31,8 +31,7 @@ read.fmli <- function(fp, zp, year, grp_var_names) {
         stop(
           paste0(
             "'", g, "' is not a valid variable. ",
-            "Please review the CE survey documentation to ensure '", g,
-            "' is a variable in your dataset (check by year)."
+            "Please review the CE PUMD documentation"
           )
         )
       }
