@@ -36,8 +36,8 @@ ce_download <- function(year, survey, zp) {
   survey_name <- rlang::as_name(survey) %>% tolower()
 
   ###### Check for bad arguments ######
-  if (!year %in% 1997:2018) {
-    stop("'year' must be a number between 1997 and 2018")
+  if (!year %in% 1997:2019) {
+    stop("'year' must be a number between 1997 and 2019")
   }
 
   if (!survey_name %in% c("interview", "diary")) {

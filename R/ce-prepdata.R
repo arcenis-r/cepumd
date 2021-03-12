@@ -134,8 +134,8 @@ ce_prepdata <- function(year,
   unlink_dia_zp <- is.null(dia_zp)
   unlink_dict_path <- is.null(dict_path)
 
-  if (!year %in% 1997:2018) {
-    stop("'year' must be a number between 1997 and 2018")
+  if (!year %in% 1997:2019) {
+    stop("'year' must be a number between 1997 and 2019")
   }
 
   if (!survey_name %in% c("interview", "diary", "integrated")) {
