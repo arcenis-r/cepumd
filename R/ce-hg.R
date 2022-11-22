@@ -59,8 +59,8 @@ ce_hg <- function(year, hg_type, hg_zip_path = NULL) {
   hg_type_name <- rlang::as_name(hg_type) %>% tolower
 
   ###### Check for bad arguments ######
-  if (!year %in% 1997:2018) {
-    stop("'year' must be a number between 1997 and 2018")
+  if (!year %in% 1997:2021) {
+    stop("'year' must be a number between 1997 and 2021")
   }
 
   if (

@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+# * This package is currently not useful due to some package updates and other required updates. Estimates Hierarchical Grouping data is currently not parsed correctly and estimates do not align with publicly available estimates on Consumer Expenditure Survey tables. I will make the required updates and remove this package when complete. 
+
 # cepumd
 
 `cepumd` facilitates the calculation of Consumer Expenditure Survey (CE) annual, weighted, estimated mean expenditures using CE Public-Use Microdata (PUMD) by addressing some unique challenges that exist in working with CE PUMD. Some examples are:
