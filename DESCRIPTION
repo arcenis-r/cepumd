@@ -1,10 +1,10 @@
 Package: cepumd
 Type: Package
 Title: Calculate Consumer Expenditure Survey (CE) Annual Estimates
-Version: 0.3.0
-Date: 2019-10-22
-Author: Arcenis Rojas <arcenis.rojas@gmail.com>
-Maintainer: Arcenis Rojas <arcenis.rojas@gmail.com>
+Version: 1.0.1
+Date: 2022-12-19
+Author: Arcenis Rojas <arcenis.rojas@tutanota.com>
+Maintainer: Arcenis Rojas <arcenis.rojas@tutanota.com>
 Description: Provides functions and data files to help CE PUMD users calculate 
     annual estimated expenditure means, standard errors, and quantiles according
     to the methods used by the CE using Public-Use Microdata (PUMD). For more
@@ -16,11 +16,11 @@ Description: Provides functions and data files to help CE PUMD users calculate
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.2.2
 Depends:
     R (>= 3.5.0)
 Imports: 
-    dplyr (>= 0.8.0.1),
+    dplyr (>= 1.0.0),
     tidyr,
     stringr,
     rlang,

@@ -5,30 +5,33 @@
 #' weighted mean or median.
 #'
 #' @param year A year between 1997 and the last year of available CE PUMD.
-#' @param survey One of either interview, diary, or integrated as a string or
+#' @param survey One of either interview, diary, or integrated as a character or
 #' symbol.
 #' @param uccs A character vector of UCCs corresponding to expenditure
 #' categories in the hierarchical grouping (HG) for a given year and survey.
+#' @param ... Variables to include in the dataset from the family
+#' characteristics file. This is intended to allow the user to calculate
+#' estimates for subsets of the data.
 #' @param recode_variables A logical indicating whether to recode all coded
 #' variables except 'UCC' using the codes in the CE's excel dictionary which can
 #' be downloaded from the
 #' \href{https://www.bls.gov/cex/pumd_doc.htm}{CE Documentation Page}
+#' @param ce_dir The directory in which CE PUMD data and metadata are stored. If
+#' \code{NULL} (the default) a directory called "ce-data" will be created in the
+#' temporary directory of the session.
 #' @param dict_path A string indicating the path where the CE PUMD dictionary
 #' is stored if already stored. If the file does not exist and
 #' \code{recode_variables = TRUE} the dictionary will be stored in this path.
 #' The default is \code{NULL} which causes the zip file to be stored in
 #' temporary memory during function operation.
-#' @param int_zp String indicating the path of the Interview data zip file if
-#' already stored. If the file does not exist its corresponding zip file will
+#' @param int_zp String indicating the path of the Interview data zip file(s) if
+#' already stored. If the file(s) does not exist its corresponding zip file will
 #' be stored in that path. The default is \code{NULL} which causes the zip file
 #' to be stored in temporary memory during function operation.
-#' @param dia_zp Same as \code{int_zip} above, but for Diary data.
+#' @param dia_zp Same as \code{int_zp} above, but for Diary data.
 #' @param hg A data frame that has, at least, the title, level, ucc, and
 #' factor columns of a CE HG file. Calling \code{\link{ce_hg}} will generate a
 #' valid HG file.
-#' @param ... Variables to include in the dataset from the family
-#' characteristics file. This is intended to allow the user to calculate
-#' estimates for subsets of the data.
 #'
 #' @return A data frame containing the following columns:
 #' \itemize{
@@ -86,14 +89,17 @@
 #' @importFrom readxl cell_cols
 #' @importFrom dplyr select
 #' @importFrom dplyr filter
+#' @importFrom dplyr across
+#' @importFrom dplyr mutate
+#' @importFrom tidyr replace_na
 #'
 #' @examples
-#' # The following workflow will prepare a dataset for calculating diary
-#' # pet expenditures for 2017 keep the "sex_ref" variable in the data to
+#' # The following workflow will prepare a dataset for calculating integrated
+#' # pet expenditures for 2021 keep the "sex_ref" variable in the data to
 #' # potentially calculate means by sex of the reference person.
 #'
 #' # First generate an HG file
-#' my_hg <- ce_hg(2017, diary)
+#' my_hg <- ce_hg(2021, integrated)
 #'
 #' # Store a vector of UCC's in the "Pets" category
 #' pet_uccs <- ce_uccs(my_hg, "Pets")
@@ -101,12 +107,11 @@
 #' # Store the diary data (not run)
 #' \dontrun{
 #' pets_dia <- ce_prepdata(
-#'   year = 2017,
-#'   survey = diary,
+#'   year = 2021,
+#'   survey = integrated,
 #'   uccs = pet_uccs,
 #'   integrate_data = TRUE,
-#'   recode_variables,
-#'   zp = NULL,
+#'   recode_variables = TRUE,
 #'   hg = my_hg,
 #'   sex_ref
 #' )
@@ -118,24 +123,37 @@ ce_prepdata <- function(year,
                         survey,
                         uccs,
                         recode_variables = FALSE,
+                        ce_dir = NULL,
                         dict_path = NULL,
                         int_zp = NULL,
                         dia_zp = NULL,
                         hg = NULL,
-                        ...) {
+                        ...
+                        ) {
 
   survey <- rlang::ensym(survey)
   survey_name <- rlang::as_string(survey) %>% tolower()
 
   grp_vars <- rlang::ensyms(...)
-  grp_var_names <- purrr::map(grp_vars, rlang::as_string) %>% unlist()
+  grp_var_names <- purrr::map(grp_vars, rlang::as_string) %>%
+    unlist() %>%
+    tolower()
 
-  unlink_int_zp <- is.null(int_zp)
-  unlink_dia_zp <- is.null(dia_zp)
-  unlink_dict_path <- is.null(dict_path)
+  # Ensure that there's a directory to put files into
+  if (is.null(ce_dir)) {
+    if (!file.exists(file.path(tempdir(), "ce-data"))) {
+      dir.create(file.path(tempdir(), "ce-data"))
+    }
 
-  if (!year %in% 1997:2021) {
-    stop("'year' must be a number between 1997 and 2021")
+    ce_dir <- file.path(tempdir(), "ce-data")
+  }
+
+  max_year <- max(ce_pumd_years())
+
+  if (!year %in% 1997:max_year) {
+    stop(
+      stringr::str_c("'year' must be a number between 1997 and ", max_year, ".")
+    )
   }
 
   if (!survey_name %in% c("interview", "diary", "integrated")) {
@@ -175,18 +193,22 @@ ce_prepdata <- function(year,
 
   if (recode_variables == TRUE) {
     if (is.null(dict_path)) {
-      dict_path <- tempfile()
-      store_ce_dict(dict_path = dict_path)
-    } else if (isFALSE(file.exists(dict_path))) {
-      store_ce_dict(dict_path = dict_path)
+      dict_path <- "ce-dict.xlsx"
+      store_ce_dict(dict_path = dict_path, ce_dir = ce_dir)
+    } else if (isFALSE(file.exists(file.path(ce_dir, dict_path)))) {
+      store_ce_dict(dict_path = dict_path, ce_dir = ce_dir)
     }
   }
 
   if (recode_variables) {
-    code_sheet <- grep("^Codes", readxl::excel_sheets(dict_path), value = TRUE)
+    code_sheet <- grep(
+      "^Codes",
+      readxl::excel_sheets(file.path(ce_dir, dict_path)),
+      value = TRUE
+    )
 
     ce_dict <- readxl::read_excel(
-      dict_path,
+      file.path(ce_dir, dict_path),
       sheet = code_sheet,
       range = readxl::cell_cols("A:J"),
       guess_max = 4000
@@ -211,45 +233,109 @@ ce_prepdata <- function(year,
   }
 
   if (survey_name %in% c("interview", "integrated")) {
-    if (is.null(int_zp)) {
-      int_zp <- tempfile()
-      ce_download(year = year, survey = "interview", zp = int_zp)
-    } else if (isFALSE(file.exists(int_zp))) {
-      ce_download(year = year, survey = "interview", zp = int_zp)
+    # Create a vector of years for which data are required
+    if (year >= 2020) {
+      int_yrs <- stringr::str_sub(c(year - 1, year), 3, 4)
+    } else {
+      int_yrs <- stringr::str_sub(year, 3, 4)
     }
 
-    fmli_files <- grep(
-      "fmli",
-      unzip(int_zp, ".", list = TRUE)$Name,
-      value = TRUE
+    # Create a vector of the required quarters for the given year
+    int_qtrs <- c(
+      stringr::str_c(stringr::str_sub(year, 3, 4), 1:4),
+      stringr::str_c(stringr::str_sub((year + 1), 3, 4), 1)
     )
 
-    mtbi_files <- grep(
-      "mtbi",
-      unzip(int_zp, ".", list = TRUE)$Name,
-      value = TRUE
-    )
+    if (!is.null(int_zp)) {
 
-    fmli <- purrr::map_df(
-      fmli_files,
+      if (sum(file.exists(file.path(ce_dir, int_zp))) == 0) {
+        int_zp <- NULL
+      } else {
+        # Make a dataframe of the required files from all of the zip files
+        int_file_df <- purrr::map(
+          file.path(ce_dir, int_zp),
+          unzip,
+          list = TRUE
+        ) %>%
+          purrr::map2_df(
+            int_zp,
+            ~ .x %>% dplyr::mutate(zipfile = file.path(ce_dir, .y))
+          ) %>%
+          dplyr::filter(
+            stringr::str_detect(
+              .data$Name,
+              stringr::str_c(int_qtrs, collapse = "|")
+            )
+          )
+
+        fmli_files <- int_file_df %>%
+          dplyr::filter(stringr::str_detect(.data$Name, "fmli"))
+
+        mtbi_files <- int_file_df %>%
+          dplyr::filter(stringr::str_detect(.data$Name, "mtbi"))
+
+        if (
+          nrow(fmli_files) != length(int_qtrs) |
+          nrow(mtbi_files) != length(int_qtrs)
+        ) {
+          int_zp <- NULL
+          rm(int_file_df, fmli_files, mtbi_files)
+        }
+      }
+    }
+
+    if (is.null(int_zp)) {
+      ce_download(year = year, survey = "interview", ce_dir = ce_dir)
+
+      # Store a vector of the zip files from which to extract data
+      int_zip_files <- stringr::str_c("intrvw", int_yrs, ".zip")
+
+      # Make a dataframe of the required files from all of the zip files
+      int_file_df <- purrr::map(
+        file.path(ce_dir, int_zip_files),
+        unzip,
+        list = TRUE
+      ) %>%
+        purrr::map2_df(
+          int_zip_files,
+          ~ .x %>% dplyr::mutate(zipfile = file.path(ce_dir, .y))
+        ) %>%
+        dplyr::filter(
+          stringr::str_detect(
+            .data$Name,
+            stringr::str_c(int_qtrs, collapse = "|")
+          )
+        )
+
+      fmli_files <- int_file_df %>%
+        dplyr::filter(stringr::str_detect(.data$Name, "fmli"))
+
+      mtbi_files <- int_file_df %>%
+        dplyr::filter(stringr::str_detect(.data$Name, "mtbi"))
+    }
+
+    fmli <- purrr::map2_df(
+      fmli_files$Name,
+      fmli_files$zipfile,
       read.fmli,
-      zp = int_zp,
       year = year,
+      ce_dir = ce_dir,
       grp_var_names = grp_var_names
     ) %>%
       dplyr::bind_rows() %>%
-      dplyr::mutate_at(
-        dplyr::vars(dplyr::contains("wtrep")), list(~ replace(., is.na(.), 0))
+      dplyr::mutate(
+        dplyr::across(dplyr::contains("wtrep"), ~ tidyr::replace_na(.x, 0))
       )
 
-    mtbi <- purrr::map_df(
-      mtbi_files,
+    mtbi <- purrr::map2_df(
+      mtbi_files$Name,
+      mtbi_files$zipfile,
       read.mtbi,
-      zp = int_zp,
       year = year,
       uccs = uccs,
       integrate_data = integrate_data,
-      hg = hg
+      hg = hg,
+      ce_dir = ce_dir
     ) %>%
       dplyr::bind_rows()
 
@@ -262,9 +348,7 @@ ce_prepdata <- function(year,
       recode_vars <- recode_vars[!recode_vars %in% "ucc"]
 
       ce_dict_int <- ce_dict %>%
-        dplyr::filter(
-          .data$survey == "I"
-        )
+        dplyr::filter(.data$survey == "I")
 
       for (i in recode_vars) {
         code_col <- interview[[i]]
@@ -282,44 +366,92 @@ ce_prepdata <- function(year,
   }
 
   if (survey_name %in% c("diary", "integrated")) {
-    if (is.null(dia_zp)) {
-      dia_zp <- tempfile()
-      ce_download(year = year, survey = "diary", zp = dia_zp)
-    } else if (isFALSE(file.exists(dia_zp))) {
-      ce_download(year = year, survey = "diary", zp = dia_zp)
+    dia_yrs <- stringr::str_sub(year, 3, 4)
+
+    dia_qtrs <- stringr::str_c(stringr::str_sub(year, 3, 4), 1:4)
+
+    if (!is.null(dia_zp)) {
+      if (sum(file.exists(file.path(ce_dir, dia_zp))) == 0) {
+        dia_zp <- NULL
+      } else {
+        # Make a dataframe of the required files from all of the zip files
+        dia_file_df <- purrr::map(
+          file.path(ce_dir, dia_zp),
+          unzip,
+          list = TRUE
+        ) %>%
+          purrr::map2_df(
+            dia_zp,
+            ~ .x %>% dplyr::mutate(zipfile = file.path(ce_dir, .y))
+          ) %>%
+          dplyr::filter(
+            stringr::str_detect(Name, stringr::str_c(dia_qtrs, collapse = "|"))
+          )
+
+        fmld_files <- dia_file_df %>%
+          dplyr::filter(stringr::str_detect(Name, "fmld"))
+
+        expd_files <- dia_file_df %>%
+          dplyr::filter(stringr::str_detect(Name, "expd"))
+
+        if (
+          nrow(fmld_files) != length(dia_qtrs) |
+          nrow(expd_files) != length(dia_qtrs)
+        ) {
+          dia_zp <- NULL
+          rm(dia_file_df, fmld_files, expd_files)
+        }
+      }
     }
 
-    fmld_files <- grep(
-      "fmld",
-      unzip(dia_zp, ".", list = TRUE)$Name,
-      value = TRUE
-    )
+    if (is.null(dia_zp)) {
+      ce_download(year = year, survey = "diary", ce_dir = ce_dir)
 
-    expd_files <- grep(
-      "expd",
-      unzip(dia_zp, ".", list = TRUE)$Name,
-      value = TRUE
-    )
+      # Store a vector of the zip files from which to extract data
+      dia_zip_files <- stringr::str_c("diary", dia_yrs, ".zip")
 
-    fmld <- purrr::map_df(
-      fmld_files,
+      # Make a dataframe of the required files from all of the zip files
+      dia_file_df <- purrr::map(
+        file.path(ce_dir, dia_zip_files),
+        unzip,
+        list = TRUE
+      ) %>%
+        purrr::map2_df(
+          dia_zip_files,
+          ~ .x %>% dplyr::mutate(zipfile = file.path(ce_dir, .y))
+        ) %>%
+        dplyr::filter(
+          stringr::str_detect(Name, stringr::str_c(dia_qtrs, collapse = "|"))
+        )
+
+      fmld_files <- dia_file_df %>%
+        dplyr::filter(stringr::str_detect(Name, "fmld"))
+
+      expd_files <- dia_file_df %>%
+        dplyr::filter(stringr::str_detect(Name, "expd"))
+    }
+
+    fmld <- purrr::map2_df(
+      fmld_files$Name,
+      fmld_files$zipfile,
       read.fmld,
-      zp = dia_zp,
-      grp_var_names = grp_var_names
+      grp_var_names = grp_var_names,
+      ce_dir = ce_dir
     ) %>%
       dplyr::bind_rows() %>%
-      dplyr::mutate_at(
-        dplyr::vars(dplyr::contains("wtrep")), list(~ replace(., is.na(.), 0))
+      dplyr::mutate(
+        dplyr::across(dplyr::contains("wtrep"), ~ tidyr::replace_na(.x, 0))
       )
 
-    expd <- purrr::map_df(
-      expd_files,
+    expd <- purrr::map2_df(
+      expd_files$Name,
+      expd_files$zipfile,
       read.expd,
-      zp = dia_zp,
       year = year,
       uccs = uccs,
       integrate_data = integrate_data,
-      hg = hg
+      hg = hg,
+      ce_dir = ce_dir
     ) %>%
       dplyr::bind_rows()
 
@@ -332,9 +464,7 @@ ce_prepdata <- function(year,
       recode_vars <- recode_vars[!recode_vars %in% "ucc"]
 
       ce_dict_dia <- ce_dict %>%
-        dplyr::filter(
-          .data$survey == "D"
-        )
+        dplyr::filter(.data$survey == "D")
 
       for (i in recode_vars) {
         code_col <- diary[[i]]
@@ -350,10 +480,6 @@ ce_prepdata <- function(year,
       }
     }
   }
-
-  if (unlink_int_zp) unlink(int_zp)
-  if (unlink_dia_zp) unlink(dia_zp)
-  if (unlink_dict_path) unlink(dict_path)
 
   if (survey_name == "integrated") {
     return(dplyr::bind_rows(interview, diary))

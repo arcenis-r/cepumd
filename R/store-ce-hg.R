@@ -4,8 +4,12 @@
 #' a zip file containing all CE hieararchical grouping files (also known as
 #' 'stub' files) to the path indicated in the \code{hg_zip_path} argument.
 #'
-#' @param hg_zip_path A valid file path entered as a string to which to store a
-#' zip file containing the hierarchical grouping files.
+#' @param ce_dir The directory in which CE PUMD data and metadata are stored. If
+#' \code{NULL} (the default) a directory called "ce-data" will be created in the
+#' temporary directory of the session.
+#' @param hg_zip_path A valid file path entered as a character to which to store
+#' a zip file containing the hierarchical grouping files. If \code{NULL} (the
+#' default) a file called "ce-stubs.zip" will be created in \code{ce_dir}.
 #'
 #' @details The download comes from
 #' \url{https://www.bls.gov/cex/pumd/stubs.zip} to the path designated in
@@ -25,10 +29,25 @@
 #' }
 
 
-store_ce_hg <- function(hg_zip_path) {
+store_ce_hg <- function(ce_dir = NULL, hg_zip_path = NULL) {
+
+  # Ensure that there's a directory to put files into
+  if (is.null(ce_dir)) {
+    if (!file.exists(file.path(tempdir(), "ce-data"))) {
+      dir.create(file.path(tempdir(), "ce-data"))
+    }
+
+    ce_dir <- file.path(tempdir(), "ce-data")
+  }
+
+  if (is.null(hg_zip_path)) {
+    hg_zip_path <- "ce-stubs.zip"
+  }
+
   download.file(
     "https://www.bls.gov/cex/pumd/stubs.zip",
-    hg_zip_path,
+    file.path(ce_dir, hg_zip_path),
+    method = "auto",
     mode = "wb"
   )
 }

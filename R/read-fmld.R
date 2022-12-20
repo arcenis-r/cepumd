@@ -8,11 +8,11 @@
 #'
 #' @importFrom rlang .data
 
-read.fmld <- function(fp, zp, grp_var_names) {
+read.fmld <- function(fp, zp, grp_var_names, ce_dir) {
 
   df <- suppressWarnings(
     readr::read_csv(
-      unzip(zp, files = fp, exdir = tempdir()),
+      unzip(zp, files = fp, exdir = ce_dir),
       na = c("NA", "", " ", "."),
       progress = FALSE
     )

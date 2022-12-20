@@ -3,8 +3,11 @@
 #' @details This is a hidden file called only by exported package functions.
 #'
 #' @param fp File to extract from zip file
-#' @param zp Zip file path
+#' @param zp Zip file path within ce_dir
 #' @param year Year
+#' @param ce_dir The directory in which CE PUMD data and metadata are stored. If
+#' \code{NULL} (the default) a directory called "ce-data" will be created in the
+#' temporary directory of the session.
 #' @param grp_var_names Variables to keep (intended for grouping)
 #'
 #' @importFrom readr read_csv
@@ -12,11 +15,11 @@
 #' @importFrom dplyr contains
 #' @importFrom rlang .data
 
-read.fmli <- function(fp, zp, year, grp_var_names) {
+read.fmli <- function(fp, zp, year, ce_dir, grp_var_names) {
 
   df <- suppressWarnings(
     readr::read_csv(
-      unzip(zp, files = fp, exdir = tempdir()),
+      unzip(zp, files = fp, exdir = ce_dir),
       na = c("NA", "", " ", "."),
       progress = FALSE
     )

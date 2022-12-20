@@ -4,11 +4,16 @@
 \alias{store_ce_hg}
 \title{Download CE hierarchical grouping files}
 \usage{
-store_ce_hg(hg_zip_path)
+store_ce_hg(ce_dir = NULL, hg_zip_path = NULL)
 }
 \arguments{
-\item{hg_zip_path}{A valid file path entered as a string to which to store a
-zip file containing the hierarchical grouping files.}
+\item{ce_dir}{The directory in which CE PUMD data and metadata are stored. If
+\code{NULL} (the default) a directory called "ce-data" will be created in the
+temporary directory of the session.}
+
+\item{hg_zip_path}{A valid file path entered as a character to which to store
+a zip file containing the hierarchical grouping files. If \code{NULL} (the
+default) a file called "ce-stubs.zip" will be created in \code{ce_dir}.}
 }
 \description{
 A wrapper for \code{\link[utils]{download.file}} that downloads

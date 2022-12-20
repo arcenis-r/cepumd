@@ -4,7 +4,7 @@
 \alias{read.fmld}
 \title{Read in and modify FMLD files}
 \usage{
-read.fmld(fp, zp, grp_var_names)
+read.fmld(fp, zp, grp_var_names, ce_dir)
 }
 \arguments{
 \item{fp}{File to extract from zip file}

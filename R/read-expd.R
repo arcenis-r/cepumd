@@ -12,7 +12,7 @@
 #' @importFrom rlang .data
 #' @importFrom dplyr left_join
 
-read.expd <- function(fp, zp, year, uccs, integrate_data, hg) {
+read.expd <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
 
   if (is.null(hg) & integrate_data & year >= 2002) {
     hg <- ce_hg(year, "integrated")
@@ -22,7 +22,7 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg) {
 
   df <- suppressWarnings(
     readr::read_csv(
-      unzip(zp, files = fp, exdir = tempdir()),
+      unzip(zp, files = fp, exdir = ce_dir),
       na = c("NA", "", " ", "."),
       progress = FALSE
     )
@@ -56,8 +56,7 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg) {
       cost = .data$cost * as.numeric(as.character(.data$factor))
     ) %>%
     dplyr::group_by(.data$newid, .data$ucc) %>%
-    dplyr::summarise(cost = sum(.data$cost)) %>%
-    dplyr::ungroup()
+    dplyr::summarise(cost = sum(.data$cost), .groups = "drop")
 
   return(df)
 }
