@@ -74,7 +74,7 @@ The CE PUMD is a wonderfully rich dataset that can provide all manner of insight
 You can install the development version of `cepumd` from [GitHub](https://github.com) with:
 
 ```{r, get_cepumd, eval=FALSE}
-devtools::install_github("/arcenis-r/cepumd")
+devtools::install_github("arcenis-r/cepumd")
 ```
 
 ## Prep work

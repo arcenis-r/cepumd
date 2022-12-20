@@ -105,7 +105,7 @@ You can install the development version of `cepumd` from
 [GitHub](https://github.com) with:
 
 ``` r
-devtools::install_github("/arcenis-r/cepumd")
+devtools::install_github("arcenis-r/cepumd")
 ```
 
 ## Prep work
@@ -257,9 +257,7 @@ variable called “food_away_dir” for simplicity.
 food_away_dir <- file.path("..", "food-away")
 dir.create(food_away_dir)
 list.files(food_away_dir)
-#>  [1] "ce-dict.xlsx" "ce-stubs.zip" "diary10"      "diary10.zip"  "diary20"     
-#>  [6] "diary20.zip"  "intrvw10"     "intrvw10.zip" "intrvw19"     "intrvw19.zip"
-#> [11] "intrvw20"     "intrvw20.zip"
+#> character(0)
 ```
 
 Next, I want to make sure that there are data for my years of interest.
@@ -281,9 +279,7 @@ Let’s take a look at what the files are called.
 
 ``` r
 list.files(food_away_dir)
-#>  [1] "ce-dict.xlsx" "ce-stubs.zip" "diary10"      "diary10.zip"  "diary20"     
-#>  [6] "diary20.zip"  "intrvw10"     "intrvw10.zip" "intrvw19"     "intrvw19.zip"
-#> [11] "intrvw20"     "intrvw20.zip"
+#> [1] "ce-dict.xlsx" "ce-stubs.zip"
 ```
 
 Next I want to see what the 2010 HG file looks like for 2010 for
