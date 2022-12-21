@@ -10,6 +10,7 @@ ce_prepdata(
   uccs,
   recode_variables = FALSE,
   ce_dir = NULL,
+  own_codebook = NULL,
   dict_path = NULL,
   int_zp = NULL,
   dia_zp = NULL,
@@ -35,11 +36,17 @@ be downloaded from the
 \code{NULL} (the default) a directory called "ce-data" will be created in the
 temporary directory of the session.}
 
+\item{own_codebook}{An optional data frame containing a user-defined codebook
+containing the same columns as the CE Dictionary "Codes " sheet. If the input
+is not a data frame or does not have all of the required columns, the
+function will give an error message. See details for the required columns.}
+
 \item{dict_path}{A string indicating the path where the CE PUMD dictionary
 is stored if already stored. If the file does not exist and
 \code{recode_variables = TRUE} the dictionary will be stored in this path.
 The default is \code{NULL} which causes the zip file to be stored in
-temporary memory during function operation.}
+temporary memory during function operation. Automatically changed to
+\code{NULL} if a valid input for \code{own_codebook} is given.}
 
 \item{int_zp}{String indicating the path of the Interview data zip file(s) if
 already stored. If the file(s) does not exist its corresponding zip file will
@@ -83,6 +90,10 @@ CE microdata include 45 weights. The primary weight that is used for
 calculating estimated means and medians is finlwt21. The 44 replicate weights
 are computed using Balanced Repeated Replication (BRR) and are used for
 calculating weighted standard errors.
+
+\code{own_codebook} requires the following columns: survey, file, variable,
+code_value, code_description, first_year, first_quarter, last_year,
+last_quarter
 
 "Months in scope" refers to the proportion of the data collection quarter for
 which a CU reported expenditures. For the Diary survey the months in scope is

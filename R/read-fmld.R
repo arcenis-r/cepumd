@@ -13,7 +13,8 @@ read.fmld <- function(fp, zp, grp_var_names, ce_dir) {
     readr::read_csv(
       unzip(zp, files = fp, exdir = ce_dir),
       na = c("NA", "", " ", "."),
-      progress = FALSE
+      progress = FALSE,
+      show_col_types = FALSE
     )
   )
 

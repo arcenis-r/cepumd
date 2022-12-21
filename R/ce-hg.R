@@ -49,6 +49,7 @@
 #' @importFrom dplyr case_when
 #' @importFrom dplyr row_number
 #' @importFrom stringr str_replace_all
+#' @importFrom readr read_lines
 #'
 #' @examples
 #' # 'survey' can be entered as a string
@@ -171,7 +172,8 @@ ce_hg <- function(year, survey, ce_dir = NULL, hg_zip_path = NULL) {
   hg <- readr::read_fwf(
     hg_tmp_clean,
     col_positions = readr::fwf_positions(pos_start, pos_end, c_names),
-    skip = (first_line - 1)
+    skip = (first_line - 1),
+    show_col_types = FALSE
   ) %>%
     cond_select(year) %>%
     dplyr::select(1:7) %>%

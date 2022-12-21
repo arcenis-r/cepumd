@@ -21,7 +21,8 @@ read.fmli <- function(fp, zp, year, ce_dir, grp_var_names) {
     readr::read_csv(
       unzip(zp, files = fp, exdir = ce_dir),
       na = c("NA", "", " ", "."),
-      progress = FALSE
+      progress = FALSE,
+      show_col_types = FALSE
     )
   )
 

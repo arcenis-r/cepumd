@@ -23,7 +23,8 @@ read.mtbi <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
     readr::read_csv(
       unzip(zp, files = fp, exdir = ce_dir),
       na = c("NA", "", " ", "."),
-      progress = FALSE
+      progress = FALSE,
+      show_col_types = FALSE
     )
   )
 

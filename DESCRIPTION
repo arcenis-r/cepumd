@@ -28,7 +28,8 @@ Imports:
     purrr,
     utils,
     readxl,
-    tidyselect (>= 1.2.0)
+    tidyselect (>= 1.2.0),
+    janitor
 Suggests: 
     testthat (>= 2.1.0),
     knitr,
