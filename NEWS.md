@@ -1,3 +1,5 @@
+# cepumd 1.1.0
+
 # cepumd 1.0.1
 This version of \code{cepumd} incorporates one important change from the perspective of design philosophy and adds a couple of utility functions to help the user.
 
