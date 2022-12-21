@@ -36,7 +36,7 @@ ce_pumd_years <- function() {
     rvest::html_elements(".cex .panes h4+ table") %>%
     purrr::pluck(csv_tbl_num) %>%
     rvest::html_table() %>%
-    dplyr::mutate(X1 = readr::parse_number(.data$X1)) %>%
-    dplyr::filter(.data$X1 >= 1997) %>%
-    dplyr::pull(.data$X1)
+    dplyr::mutate(X1 = readr::parse_number(X1)) %>%
+    dplyr::filter(X1 >= 1997) %>%
+    dplyr::pull(X1)
 }

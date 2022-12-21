@@ -84,7 +84,6 @@
 #'
 #' @export
 #'
-#' @importFrom rlang .data
 #' @importFrom readxl excel_sheets
 #' @importFrom readxl cell_cols
 #' @importFrom dplyr select
@@ -219,16 +218,16 @@ ce_prepdata <- function(year,
 
     ce_dict <- ce_dict %>%
       dplyr::mutate(
-        survey = substr(.data$survey, 1, 1),
-        variable = tolower(.data$variable),
+        survey = substr(survey, 1, 1),
+        variable = tolower(variable),
         last_year = tidyr::replace_na(
-          .data$last_year,
-          max(.data$last_year, na.rm = TRUE)
+          last_year,
+          max(last_year, na.rm = TRUE)
         )
       ) %>%
       dplyr::filter(
-        .data$first_year <= year,
-        .data$last_year >= year,
+        first_year <= year,
+        last_year >= year,
       )
   }
 
@@ -263,16 +262,16 @@ ce_prepdata <- function(year,
           ) %>%
           dplyr::filter(
             stringr::str_detect(
-              .data$Name,
+              Name,
               stringr::str_c(int_qtrs, collapse = "|")
             )
           )
 
         fmli_files <- int_file_df %>%
-          dplyr::filter(stringr::str_detect(.data$Name, "fmli"))
+          dplyr::filter(stringr::str_detect(Name, "fmli"))
 
         mtbi_files <- int_file_df %>%
-          dplyr::filter(stringr::str_detect(.data$Name, "mtbi"))
+          dplyr::filter(stringr::str_detect(Name, "mtbi"))
 
         if (
           nrow(fmli_files) != length(int_qtrs) |
@@ -302,16 +301,16 @@ ce_prepdata <- function(year,
         ) %>%
         dplyr::filter(
           stringr::str_detect(
-            .data$Name,
+            Name,
             stringr::str_c(int_qtrs, collapse = "|")
           )
         )
 
       fmli_files <- int_file_df %>%
-        dplyr::filter(stringr::str_detect(.data$Name, "fmli"))
+        dplyr::filter(stringr::str_detect(Name, "fmli"))
 
       mtbi_files <- int_file_df %>%
-        dplyr::filter(stringr::str_detect(.data$Name, "mtbi"))
+        dplyr::filter(stringr::str_detect(Name, "mtbi"))
     }
 
     fmli <- purrr::map2_df(
@@ -340,7 +339,7 @@ ce_prepdata <- function(year,
       dplyr::bind_rows()
 
     interview <- dplyr::left_join(fmli, mtbi, by = "newid") %>%
-      dplyr::mutate(cost = replace(.data$cost, is.na(.data$cost), 0)) %>%
+      dplyr::mutate(cost = replace(cost, is.na(cost), 0)) %>%
       dplyr::mutate(survey = "I")
 
     if (recode_variables) {
@@ -348,13 +347,13 @@ ce_prepdata <- function(year,
       recode_vars <- recode_vars[!recode_vars %in% "ucc"]
 
       ce_dict_int <- ce_dict %>%
-        dplyr::filter(.data$survey == "I")
+        dplyr::filter(survey == "I")
 
       for (i in recode_vars) {
         code_col <- interview[[i]]
         codes_df <- ce_dict_int %>%
-          dplyr::filter(.data$variable %in% i) %>%
-          dplyr::select(.data$code_value, .data$code_description)
+          dplyr::filter(variable %in% i) %>%
+          dplyr::select(code_value, code_description)
 
         interview[, i] <- factor(
           code_col,
@@ -456,7 +455,7 @@ ce_prepdata <- function(year,
       dplyr::bind_rows()
 
     diary <- dplyr::left_join(fmld, expd, by = "newid") %>%
-      dplyr::mutate(cost = replace(.data$cost, is.na(.data$cost), 0)) %>%
+      dplyr::mutate(cost = replace(cost, is.na(cost), 0)) %>%
       dplyr::mutate(survey = "D")
 
     if (recode_variables) {
@@ -464,13 +463,13 @@ ce_prepdata <- function(year,
       recode_vars <- recode_vars[!recode_vars %in% "ucc"]
 
       ce_dict_dia <- ce_dict %>%
-        dplyr::filter(.data$survey == "D")
+        dplyr::filter(survey == "D")
 
       for (i in recode_vars) {
         code_col <- diary[[i]]
         codes_df <- ce_dict_dia %>%
-          dplyr::filter(.data$variable %in% i) %>%
-          dplyr::select(.data$code_value, .data$code_description)
+          dplyr::filter(variable %in% i) %>%
+          dplyr::select(code_value, code_description)
 
         diary[, i] <- factor(
           code_col,

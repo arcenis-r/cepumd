@@ -11,7 +11,6 @@
 #'
 #' @export
 #'
-#' @importFrom rlang .data
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarise
 #'
@@ -59,30 +58,30 @@ ce_quantiles <- function(ce_data, probs = 0.5) {
   }
 
   df <- ce_data %>%
-    dplyr::select(.data$newid, .data$finlwt21, .data$cost) %>%
-    dplyr::group_by(.data$newid) %>%
+    dplyr::select(newid, finlwt21, cost) %>%
+    dplyr::group_by(newid) %>%
     dplyr::summarise(
-      cost = sum(.data$cost),
-      finlwt21 = mean(.data$finlwt21)
+      cost = sum(cost),
+      finlwt21 = mean(finlwt21)
     ) %>%
-    dplyr::arrange(.data$cost)
+    dplyr::arrange(cost)
 
   results <- numeric(length(probs))
 
   for (i in 1:length(probs)) {
     below <- df %>%
-      dplyr::filter(cumsum(.data$finlwt21) < sum(.data$finlwt21 * probs[i]))
+      dplyr::filter(cumsum(finlwt21) < sum(finlwt21 * probs[i]))
 
     above <- df %>%
-      dplyr::filter(cumsum(.data$finlwt21) > sum(.data$finlwt21 * probs[i]))
+      dplyr::filter(cumsum(finlwt21) > sum(finlwt21 * probs[i]))
 
     if (sum(below$finlwt21) == sum(above$finlwt21)) {
       result <- sum(
-        below %>% dplyr::slice(.data$n()) %>% dplyr::pull(.data$cost),
-        above %>% dplyr::slice(1) %>% dplyr::pull(.data$cost)
+        below %>% dplyr::slice(n()) %>% dplyr::pull(cost),
+        above %>% dplyr::slice(1) %>% dplyr::pull(cost)
       ) / 2
     } else {
-      result <- above %>% dplyr::slice(1) %>% dplyr::pull(.data$cost)
+      result <- above %>% dplyr::slice(1) %>% dplyr::pull(cost)
     }
 
     results[i] <- result

@@ -106,13 +106,13 @@ ce_hg <- function(year, survey, ce_dir = NULL, hg_zip_path = NULL) {
     c_names <- c(
       "info_type", "level", "ucc_name", "ucc", "source", "factor", "section"
     )
-  } else if (survey_name %in% "diary" & year %in% 1997:2012) {
-    pos_start <- c(1, 4, 7, 70, 79, 80, 86)
-    pos_end <- c(1, 4, 69, 77, 79, 80, NA)
+  } else if (survey_name %in% "diary" & year %in% 2000) {
+    pos_start <- c(1, 4, 7, 69, 79, 82, 85)
+    pos_end <- c(1, 4, 68, 77, 80, 83, NA)
     c_names <- c(
       "info_type", "level", "ucc_name", "ucc", "source", "factor", "section"
     )
-  } else if (survey_name %in% "integrated" & year %in% 1998) {
+  } else if (survey_name %in% "integrated" & year %in% 1998:2000) {
     pos_start <- c(1, 4, 7, 70, 83, 86, 89)
     pos_end <- c(1, 4, 69, 77, 83, 86, NA)
     c_names <- c(
@@ -138,7 +138,7 @@ ce_hg <- function(year, survey, ce_dir = NULL, hg_zip_path = NULL) {
   cond_select <- function(df, yr) {
     if (yr %in% 2013:2014) {
       as.data.frame(df) %>%
-        dplyr::select(-.data$X5)
+        dplyr::select(-x)
     } else {
       df
     }
@@ -184,18 +184,18 @@ ce_hg <- function(year, survey, ce_dir = NULL, hg_zip_path = NULL) {
     dplyr::mutate(
       rnum = dplyr::row_number(),
       title = dplyr::case_when(
-        rnum == max(rnum) & .data$linenum == 1 ~ title,
+        rnum == max(rnum) & linenum == 1 ~ title,
         dplyr::lead(linenum == 2) ~ paste(title, dplyr::lead(title)),
         TRUE ~ title
       ) %>%
         stringr::str_replace(" #$", "")
     ) %>%
     dplyr::filter(
-      !.data$linenum %in% "2",
-      .data$group %in% c("FOOD", "EXPEND")
+      !linenum %in% "2",
+      group %in% c("FOOD", "EXPEND")
     ) %>%
     dplyr::select(
-      .data$level, .data$title, .data$ucc, .data$survey, .data$factor
+      level, title, ucc, survey, factor
     )
 
   unlink(hg_lines_temp, recursive = TRUE)

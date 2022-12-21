@@ -1,4 +1,5 @@
 # cepumd 1.1.0
+I added a dependency on \code{tidyselect 1.2.0} which does not require the `.data$` prefix for data objects used in Tidyverse pipelines. I also corrected some of the fixed width position conditions `ce_hg()` for converting HG files to tables as the Diary stubs from 1997 through 2012 and a few others were being read incorrectly. I also made some changes to the example workflows in the README file.
 
 # cepumd 1.0.1
 This version of \code{cepumd} incorporates one important change from the perspective of design philosophy and adds a couple of utility functions to help the user.

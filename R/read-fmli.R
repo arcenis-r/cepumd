@@ -13,7 +13,7 @@
 #' @importFrom readr read_csv
 #' @importFrom rlang as_string
 #' @importFrom dplyr contains
-#' @importFrom rlang .data
+#'
 
 read.fmli <- function(fp, zp, year, ce_dir, grp_var_names) {
 
@@ -42,13 +42,13 @@ read.fmli <- function(fp, zp, year, ce_dir, grp_var_names) {
 
     df <- df %>%
       dplyr::select(
-        .data$newid, .data$qintrvyr, .data$qintrvmo, .data$finlwt21,
+        newid, qintrvyr, qintrvmo, finlwt21,
         dplyr::contains("wtrep"), grp_var_names
       )
   } else {
     df <- df %>%
       dplyr::select(
-        .data$newid, .data$qintrvyr, .data$qintrvmo, .data$finlwt21,
+        newid, qintrvyr, qintrvmo, finlwt21,
         dplyr::contains("wtrep")
       )
   }
@@ -56,17 +56,17 @@ read.fmli <- function(fp, zp, year, ce_dir, grp_var_names) {
   df <- df %>%
     dplyr::mutate(
       newid = stringr::str_pad(
-        .data$newid, width = 8, side = "left", pad = "0"
+        newid, width = 8, side = "left", pad = "0"
       ),
-      qintrvmo = as.integer(.data$qintrvmo),
-      qintrvyr = as.integer(.data$qintrvyr),
+      qintrvmo = as.integer(qintrvmo),
+      qintrvyr = as.integer(qintrvyr),
       mo_scope = ifelse(
-        .data$qintrvyr %in% (year + 1), 4 - .data$qintrvmo,
-        ifelse(.data$qintrvmo %in% 1:3, .data$qintrvmo - 1, 3)
+        qintrvyr %in% (year + 1), 4 - qintrvmo,
+        ifelse(qintrvmo %in% 1:3, qintrvmo - 1, 3)
       ),
-      popwt = (.data$finlwt21 / 4) * (.data$mo_scope / 3)
+      popwt = (finlwt21 / 4) * (mo_scope / 3)
     ) %>%
-    dplyr::select(-c(.data$qintrvyr, .data$qintrvmo))
+    dplyr::select(-c(qintrvyr, qintrvmo))
 
   return(df)
 }

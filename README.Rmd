@@ -2,9 +2,6 @@
 output: github_document
 ---
 
-[![Travis build status](https://travis-ci.com/arcenis-r/cepumd.svg?branch=master)](https://travis-ci.com/arcenis-r/cepumd)
-[![codecov](https://codecov.io/gh/arcenis-r/cepumd/branch/master/graph/badge.svg)](https://codecov.io/gh/arcenis-r/cepumd)
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
@@ -45,7 +42,7 @@ and necessary documentation, such as the HG files:
 There are two functions that the user can use to calculate CE summary statistics:
 
 * `ce_mean()` calculates a mean expenditure, standard error of the mean, coefficient of variation, and an aggregate expenditure.
-* `ce_quantiles()` calculates weighted expenditure quantiles. It is important to note that calculating means for integrated expenditures is not recommended because the calculation involves using weights from both the Diary and Survey instruments.
+* `ce_quantiles()` calculates weighted expenditure quantiles. It is important to note that calculating medians for integrated expenditures is not recommended because the calculation involves using weights from both the Diary and Survey instruments.
 
 There are two functions that allow the user to download metadata that can be useful in preparing data:
 
@@ -61,13 +58,13 @@ Finally, there are two utility functions to make the workflow a bit easier:
 
 Due to changes in the way CE PUMD stores their data starting with the 2020 PUMD
 I revisited the way that the main functions of \code{cepumd} stores and accesses
-files locally. The main overarching change is that all files are expected to be
+files locally. The most important change is that all files are expected to be
 stored in one directory. To that end, if a directory is not provided to the
-functions, one will be created in the local temporary directory. Also, the most of the functions used for downloading or preparing data now take a \code{ce_dir} argument to help with this. The major benefit of this change is that all files are now in one place and can be quickly cleaned up. An ancillary benefit is that it can make the workflow much simpler for quickly getting an expenditure estimate.
+functions, one will be created in the local temporary directory. Also, most of the functions used for downloading or preparing data now take a \code{ce_dir} argument to help with this. The major benefit of this change is that all files are now in one place and can be quickly cleaned up. An ancillary benefit is that it can make the workflow much simpler for quickly getting an expenditure estimate.
 
 ## Word of caution
 
-The CE PUMD is a wonderfully rich dataset that can provide all manner of insight into how Americans spend money, but there are some strict limitations with respect to the types of analyses that can be done with this data. One of the more common violations of sound statistical methodology that I'm aware of is trying to calculate annual expenditure means for subgroups that are defined by variables that were not used in the sample design, i.e., the weights. The best advice that I can give is that users of this package (or anyone using CE PUMD to estimate annual expenditures) is to stick to the same classifications used by the CE in their published tables ([](https://www.bls.gov/cex/tables.htm)). I'll also point users of this package to the [CE PUMD Getting Started Guide](https://www.bls.gov/cex/tables.htm).
+The CE PUMD is a wonderfully rich data set that can provide all manner of insight into how Americans spend money, but there are some strict limitations with respect to the types of analyses that can be done with this data. One of the more common violations of sound statistical methodology that I'm aware of is trying to calculate annual expenditure means for subgroups that are defined by variables that were not used in the sample design, i.e., the weights. The best advice that I can give is that users of this package (or anyone using CE PUMD to estimate annual expenditures) is to stick to the same classifications used by the CE in their published tables ([](https://www.bls.gov/cex/tables.htm)). I'll also point users of this package to the [CE PUMD Getting Started Guide](https://www.bls.gov/cex/tables.htm).
 
 ## Installation
 
@@ -93,11 +90,10 @@ invisible(
   )
 )
 
-# Load 'cepumd' and 'tidyverse' to the workspace
 library(knitr)
 library(readxl)
-library(cepumd)
 library(tidyverse)
+library(cepumd)
 ```
 
 ## Example Workflow 1
@@ -128,26 +124,11 @@ ce_cleanup()
 list.files(file.path(tempdir(), "ce-data"))
 ```
 
-This works because if `ce_cleanup()` isn't given a directory to clean up it looks R's temporary directory for a subdirectory called "ce-data". If it doesn't find that AND it gets no other directory to look in, it returns a message saying there's nothing to clean up.
-
-We saw the mean in the last example, but getting the annual, weighted estimate of the median would be just as easy.
-
-```{r ex-1-median}
-ce_prepdata(
-  2021,
-  integrated,
-  uccs = ce_hg(2021, integrated) %>% ce_uccs("Pets")
-) %>%
-  ce_quantiles() %>%
-  kable(booktabs = TRUE)
-
-ce_cleanup()
-```
-
+This works because if `ce_cleanup()` isn't given a directory to clean up it looks R's temporary directory for a sub-directory called "ce-data". If it doesn't find that AND it gets no other directory to look in, it returns a message saying there's nothing to clean up.
 
 ## Example Workflow 2
 
-In this example I'll calculate estimated annual expenditures on used cars and trucks by urbanicity also for 2021. I already know that the title of that expenditure category in the HG files is "Cars and trucks, used" and the UCCs are 460110 for used cars and 460901 for used trucks. I also know that all of these data are collected through the interview survey, so I'll use the interview data only. Now here's a wrinkle: because I'm going to add a grouping variable ("BLS_URBN"), I do need to specify all of the other named arguments. This is due to the developer's inexperience with using missing arguments (if anyone can help me out with this, I would greatly appreciate it). Once the data are prepped with `ce_data()` I'll just nest the data by urbanicity and run `ce_means()` on the nested datasets.
+In this example I'll calculate estimated annual expenditures on used cars and trucks by urbanicity also for 2021. I already know that the UCC for used cars is 460110 for and the UCC for used trucks is 460901. I also know that all of these data are collected through the interview survey, so I'll use the interview data only. Now here's a wrinkle: because I'm going to add a grouping variable ("BLS_URBN"), I do need to specify all of the other named arguments. This is due to the developer's inexperience with using missing arguments (if anyone can help me out with this, I would greatly appreciate it). Once the data are prepped with `ce_data()` I'll just nest the data by urbanicity and run `ce_means()` on the nested datasets.
 
 ```{r ex-2}
 ce_prepdata(
@@ -166,6 +147,20 @@ ce_prepdata(
   mutate(ce_mn_df = map(data, ce_mean)) %>% 
   select(-data) %>% 
   unnest(ce_mn_df) %>%
+  kable(booktabs = TRUE)
+
+ce_cleanup()
+```
+
+There have been 2 examples of calculated a mean estimate in the last 2 examples, but getting the annual, weighted estimate of the median would be just as easy. Since I'm using interview data only here, this would be a good example. I'll calculate the overall median rather than breaking it down by urbanicity.
+
+```{r ex-2-median}
+ce_prepdata(
+  2021,
+  interview,
+  uccs = c("460110", "460901")
+) %>%
+  ce_quantiles() %>%
   kable(booktabs = TRUE)
 
 ce_cleanup()
@@ -200,7 +195,7 @@ Let's take a look at what the files are called.
 list.files(food_away_dir)
 ```
 
-Next I want to see what the 2010 HG file looks like for 2010 for expenditures on "food away from home". First I'll download both HG files (2010 and 2020), then I'll find the correct title in the 2010 HG file for my category.
+Next I want to see what the 2010 HG file looks like for 2010 for expenditures on "food away from home". First I'll download both HG files (2010 and 2020), then I'll find the correct title in the 2010 HG file for my category. I'm going to cheat a little by magically knowing that the title is the same in 2020.
 
 ```{r ex3-store-hg}
 hg_10 <- ce_hg(2010, integrated, food_away_dir)
@@ -231,7 +226,7 @@ ce_dict_file_path <- file.path(food_away_dir, "ce-dict.xlsx")
 excel_sheets(ce_dict_file_path)
 ```
 
-Next I'll see what variables contain anything about the number of household members. To do that I'll have to load the sheet from the dictionary containing the variable definitions
+Now I'll see what variables contain anything about the number of household members. To do that I'll have to load the sheet from the dictionary containing the variable definitions
 ```{r ex-3-cu-size-vars}
 ce_variables <- read_excel(ce_dict_file_path, sheet = "Variables")
 
@@ -245,19 +240,7 @@ ce_variables %>%
   kable(booktabs = TRUE)
 ```
 
-It looks like FAM_SIZE Might be the variable. I'll look at the full
-description.
-
-```{r ex-3-fam-size-desc}
-ce_variables %>%
-  filter(
-    `Variable Name` %in% "FAM_SIZE",
-    str_detect(File, "FMLI"), is.na(`Last year`)
-  ) %>%
-  pull("Variable description")
-```
-
-Next I'll check whether the FAM_SIZE variable has any value codes associated with it. I'll have to pull in the "Codes" sheet. (Check your spelling here.)
+It looks like FAM_SIZE is the variable I want. Next I'll check whether the FAM_SIZE variable has any value codes associated with it. I'll have to pull in the "Codes" sheet. (Check your spelling here.)
 
 ```{r ex-3-fam-size-codes}
 ce_codes <- read_excel(ce_dict_file_path, sheet = "Codes ")
@@ -267,7 +250,7 @@ ce_codes %>%
   kable(booktabs = TRUE)
 ```
 
-It looks like FAM_SIZE is not a coded variable (no observations in the "Codes" sheet). So I'm ready to prepare my data.
+It looks like FAM_SIZE is not a coded variable (no observations in the "Codes" sheet), so it must be numeric. With all that, I'm ready to prepare my data.
 The first thing I'll need are the UCCs for each of the two years in my analysis.
 
 ```{r ex-3-get-uccs}
@@ -296,7 +279,7 @@ food_away_data_10 <- ce_prepdata(
 summary(food_away_data_10$fam_size)
 ```
 
-Since some housholds have as many as 14 peopl, I'll create a FAM_SIZE label with any number greater than 4 taking on the value "5+" later on. Next, I'll prepare the 2020 data and rowbind it with the 2010 data as well as create the fam_size_label variable. I'll also go ahead and get weighted, annual estimated means in one go.
+Since some households have as many as 14 people, I'll create a FAM_SIZE label with any number greater than 4 taking on the value "5+" later on. Next, I'll prepare the 2020 data and rowbind it with the 2010 data as well as create the "fam_size_label" variable. I'll also go ahead and get weighted, annual estimated means in one go.
 
 ```{r ex-3-get-wt-estimates}
 food_away_data_20 <- ce_prepdata(
@@ -355,20 +338,33 @@ food_away_comp_data %>%
   theme(plot.title = element_text(hjust = 0.5), legend.position = "bottom")
 ```
 
-And that's it. This analysis would give me the weighted, annual estimated mean expenditures on food away from home by family size in 2010 and 2020. Now for a very quick comparison, I'll take a quick look at the median and 60th, 75th and 95th weighted, annual estimated quantiles for the same years.
+And that's it. This analysis would give me the weighted, annual estimated mean expenditures on food away from home by family size in 2010 and 2020. 
+
+Now for a very quick analysis, I'll generate a plot of the expenditures at each weighted, annual, estimated quantile (from 0.01 through 0.99, by 0.01) for the same years, but only using Diary data, since most of the UCCs (16 out of 21) in the "food away from home" category come from the Diary. This analysis involves re-running everything in one call to `map2_df()` giving it the 2 years of interest and the Diary zip files as arguments then performing all of the steps for aggregation by year. 
 
 ```{r ex-3-group-qtile-plot}
-food_away_comp_quantiles <- food_away_data_10 %>%
-  mutate(year = 2010) %>%
-  bind_rows(food_away_data_20 %>% mutate(year = 2020)) %>%
+food_away_comp_quantiles <- map2_df(
+  c(2010, 2020),
+  c("diary10.zip", "diary20.zip"),
+  ~ ce_prepdata(
+    .x,
+    diary,
+    ce_hg(.x, diary) %>% ce_uccs(food_away_title),
+    recode_variables = FALSE,
+    ce_dir = food_away_dir,
+    dict_path = "ce-dict.xslx",
+    int_zp = NULL,
+    dia_zp = .y,
+    hg = ce_hg(.x, diary)
+  ) %>%
+    mutate(year = .x)
+) %>%
   mutate(year = factor(year)) %>%
-  group_by(year) %>%
-  nest() %>%
+  nest(data = -year) %>%
   mutate(
     fa_qtile = map(data, ce_quantiles, probs = c(seq(0, 0.95, by = 0.05), 0.99))
-  ) %>% 
-  ungroup() %>%
-  select(-data) %>% 
+  ) %>%
+  select(-data) %>%
   unnest(fa_qtile) %>%
   mutate(probs = parse_number(probs) / 100)
 
@@ -390,12 +386,4 @@ food_away_comp_quantiles %>%
 ce_cleanup(food_away_dir)
 ```
 
-There are a lot of 0-value reported expenditures in the CE on food away from home. Unfortunately, I can't perform an analysis using only respondents that did have expenditures in this category, i.e., dropping the 0's, because whether someone had an expenditure on food away from home is not one of the variables used for generating the survey weights. In other words, the analysis can be done, but it would not be statistically valid and I definitely wouldn't be able to make any inferences from it. This is my cautionary note to anyone using this package who might use it in a way that is not statistically sound. Please visit the [CE's website](https://www.bls.gov/cex/) and read the [CE PUMD Getting Started Guide](https://www.bls.gov/cex/tables.htm) for more information.
-
-
-
-
-
-
-
-
+Interestingly the expenditures don't appear to have changed much between 2010 and 2020 across the different quantiles. There are a lot of 0-value reported expenditures, though, in the CE on food away from home. Unfortunately, I can't perform an analysis using only respondents that did have expenditures in this category, i.e., dropping the 0's, because whether someone had an expenditure on food away from home is not one of the variables used for generating the survey weights. In other words, the analysis can be done, but it would not be statistically valid and I definitely wouldn't be able to make any inferences from it. This is my cautionary note to anyone using this package who might use it in a way that is not statistically sound. Please visit the [CE's website](https://www.bls.gov/cex/) and read the [CE PUMD Getting Started Guide](https://www.bls.gov/cex/tables.htm) for more information.
