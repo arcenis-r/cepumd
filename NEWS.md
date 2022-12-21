@@ -1,4 +1,7 @@
 # cepumd 1.2.0
+<ul>Broke ce_prepdata() down to use helper functions to make it easier to refactor</ul>
+<ul>Added "own_codebook" argument to ce_prepdata() to allow the user to use a customized codebook.</ul>
+<ul>Suppressed column type messages from {readr} functions.</ul>
 
 # cepumd 1.1.0
 I added a dependency on \code{tidyselect 1.2.0} which does not require the `.data$` prefix for data objects used in Tidyverse pipelines. I also corrected some of the fixed width position conditions `ce_hg()` for converting HG files to tables as the Diary stubs from 1997 through 2012 and a few others were being read incorrectly. I also made some changes to the example workflows in the README file.
