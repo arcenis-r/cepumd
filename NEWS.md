@@ -1,4 +1,5 @@
 # cepumd 1.2.1
+Patched an issue with ce_uccs() such that it coutldn't handle cases where the level decreases by more than one in finding only the UCCs directly under the title row of the requested expenditure category.
 
 # cepumd 1.2.0
 <ul>Broke ce_prepdata() down to use helper functions to make it easier to refactor</ul>
