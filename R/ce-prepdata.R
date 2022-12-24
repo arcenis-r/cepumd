@@ -333,7 +333,7 @@ ce_prepdata <- function(year,
     diary_files <- get_survey_files(
       year = year,
       survey = "diary",
-      file_yrs = int_yrs,
+      file_yrs = dia_yrs,
       qtrs = dia_qtrs,
       ce_dir = ce_dir,
       zp_file = dia_zp
