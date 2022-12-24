@@ -4,7 +4,7 @@
 \alias{read.mtbi}
 \title{Read in and modify MTBI files}
 \usage{
-read.mtbi(fp, zp, year, uccs, integrate_data, hg)
+read.mtbi(fp, zp, year, uccs, integrate_data, hg, ce_dir)
 }
 \arguments{
 \item{fp}{File to extract from zip file}

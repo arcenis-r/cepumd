@@ -4,11 +4,16 @@
 \alias{store_ce_dict}
 \title{Download CE Public-Use Microdata Dictionary}
 \usage{
-store_ce_dict(dict_path)
+store_ce_dict(ce_dir = NULL, dict_path = NULL)
 }
 \arguments{
+\item{ce_dir}{The directory in which CE PUMD data and metadata are stored. If
+\code{NULL} (the default) a directory called "ce-data" will be created in the
+temporary directory of the session.}
+
 \item{dict_path}{A valid file path entered as a string to which to store a
-the CE PUMD Excel dectionary.}
+the CE PUMD Excel dictionary. If \code{NULL} (the default) a file called
+"ce-stubs.zip" will be created in \code{ce_dir}.}
 }
 \description{
 A wrapper for \code{\link[utils]{download.file}} that downloads

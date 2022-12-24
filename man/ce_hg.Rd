@@ -4,13 +4,17 @@
 \alias{ce_hg}
 \title{Generate a CE heiarchical grouping file as data frame}
 \usage{
-ce_hg(year, hg_type, hg_zip_path = NULL)
+ce_hg(year, survey, ce_dir = NULL, hg_zip_path = NULL)
 }
 \arguments{
 \item{year}{A year between 1996 and the last year of available CE PUMD.}
 
-\item{hg_type}{The type of HG file, i.e., interview, diary, or
-integrated. Accepted as a string or symbol (quotes or no quotes).}
+\item{survey}{The type of HG file, i.e., interview, diary, or
+integrated. Accepted as a character or symbol.}
+
+\item{ce_dir}{The directory in which CE PUMD data and metadata are stored. If
+\code{NULL} (the default) a directory called "ce-data" will be created in the
+temporary directory of the session.}
 
 \item{hg_zip_path}{The path to a zip file containing HG files downloaded
 from the CE website. The structure of the zip file must be exactly as it is
@@ -52,9 +56,9 @@ the function to call \code{\link{store_ce_hg}} and store the zip file to a
 temporary file.
 }
 \examples{
-# 'hg_type' can be entered as a string
+# 'survey' can be entered as a string
 ce_hg(2016, "integrated")
 
-# 'hg_type' can also be entered as a symbol
+# 'survey' can also be entered as a symbol
 ce_hg(2016, integrated)
 }

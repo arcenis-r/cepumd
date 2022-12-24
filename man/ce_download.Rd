@@ -4,19 +4,23 @@
 \alias{ce_download}
 \title{Download CE zip files}
 \usage{
-ce_download(year, survey, zp)
+ce_download(year, survey, ce_dir = NULL)
 }
 \arguments{
 \item{year}{A year between 1996 and the last year of available CE PUMD.}
 
-\item{survey}{One of either "interview" or "diary" as a string or symbol.}
+\item{survey}{One of either "interview" or "diary" as a character or symbol.}
 
-\item{zp}{A string indicating the file path where you'd like to save the zip
-file. This argment gets passed to 'destfile' in
-\code{\link[utils]{download.file}}}
+\item{ce_dir}{The directory in which CE PUMD data and metadata are stored. If
+\code{NULL} (the default) a directory called "ce-data" will be created in the
+temporary directory of the session. This argment gets passed to 'destfile' in
+\code{\link[utils]{download.file}}.}
 }
 \value{
-Stores a zip file containing CE data in the designated location.
+Stores a zip file containing CE data in the designated directory The
+zip file is named using the survey label and year, so, for example, the zip
+file for the 2020 Interview files will be named "intrvw20.zip" following the
+convention of CE PUMD.
 }
 \description{
 Downloads zip files directly from the CE PUMD page on the
