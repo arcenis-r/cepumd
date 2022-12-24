@@ -1,3 +1,5 @@
+# cepumd 1.2.1
+
 # cepumd 1.2.0
 <ul>Broke ce_prepdata() down to use helper functions to make it easier to refactor</ul>
 <ul>Added "own_codebook" argument to ce_prepdata() to allow the user to use a customized codebook.</ul>
