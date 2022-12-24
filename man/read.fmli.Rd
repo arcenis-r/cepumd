@@ -4,14 +4,18 @@
 \alias{read.fmli}
 \title{Read in and modify FMLI files}
 \usage{
-read.fmli(fp, zp, year, grp_var_names)
+read.fmli(fp, zp, year, ce_dir, grp_var_names)
 }
 \arguments{
 \item{fp}{File to extract from zip file}
 
-\item{zp}{Zip file path}
+\item{zp}{Zip file path within ce_dir}
 
 \item{year}{Year}
+
+\item{ce_dir}{The directory in which CE PUMD data and metadata are stored. If
+\code{NULL} (the default) a directory called "ce-data" will be created in the
+temporary directory of the session.}
 
 \item{grp_var_names}{Variables to keep (intended for grouping)}
 }

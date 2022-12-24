@@ -19,15 +19,14 @@
 #'
 #' @importFrom graphics title
 #' @importFrom dplyr bind_rows
-#' @importFrom rlang .data
 #'
 #' @seealso \code{\link{ce_quantiles}}
 #'
 #' @examples
 #'
-#' # Download the stub file keeping the section for expenditures on utilities
+#' # Download the HG file keeping the section for expenditures on utilities
 #' \dontrun{
-#' utils_stub <- ce_stub(2017, interview) %>%
+#' utils_hg <- ce_hg(2017, interview) %>%
 #'   ce_uccs("Utilities, fuels, and public services", uccs_only = FALSE)
 #' }
 #'
@@ -36,10 +35,10 @@
 #' utils_interview <- ce_prepdata(
 #'   2017,
 #'   interview,
-#'   uccs = ce_uccs(utils_stub, "Utilities, fuels, and public services"),
+#'   uccs = ce_uccs(utils_hg, "Utilities, fuels, and public services"),
 #'   zp = NULL,
 #'   integrate_data = FALSE,
-#'   stub = utils_stub,
+#'   hg = utils_hg,
 #'   bls_urbn
 #' )
 #' }
@@ -54,7 +53,6 @@
 #'   mutate(mean_utils = purrr::map(data, ce_mean)) %>%
 #'   select(-data) %>%
 #'   unnest(mean_utils)
-#' }
 #' }
 #'
 #' @note
@@ -99,12 +97,12 @@ ce_mean <- function(ce_data) {
 
   # Calculate aggregate weights by survey type
   aggwts <- ce_data %>%
-    dplyr::select(.data$survey, .data$newid, .data$popwt) %>%
-    dplyr::group_by(.data$survey, .data$newid, .data$popwt) %>%
+    dplyr::select(survey, newid, popwt) %>%
+    dplyr::group_by(survey, newid, popwt) %>%
     dplyr::slice(1) %>%
     dplyr::ungroup() %>%
-    dplyr::group_by(.data$survey) %>%
-    dplyr::summarise(aggwt = sum(.data$popwt)) %>%
+    dplyr::group_by(survey) %>%
+    dplyr::summarise(aggwt = sum(popwt)) %>%
     dplyr::ungroup()
 
   estimates <- ce_data %>%
@@ -114,7 +112,7 @@ ce_mean <- function(ce_data) {
 
     # Generate an aggregate expenditure column by multiplying the cost by the
     # consumer unit's weight
-    dplyr::mutate(agg_exp = .data$finlwt21 * .data$cost)
+    dplyr::mutate(agg_exp = finlwt21 * cost)
 
   # Adjust each of the weight variables by multiplying it by the expenditure
   # and dividing by the aggregate weight variable, which represents the
@@ -129,25 +127,25 @@ ce_mean <- function(ce_data) {
   estimates <- estimates %>%
 
     # Group by UCC
-    dplyr::group_by(.data$ucc) %>%
+    dplyr::group_by(ucc) %>%
 
     # Collapse (sum) each adjusted weight column by UCC, which will result in
     # an aggregate expenditure, a mean expenditure, and 44 replicate mean
     # expenditures for each UCC.
     dplyr::summarise_at(
-      dplyr::vars(dplyr::contains("wtrep"), .data$finlwt21, .data$agg_exp),
+      dplyr::vars(dplyr::contains("wtrep"), finlwt21, agg_exp),
       sum
     ) %>%
 
     # Drop the observation that accounts for households not having reported any
     # expenditures in the selected categories
-    tidyr::drop_na(.data$ucc) %>%
+    tidyr::drop_na(ucc) %>%
 
     # Remove the grouping layer
     dplyr::ungroup() %>%
 
     # Drop the UCC column
-    dplyr::select(-.data$ucc) %>%
+    dplyr::select(-ucc) %>%
 
     # Get the sum of the mean and each of the squared differences from the mean
     dplyr::summarise_all(sum)
@@ -168,10 +166,10 @@ ce_mean <- function(ce_data) {
     # Generate a standard error column by taking the sum of the 44 squared
     # differences, dividing it by 44, then taking the square root of the result
     dplyr::mutate(
-      se = sqrt((.data$sum_sqrs / 44)),
-      cv = .data$se / .data$finlwt21
+      se = sqrt((sum_sqrs / 44)),
+      cv = (se * 100) / finlwt21
     ) %>%
-    dplyr::select(.data$agg_exp, mean_exp = "finlwt21", .data$se, .data$cv)
+    dplyr::select(agg_exp, mean_exp = "finlwt21", se, cv)
 
   return(estimates)
 }

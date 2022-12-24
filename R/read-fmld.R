@@ -6,15 +6,15 @@
 #' @param zp Zip file path
 #' @param grp_var_names Variables to keep (intended for grouping)
 #'
-#' @importFrom rlang .data
 
-read.fmld <- function(fp, zp, grp_var_names) {
+read.fmld <- function(fp, zp, grp_var_names, ce_dir) {
 
   df <- suppressWarnings(
     readr::read_csv(
-      unzip(zp, files = fp, exdir = tempdir()),
+      unzip(zp, files = fp, exdir = ce_dir),
       na = c("NA", "", " ", "."),
-      progress = FALSE
+      progress = FALSE,
+      show_col_types = FALSE
     )
   )
 
@@ -27,8 +27,7 @@ read.fmld <- function(fp, zp, grp_var_names) {
         stop(
           paste0(
             "'", g, "' is not a valid variable. ",
-            "Please review the CE survey documentation to ensure '", g,
-            "' is a variable in your dataset (check by year)."
+            "Please review the CE PUMD documentation."
           )
         )
       }
@@ -36,21 +35,21 @@ read.fmld <- function(fp, zp, grp_var_names) {
 
     df <- df %>%
       dplyr::select(
-        .data$newid, .data$finlwt21, dplyr::contains("wtrep"), grp_var_names
+        newid, finlwt21, dplyr::contains("wtrep"), grp_var_names
       )
   } else {
     df <- df %>% dplyr::select(
-      .data$newid, .data$finlwt21, dplyr::contains("wtrep")
+      newid, finlwt21, dplyr::contains("wtrep")
     )
   }
 
   df <- df %>%
     dplyr::mutate(
       newid = stringr::str_pad(
-        .data$newid, width = 8, side = "left", pad = "0"
+        newid, width = 8, side = "left", pad = "0"
       ),
       mo_scope = 3,
-      popwt = (.data$finlwt21 / 4) * (.data$mo_scope / 3)
+      popwt = (finlwt21 / 4) * (mo_scope / 3)
     )
 
   return(df)

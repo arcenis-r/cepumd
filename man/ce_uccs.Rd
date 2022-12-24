@@ -4,19 +4,19 @@
 \alias{ce_uccs}
 \title{Find UCCs for expenditure categories}
 \usage{
-ce_uccs(stub, expenditure, uccs_only = TRUE)
+ce_uccs(hg, expenditure, uccs_only = TRUE)
 }
 \arguments{
-\item{stub}{A data frame that has, at least, the title, level, and ucc
-columns of a CE stub file.}
+\item{hg}{A data frame that has, at least, the title, level, and ucc
+columns of a CE HG file.}
 
 \item{expenditure}{A string that is an expenditure category contained in a
-CE stub file (exact match required).}
+CE HG file (exact match required).}
 
 \item{uccs_only}{A logical indicating whether to return only the expenditure
 category's component ucc's. If TRUE (default), a vector of UCC's will be
 returned. If FALSE, a dataframe will be returned containing the section of
-the stub file containing the expenditure category and its component sub-
+the HG file containing the expenditure category and its component sub-
 categories}
 }
 \value{
@@ -27,11 +27,11 @@ the lowest hierarchical level for that category.
 Find UCCs for expenditure categories
 }
 \examples{
-# First generate a stub file
-mystub <- ce_stub(2017, interview)
+# First generate an HG file
+my_hg <- ce_hg(2017, interview)
 
 # Store a vector of UCC's in the "Pets" category
-pet_uccs <- ce_uccs(mystub, "Pets")
+pet_uccs <- ce_uccs(my_hg, "Pets")
 pet_uccs
 # [1] "610320" "620410" "620420"
 }

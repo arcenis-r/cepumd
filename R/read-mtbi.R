@@ -7,24 +7,24 @@
 #' @param year Year
 #' @param uccs Vector of UCC's to filter for
 #' @param integrate_data Whether to prepare data for integrated estimates
-#' @param stub Stub file data
+#' @param hg Hierarchical grouping data
 #'
 #' @importFrom dplyr ungroup
-#' @importFrom rlang .data
 
-read.mtbi <- function(fp, zp, year, uccs, integrate_data, stub) {
+read.mtbi <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
 
-  if (is.null(stub) & integrate_data & year >= 2002) {
-    stub <- ce_stub(year, "integrated")
-  } else if (is.null(stub)) {
-    stub <- ce_stub(year, "interview")
+  if (is.null(hg) & integrate_data & year >= 2002) {
+    hg <- ce_hg(year, "integrated")
+  } else if (is.null(hg)) {
+    hg <- ce_hg(year, "interview")
   }
 
   df <- suppressWarnings(
     readr::read_csv(
-      unzip(zp, files = fp, exdir = tempdir()),
+      unzip(zp, files = fp, exdir = ce_dir),
       na = c("NA", "", " ", "."),
-      progress = FALSE
+      progress = FALSE,
+      show_col_types = FALSE
     )
   )
 
@@ -32,29 +32,28 @@ read.mtbi <- function(fp, zp, year, uccs, integrate_data, stub) {
 
   df <- df %>%
     dplyr::select(
-      .data$newid, .data$ref_yr, .data$ucc, .data$cost, .data$pubflag
+      newid, ref_yr, ucc, cost, pubflag
     ) %>%
     dplyr::mutate(
       newid = stringr::str_pad(
-        .data$newid, width = 8, side = "left", pad = "0"
+        newid, width = 8, side = "left", pad = "0"
       ),
-      ucc = stringr::str_pad(.data$ucc, width = 6, side = "left", pad = "0")
+      ucc = stringr::str_pad(ucc, width = 6, side = "left", pad = "0")
     )
 
-  if (integrate_data) df <- df %>% dplyr::filter(.data$pubflag %in% "2")
+  if (integrate_data) df <- df %>% dplyr::filter(pubflag %in% "2")
 
   df <- df %>%
-    dplyr::filter(.data$ref_yr %in% year, .data$ucc %in% uccs) %>%
+    dplyr::filter(ref_yr %in% year, ucc %in% uccs) %>%
     dplyr::left_join(
-      stub %>% dplyr::select(.data$ucc, .data$factor),
+      hg %>% dplyr::select(ucc, factor),
       by = "ucc"
     ) %>%
     dplyr::mutate(
-      cost = .data$cost * as.numeric(as.character((.data$factor)))
+      cost = cost * as.numeric(as.character((factor)))
     ) %>%
-    dplyr::group_by(.data$newid, .data$ucc) %>%
-    dplyr::summarise(cost = sum(.data$cost)) %>%
-    dplyr::ungroup()
+    dplyr::group_by(newid, ucc) %>%
+    dplyr::summarise(cost = sum(cost), .groups = "drop")
 
   return(df)
 }

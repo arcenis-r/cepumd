@@ -11,24 +11,25 @@
 #'
 #' @export
 #'
-#' @importFrom rlang .data
+#' @importFrom dplyr group_by
+#' @importFrom dplyr summarise
 #'
 #' @seealso \code{\link{ce_mean}}
 #'
 #' @examples
 #' \dontrun{
-#' # Download the stub file keeping the section for expenditures on utilities
-#' utils_stub <- ce_stub(2017, interview) %>%
+#' # Download the HG file keeping the section for expenditures on utilities
+#' utils_hg <- ce_hg(2017, interview) %>%
 #'   ce_uccs("Utilities, fuels, and public services", uccs_only = FALSE)
 #'
 #' # Download and prepare interview data
 #' utils_interview <- ce_prepdata(
 #'   2017,
 #'   interview,
-#'   uccs = ce_uccs(utils_stub, "Utilities, fuels, and public services"),
+#'   uccs = ce_uccs(utils_hg, "Utilities, fuels, and public services"),
 #'   zp = NULL,
 #'   integrate_data = FALSE,
-#'   stub = utils_stub,
+#'   hg = utils_hg,
 #'   bls_urbn
 #' )
 #'
@@ -57,27 +58,30 @@ ce_quantiles <- function(ce_data, probs = 0.5) {
   }
 
   df <- ce_data %>%
-    dplyr::select(.data$newid, .data$finlwt21, .data$cost) %>%
-    group_by(.data$newid) %>%
-    summarise(cost = sum(.data$cost), finlwt21 = mean(.data$finlwt21)) %>%
-    dplyr::arrange(.data$cost)
+    dplyr::select(newid, finlwt21, cost) %>%
+    dplyr::group_by(newid) %>%
+    dplyr::summarise(
+      cost = sum(cost),
+      finlwt21 = mean(finlwt21)
+    ) %>%
+    dplyr::arrange(cost)
 
   results <- numeric(length(probs))
 
   for (i in 1:length(probs)) {
     below <- df %>%
-      dplyr::filter(cumsum(.data$finlwt21) < sum(.data$finlwt21 * probs[i]))
+      dplyr::filter(cumsum(finlwt21) < sum(finlwt21 * probs[i]))
 
     above <- df %>%
-      dplyr::filter(cumsum(.data$finlwt21) > sum(.data$finlwt21 * probs[i]))
+      dplyr::filter(cumsum(finlwt21) > sum(finlwt21 * probs[i]))
 
     if (sum(below$finlwt21) == sum(above$finlwt21)) {
       result <- sum(
-        below %>% dplyr::slice(.data$n()) %>% dplyr::pull(.data$cost),
-        above %>% dplyr::slice(1) %>% dplyr::pull(.data$cost)
+        below %>% dplyr::slice(n()) %>% dplyr::pull(cost),
+        above %>% dplyr::slice(1) %>% dplyr::pull(cost)
       ) / 2
     } else {
-      result <- above %>% dplyr::slice(1) %>% dplyr::pull(.data$cost)
+      result <- above %>% dplyr::slice(1) %>% dplyr::pull(cost)
     }
 
     results[i] <- result

@@ -23,18 +23,18 @@ Calculate a CE weighted quantiles
 }
 \examples{
 \dontrun{
-# Download the stub file keeping the section for expenditures on utilities
-utils_stub <- ce_stub(2017, interview) \%>\%
+# Download the HG file keeping the section for expenditures on utilities
+utils_hg <- ce_hg(2017, interview) \%>\%
   ce_uccs("Utilities, fuels, and public services", uccs_only = FALSE)
 
 # Download and prepare interview data
 utils_interview <- ce_prepdata(
   2017,
   interview,
-  uccs = ce_uccs(utils_stub, "Utilities, fuels, and public services"),
+  uccs = ce_uccs(utils_hg, "Utilities, fuels, and public services"),
   zp = NULL,
   integrate_data = FALSE,
-  stub = utils_stub,
+  hg = utils_hg,
   bls_urbn
 )
 

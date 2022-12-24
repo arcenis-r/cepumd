@@ -1,13 +1,13 @@
 #' Find UCCs for expenditure categories
 #'
-#' @param stub A data frame that has, at least, the title, level, and ucc
-#' columns of a CE stub file.
+#' @param hg A data frame that has, at least, the title, level, and ucc
+#' columns of a CE HG file.
 #' @param expenditure A string that is an expenditure category contained in a
-#' CE stub file (exact match required).
+#' CE HG file (exact match required).
 #' @param uccs_only A logical indicating whether to return only the expenditure
 #' category's component ucc's. If TRUE (default), a vector of UCC's will be
 #' returned. If FALSE, a dataframe will be returned containing the section of
-#' the stub file containing the expenditure category and its component sub-
+#' the HG file containing the expenditure category and its component sub-
 #' categories
 #'
 #' @return A vector of Universal Classification Codes (UCC's) corresponding to
@@ -16,49 +16,49 @@
 #' @export
 #'
 #' @examples
-#' # First generate a stub file
-#' mystub <- ce_stub(2017, interview)
+#' # First generate an HG file
+#' my_hg <- ce_hg(2017, interview)
 #'
 #' # Store a vector of UCC's in the "Pets" category
-#' pet_uccs <- ce_uccs(mystub, "Pets")
+#' pet_uccs <- ce_uccs(my_hg, "Pets")
 #' pet_uccs
 #' # [1] "610320" "620410" "620420"
 
-ce_uccs <- function(stub, expenditure, uccs_only = TRUE) {
+ce_uccs <- function(hg, expenditure, uccs_only = TRUE) {
   if (
-    !is.data.frame(stub) |
-    !all(c("title", "level", "ucc", "factor") %in% names(stub))
+    !is.data.frame(hg) |
+    !all(c("title", "level", "ucc", "factor") %in% names(hg))
   ) {
     stop(
       paste(
-        "'stub' requires a valid stub dataframe.",
-        "Please generate one using ce_stub()."
+        "'hg' requires a valid HG dataframe.",
+        "Please generate one using ce_hg()."
       )
     )
   }
 
-  if (!expenditure %in% stub$title) {
+  if (!expenditure %in% hg$title) {
     stop(
       paste(
-        "The expenditure must be a valid expenditure category from the stub",
+        "The expenditure must be a valid expenditure category from the HG",
         "dataframe's 'title' column and must be spelled exactly as it is in",
-        "the stub file."
+        "the HG file."
       )
     )
   }
 
-  title_row <- match(expenditure, stub$title)
-  title_row_level <- stub$level[title_row]
+  title_row <- match(expenditure, hg$title)
+  title_row_level <- hg$level[title_row]
   stop_row <- match(
     TRUE,
-    title_row_level >= stub$level[(title_row + 1):(nrow(stub))] # all remaining levels
+    title_row_level >= hg$level[(title_row + 1):(nrow(hg))]
   ) + title_row - 1
 
-  if (is.na(stop_row)) stop_row <- nrow(stub)
+  if (is.na(stop_row)) stop_row <- nrow(hg)
 
-  uccs <- stub$ucc[title_row:stop_row]
+  uccs <- hg$ucc[title_row:stop_row]
   uccs <- suppressWarnings(uccs[!is.na(as.numeric(uccs))])
 
-  if (uccs_only) return(uccs) else return(stub[title_row:stop_row, ])
+  if (uccs_only) return(uccs) else return(hg[title_row:stop_row, ])
 }
 

@@ -7,23 +7,24 @@
 #' @param year Year
 #' @param uccs Vector of UCC's to filter for
 #' @param integrate_data Whether to prepare data for integrated estimates
-#' @param stub Stub file data
-#'
-#' @importFrom rlang .data
+#' @param hg Hierarchical grouping data
 
-read.expd <- function(fp, zp, year, uccs, integrate_data, stub) {
+#' @importFrom dplyr left_join
 
-  if (is.null(stub) & integrate_data & year >= 2002) {
-    stub <- ce_stub(year, "integrated")
-  } else if (is.null(stub)) {
-    stub <- ce_stub(year, "diary")
+read.expd <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
+
+  if (is.null(hg) & integrate_data & year >= 2002) {
+    hg <- ce_hg(year, "integrated")
+  } else if (is.null(hg)) {
+    hg <- ce_hg(year, "diary")
   }
 
   df <- suppressWarnings(
     readr::read_csv(
-      unzip(zp, files = fp, exdir = tempdir()),
+      unzip(zp, files = fp, exdir = ce_dir),
       na = c("NA", "", " ", "."),
-      progress = FALSE
+      progress = FALSE,
+      show_col_types = FALSE
     )
   )
 
@@ -31,32 +32,31 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, stub) {
 
   if (year >= 1996 & year <= 2011) {
     df <- df %>%
-      dplyr::mutate(expnyr = as.integer(stringr::str_sub(.data$qredate, 7, 10)))
+      dplyr::mutate(expnyr = as.integer(stringr::str_sub(qredate, 7, 10)))
   }
 
   df <- df %>%
     dplyr::select(
-      .data$newid, .data$expnyr, .data$ucc, .data$cost, .data$pub_flag
+      newid, expnyr, ucc, cost, pub_flag
     ) %>%
     dplyr::mutate(
       newid = stringr::str_pad(
-        .data$newid, width = 8, side = "left", pad = "0"
+        newid, width = 8, side = "left", pad = "0"
       ),
-      ucc = stringr::str_pad(.data$ucc, width = 6, side = "left", pad = "0"),
-      cost = .data$cost * 13
+      ucc = stringr::str_pad(ucc, width = 6, side = "left", pad = "0"),
+      cost = cost * 13
     )
 
-  if (integrate_data) df <- df %>% filter(.data$pub_flag %in% "2")
+  if (integrate_data) df <- df %>% dplyr::filter(pub_flag %in% "2")
 
   df <- df %>%
-    filter(.data$ucc %in% uccs) %>%
-    left_join(stub %>% select(.data$ucc, .data$factor), by = "ucc") %>%
+    dplyr::filter(ucc %in% uccs) %>%
+    dplyr::left_join(dplyr::select(hg, ucc, factor), by = "ucc") %>%
     dplyr::mutate(
-      cost = .data$cost * as.numeric(as.character(.data$factor))
+      cost = cost * as.numeric(as.character(factor))
     ) %>%
-    dplyr::group_by(.data$newid, .data$ucc) %>%
-    dplyr::summarise(cost = sum(.data$cost)) %>%
-    dplyr::ungroup()
+    dplyr::group_by(newid, ucc) %>%
+    dplyr::summarise(cost = sum(cost), .groups = "drop")
 
   return(df)
 }
