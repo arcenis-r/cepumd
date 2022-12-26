@@ -1,3 +1,6 @@
+# cepumd 1.3.0
+Added the `ucc_group` parameter to ce_uccs() to deal with the fact that some UCC titles are identical. Combinations of `ucc_group` and `title` are identical in the stub files. `ucc_group` is the primary parameter. Also, in previous versions `ce_hg()` only unwrapped titles that wrapped over 2 lines, thereby leaving titles that wrapped over more lines incomplete. That method is now updated to be able to deal with multi-line titles of more than 2 lines.
+
 # cepumd 1.2.1
 Patched an issue with ce_uccs() such that it coutldn't handle cases where the level decreases by more than one in finding only the UCCs directly under the title row of the requested expenditure category.
 
