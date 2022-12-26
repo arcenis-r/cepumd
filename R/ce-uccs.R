@@ -58,7 +58,7 @@ ce_uccs <- function(hg,
   }
 
 
-  if (is.null(ucc_group)) {   # UCC is NULL
+  if (is.null(ucc_group)) {
 
     if (is.null(expenditure)) {
       stop(
@@ -84,7 +84,7 @@ ce_uccs <- function(hg,
       title_row <- match(expenditure, hg$title)
     }
 
-  } else if (length(stringr::str_which(ucc_group, hg$ucc)) > 1) {   # UCC has more than 1 match
+  } else if (length(stringr::str_which(ucc_group, hg$ucc)) > 1) {
 
     if (is.null(expenditure)) {
       warning(
