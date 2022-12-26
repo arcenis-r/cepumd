@@ -46,10 +46,12 @@
 #' @export
 #'
 #' @importFrom rlang ensym
-#' @importFrom dplyr case_when
-#' @importFrom dplyr row_number
-#' @importFrom stringr str_replace_all
+#' @importFrom dplyr summarise across filter select group_by
+#' @importFrom stringr str_replace_all str_c
 #' @importFrom readr read_lines
+#' @importFrom tidyr fill nest unnest
+#' @importFrom tidyselect everything
+#' @importFrom purrr map
 #'
 #' @examples
 #' # 'survey' can be entered as a string
@@ -184,25 +186,35 @@ ce_hg <- function(year, survey, ce_dir = NULL, hg_zip_path = NULL) {
     rlang::set_names(
       c("linenum", "level", "title", "ucc", "survey", "factor", "group")
     ) %>%
-    dplyr::mutate_all(
-      list(~(stringr::str_trim(.) %>% stringr::str_squish()))
-    ) %>%
     dplyr::mutate(
-      rnum = dplyr::row_number(),
-      title = dplyr::case_when(
-        rnum == max(rnum) & linenum == 1 ~ title,
-        dplyr::lead(linenum == 2) ~ paste(title, dplyr::lead(title)),
-        TRUE ~ title
-      ) %>%
-        stringr::str_replace(" #$", "")
+      dplyr::across(
+        tidyselect::everything(),
+        ~ stringr::str_trim(.x) %>% stringr::str_squish()
+      )
     ) %>%
-    dplyr::filter(
-      !linenum %in% "2",
-      group %in% c("FOOD", "EXPEND")
+
+    # Collapse all multi-line titles down to one line each
+    dplyr::mutate(line_group = cumsum(as.numeric(linenum == "1"))) %>%
+    tidyr::fill(group, level, survey, ucc, factor, .direction = "down") %>%
+    tidyr::nest(data = -line_group) %>%
+    dplyr::mutate(
+      data = purrr::map(
+        data,
+        ~ .x %>%
+          dplyr::group_by(group, level, survey, ucc, factor) %>%
+          dplyr::summarise(
+            title = stringr::str_c(title, collapse = " "),
+            .groups = "drop"
+          )
+      )
     ) %>%
-    dplyr::select(
-      level, title, ucc, survey, factor
-    )
+    dplyr::select(-line_group) %>%
+    tidyr::unnest(data) %>%
+
+    # Keep only expenditure groups
+    dplyr::filter(group %in% c("FOOD", "EXPEND")) %>%
+    dplyr::select(level, title, ucc, survey, factor) %>%
+    dplyr::mutate(title = stringr::str_replace_all(title, " #$", ""))
 
   unlink(hg_lines_temp, recursive = TRUE)
   unlink(hg_tmp_clean, recursive = TRUE)
