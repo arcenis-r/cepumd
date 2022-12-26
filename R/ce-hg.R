@@ -99,7 +99,8 @@ ce_hg <- function(year, survey, ce_dir = NULL, hg_zip_path = NULL) {
     pos_start <- c(1, 4, 7, 70, 80, 83, 86, 89)
     pos_end <- c(1, 4, 69, 77, 80, 83, 86, NA)
     c_names <- c(
-      "info_type", "level", "ucc_name", "ucc", "x", "source", "factor", "section"
+      "info_type", "level", "ucc_name", "ucc", "x", "source", "factor",
+      "section"
     )
   } else if (year %in% 2015:2020) {
     pos_start <- c(1, 4, 7, 70, 83, 86, 89)
@@ -167,7 +168,10 @@ ce_hg <- function(year, survey, ce_dir = NULL, hg_zip_path = NULL) {
 
   readr::write_lines(hg_lines, hg_tmp_clean)
 
-  first_line <- match("1", stringr::str_sub(readr::read_lines(hg_tmp_clean), 1, 1))
+  first_line <- match(
+    "1",
+    stringr::str_sub(readr::read_lines(hg_tmp_clean), 1, 1)
+  )
 
   hg <- readr::read_fwf(
     hg_tmp_clean,
