@@ -79,14 +79,14 @@ ce_uccs <- function(hg,
         )
       )
 
-      title_row <- matches(expenditure, hg$title)
+      title_row <- match(expenditure, hg$title)
     } else {
-      title_row <- matches(expenditure, hg$title)
+      title_row <- match(expenditure, hg$title)
     }
 
   } else if (length(stringr::str_which(ucc_group, hg$ucc)) > 1) {   # UCC has more than 1 match
 
-    if (is.null(expend)) {
+    if (is.null(expenditure)) {
       warning(
         stringr::str_c(
           "Multiple 'expenditure' matches found. The first match will be used.",
@@ -95,7 +95,7 @@ ce_uccs <- function(hg,
         )
       )
 
-      title_row <- matches(expenditure, hg$title)
+      title_row <- match(expenditure, hg$title)
     } else {
       combos <- hg %>%
         dplyr::mutate(hg_row = dplyr::row_number()) %>%
@@ -108,14 +108,15 @@ ce_uccs <- function(hg,
           stringr::str_c(
             "The combination of 'ucc_group' and 'expenditure' do not yield a",
             "unique combination. Please ensure that 'ucc_group' and",
-            "'expenditure' come from the same line in the HG dataframe."
+            "'expenditure' come from the same line in the HG dataframe.",
+            sep = " "
           )
         )
       }
     }
 
   } else {
-    title_row <- matches(ucc_group, hg$ucc)
+    title_row <- match(ucc_group, hg$ucc)
   }
 
 
