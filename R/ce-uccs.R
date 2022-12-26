@@ -3,7 +3,11 @@
 #' @param hg A data frame that has, at least, the title, level, and ucc
 #' columns of a CE HG file.
 #' @param expenditure A string that is an expenditure category contained in a
-#' CE HG file (exact match required).
+#' CE HG file (exact match required). Either expenditure or ucc_group is
+#' required. The default is NULL.
+#' @param ucc_group A string indicating an expenditure category by UCC group in
+#' a CE HG file (exact match required). Either expenditure or ucc_group is
+#' required. The default is NULL.
 #' @param uccs_only A logical indicating whether to return only the expenditure
 #' category's component ucc's. If TRUE (default), a vector of UCC's will be
 #' returned. If FALSE, a dataframe will be returned containing the section of
@@ -12,6 +16,9 @@
 #'
 #' @return A vector of Universal Classification Codes (UCC's) corresponding to
 #' the lowest hierarchical level for that category.
+#'
+#' @details If both a valid expenditure and valid ucc_group are input, ucc_group
+#' will be used.
 #'
 #' @export
 #'
@@ -24,30 +31,94 @@
 #' pet_uccs
 #' # [1] "610320" "620410" "620420"
 
-ce_uccs <- function(hg, expenditure, uccs_only = TRUE) {
+ce_uccs <- function(hg,
+                    expenditure = NULL,
+                    ucc_group = NULL,
+                    uccs_only = TRUE) {
+
   if (
     !is.data.frame(hg) |
     !all(c("title", "level", "ucc", "factor") %in% names(hg))
   ) {
     stop(
-      paste(
+      stringr::str_c(
         "'hg' requires a valid HG dataframe.",
-        "Please generate one using ce_hg()."
+        "Please generate one using ce_hg().",
+        sep = " "
       )
     )
   }
 
-  if (!expenditure %in% hg$title) {
-    stop(
-      paste(
-        "The expenditure must be a valid expenditure category from the HG",
-        "dataframe's 'title' column and must be spelled exactly as it is in",
-        "the HG file."
-      )
-    )
+  if (!is.null(ucc_group)) {
+    if (!ucc_group %in% hg$ucc) {ucc_group <- NULL}
   }
 
-  title_row <- match(expenditure, hg$title)
+  if (!is.null(expenditure)) {
+    if (!expenditure %in% hg$title) {expenditure <- NULL}
+  }
+
+
+  if (is.null(ucc_group)) {   # UCC is NULL
+
+    if (is.null(expenditure)) {
+      stop(
+        stringr::str_c(
+          "Either a valid 'expenditure' or valid 'ucc_group' is required and",
+          "it must match exactly the spelling in the HG file corresponding",
+          "column. Please see details in the ce_ucc() documentation.",
+          sep = " "
+        )
+      )
+    } else if (length(stringr::str_which(expenditure, hg$title)) > 1) {
+      warning(
+        stringr::str_c(
+          "Multiple expenditure matches found. The first match will be used.",
+          "To explicitly select the UCC group, please re-run ce_uccs() with",
+          "a UCC group that corresponds to the expenditure to limit matches.",
+          sep = " "
+        )
+      )
+
+      title_row <- matches(expenditure, hg$title)
+    } else {
+      title_row <- matches(expenditure, hg$title)
+    }
+
+  } else if (length(stringr::str_which(ucc_group, hg$ucc)) > 1) {   # UCC has more than 1 match
+
+    if (is.null(expend)) {
+      warning(
+        stringr::str_c(
+          "Multiple 'expenditure' matches found. The first match will be used.",
+          "To explicitly select the UCC group, please re-run ce_uccs() with",
+          "a 'ucc_group' that corresponds to 'expenditure' to limit matches."
+        )
+      )
+
+      title_row <- matches(expenditure, hg$title)
+    } else {
+      combos <- hg %>%
+        dplyr::mutate(hg_row = dplyr::row_number()) %>%
+        dplyr::filter(ucc %in% ucc_group, title %in% expenditure)
+
+      if (nrow(combos) == 1) {
+        title_row <- pull(combos, hg_row)
+      } else {
+        stop(
+          stringr::str_c(
+            "The combination of 'ucc_group' and 'expenditure' do not yield a",
+            "unique combination. Please ensure that 'ucc_group' and",
+            "'expenditure' come from the same line in the HG dataframe."
+          )
+        )
+      }
+    }
+
+  } else {
+    title_row <- matches(ucc_group, hg$ucc)
+  }
+
+
   title_row_level <- hg$level[title_row]
   stop_row <- match(
     TRUE,
