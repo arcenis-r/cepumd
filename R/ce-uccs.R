@@ -69,7 +69,8 @@ ce_uccs <- function(hg,
           sep = " "
         )
       )
-    } else if (length(stringr::str_which(expenditure, hg$title)) > 1) {
+    } else if (length(stringr::str_which(hg$title, expenditure)) > 1) {
+      print(length(stringr::str_which(hg$title, expenditure)))
       warning(
         stringr::str_c(
           "Multiple expenditure matches found. The first match will be used.",
@@ -84,7 +85,7 @@ ce_uccs <- function(hg,
       title_row <- match(expenditure, hg$title)
     }
 
-  } else if (length(stringr::str_which(ucc_group, hg$ucc)) > 1) {
+  } else if (length(stringr::str_which(hg$ucc, ucc_group)) > 1) {
 
     if (is.null(expenditure)) {
       warning(
