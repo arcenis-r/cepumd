@@ -18,7 +18,8 @@
 #' @export
 #'
 #' @importFrom graphics title
-#' @importFrom dplyr bind_rows
+#' @importFrom dplyr bind_rows across
+#' @importFrom tidyselect all_of contains everything
 #'
 #' @seealso \code{\link{ce_quantiles}}
 #'
