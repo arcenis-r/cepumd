@@ -28,8 +28,8 @@ official CE estimates.
 Estimates produced using PUMD, which is topcoded by the CE and has some
 records suppressed to protect respondent confidentiality, will not match the
 published estimates released by the CE in most cases. The CE's published
-estimates are based on data that are not topcoded nor have records
-suppressed. You can learn more at
+estimates are based on confidential data that are not topcoded nor have
+records suppressed. You can learn more at
 \href{https://www.bls.gov/cex/pumd_disclosure.htm}{CE Protection of
 Respondent Confidentiality}
 }
@@ -68,5 +68,5 @@ utils_interview \%>\%
 
 }
 \seealso{
-\code{\link{ce_quantiles}}
+\code{\link{ce_quantiles}} \code{\link{ce_prepdata}}
 }

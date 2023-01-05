@@ -49,6 +49,8 @@
 #'         value of finlwt21 is meant to be representative of only 1 quarter of
 #'         data (see details)
 #'   \item ucc - The UCC for a given expenditure
+#'   \item ref_yr - The year in which the corresponding expenditure occurred
+#'   \item ref_mo - The month in which the corresponding expenditure occurred
 #'   \item cost - The value of the expenditure (in U.S. Dollars)
 #'   \item survey - An indicator of which survey the data come from: "I" for
 #'         Interview and "D" for Diary.
