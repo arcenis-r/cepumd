@@ -1,3 +1,8 @@
+# cepumd 1.4.0
+* Refactored ce_prepdata to make `...` more useful and allow the user to accept default arguments.
+* Added the "ref_yr" and "ref_mo" variables to the output of `ce_prepdata()` to allow users to make inflation or other adjustments to the "cost" values
+* Refactored `ce_means()` to conform with newer Tidyverse functions and to summarize input data by "survey", "ucc", and "newid" (as opposed to down to the level of reference month and year as done by `ce_prepdata()`)
+
 # cepumd 1.3.0
 Added the `ucc_group` parameter to ce_uccs() to deal with the fact that some UCC titles are identical. Combinations of `ucc_group` and `title` are identical in the stub files. `ucc_group` is the primary parameter. Also, in previous versions `ce_hg()` only unwrapped titles that wrapped over 2 lines, thereby leaving titles that wrapped over more lines incomplete. That method is now updated to be able to deal with multi-line titles of more than 2 lines.
 
