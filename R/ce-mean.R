@@ -68,33 +68,34 @@ ce_mean <- function(ce_data) {
 
   ### Check dataframe for ce_means()
 
-  check_cols <- c(
-    "finlwt21", paste0("wtrep", stringr::str_pad(1:44, 2, "left", "0")),
-    "cost"
-  )
+  # Store a vector of replicate weight variable names
+  wtrep_vars <- stringr::str_c("wtrep", stringr::str_pad(1:44, 2, "left", "0"))
+
+  check_cols <- c("finlwt21", wtrep_vars, "cost")
 
   if (length(setdiff(c(check_cols, "survey"), names(ce_data))) > 0) {
     stop(
-      paste(
+      stringr::str_c(
         "Your dataset needs to include 'finlwt21', all 44 replicate weights,",
         "i.e., 'wtrep01' to 'wtrep44', the 'cost' variable, and the 'survey'",
-        "variable."
+        "variable.",
+        sep = " "
       )
     )
   } else if (
     length(setdiff(sapply(ce_data[, check_cols], class), "numeric")) > 0
   ) {
     stop(
-      paste(
+      stringr::str_c(
         "'finlwt21', all replicate weight variables, i.e., 'wtrep01' to",
-        "'wtrep44', and the 'cost' variable must be numeric."
+        "'wtrep44', and the 'cost' variable must be numeric.",
+        sep = " "
       )
     )
   }
 
-  # Store a vector of replicate weight variable names
-  wtrep_vars <- grep("wtrep", names(ce_data), value = TRUE)
-
+  # Summarise the data at the UCC level. ce_prepdata() summarises at the level
+  # of reference year and month to allow for inflation adjustment.
   ce_data <- ce_data %>%
     dplyr::group_by(survey, newid, ucc) %>%
     dplyr::summarise(
@@ -116,26 +117,26 @@ ce_mean <- function(ce_data) {
     dplyr::summarise(aggwt = sum(popwt)) %>%
     dplyr::ungroup()
 
-  estimates <- ce_data %>%
+  ce_data %>%
 
     # Calculate an aggregate population by survey
     dplyr::left_join(aggwts, by = "survey") %>%
+    dplyr::mutate(
+      # Generate an aggregate expenditure column by multiplying the cost by the
+      # consumer unit's weight
+      agg_exp = finlwt21 * cost,
 
-    # Generate an aggregate expenditure column by multiplying the cost by the
-    # consumer unit's weight
-    dplyr::mutate(agg_exp = finlwt21 * cost)
-
-  # Adjust each of the weight variables by multiplying it by the expenditure
-  # and dividing by the aggregate weight variable, which represents the
-  # population weight. This has the effect of converting each observation of
-  # the consumer unit weight and associated replicate weights into the ratio
-  # of the expenditures of the population representation by a given consumer
-  # unit to the total population
-  for (i in c("finlwt21", wtrep_vars)) {
-    estimates[i] = (estimates[i] * estimates$cost) / estimates$aggwt
-  }
-
-  estimates <- estimates %>%
+      # Adjust each of the weight variables by multiplying it by the expenditure
+      # and dividing by the aggregate weight variable, which represents the
+      # population weight. This has the effect of converting each observation of
+      # the consumer unit weight and associated replicate weights into the ratio
+      # of the expenditures of the population representation by a given consumer
+      # unit to the total population
+      dplyr::across(
+        c(finlwt21, tidyselect::all_of(wtrep_vars)),
+        ~ (.x * cost) / aggwt
+      )
+    ) %>%
 
     # Group by UCC
     dplyr::group_by(ucc) %>%
@@ -143,44 +144,36 @@ ce_mean <- function(ce_data) {
     # Collapse (sum) each adjusted weight column by UCC, which will result in
     # an aggregate expenditure, a mean expenditure, and 44 replicate mean
     # expenditures for each UCC.
-    dplyr::summarise_at(
-      dplyr::vars(dplyr::contains("wtrep"), finlwt21, agg_exp),
-      sum
+    dplyr::summarise(
+      dplyr::across(c(dplyr::contains("wtrep"), finlwt21, agg_exp), sum),
+      .groups = "drop"
     ) %>%
 
     # Drop the observation that accounts for households not having reported any
     # expenditures in the selected categories
     tidyr::drop_na(ucc) %>%
 
-    # Remove the grouping layer
-    dplyr::ungroup() %>%
-
     # Drop the UCC column
     dplyr::select(-ucc) %>%
 
-    # Get the sum of the mean and each of the squared differences from the mean
-    dplyr::summarise_all(sum)
+    # Get the sum of the mean and each of the replicate means
+    dplyr::summarise(dplyr::across(tidyselect::everything(), sum)) %>%
 
-  # For each UCC, get the differences between the mean and each of its
-  # replicate means then square those differences. Upon running the next
-  # command, the values in the "adj_finlwt21" column will represent the
-  # estimated means for each of the UCCs.
-  for (i in wtrep_vars) {
-    (estimates$finlwt21 - estimates[i]) ^ 2
-  }
-
-  # Sum up the 44 squared differences
-  estimates$sum_sqrs <- rowSums(estimates[, wtrep_vars])
-
-  estimates <- estimates  %>%
-
-    # Generate a standard error column by taking the sum of the 44 squared
-    # differences, dividing it by 44, then taking the square root of the result
     dplyr::mutate(
+      # For each UCC, get the differences between the mean and each of its
+      # replicate means then square those differences. Upon running the next
+      # command, the values in the "adj_finlwt21" column will represent the
+      # estimated means for each of the UCCs.
+      dplyr::across(tidyselect::all_of(wtrep_vars), ~ (finlwt21 - .x) ^ 2),
+
+      # Sum up the 44 squared differences
+      sum_sqrs = rowSums(across(tidyselect::all_of(wtrep_vars))),
+
+      # Generate a standard error column by taking the sum of the 44 squared
+      # differences, dividing it by 44, then taking the square root of the
+      # result
       se = sqrt((sum_sqrs / 44)),
       cv = (se * 100) / finlwt21
     ) %>%
     dplyr::select(agg_exp, mean_exp = "finlwt21", se, cv)
-
-  return(estimates)
 }
