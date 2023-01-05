@@ -4,7 +4,7 @@
 \alias{read.fmli}
 \title{Read in and modify FMLI files}
 \usage{
-read.fmli(fp, zp, year, ce_dir, grp_var_names)
+read.fmli(fp, zp, year, ce_dir, ...)
 }
 \arguments{
 \item{fp}{File to extract from zip file}
@@ -17,7 +17,8 @@ read.fmli(fp, zp, year, ce_dir, grp_var_names)
 \code{NULL} (the default) a directory called "ce-data" will be created in the
 temporary directory of the session.}
 
-\item{grp_var_names}{Variables to keep (intended for grouping)}
+\item{...}{<[`dynamic-dots`][rlang::dyn-dots]> Additional variables to keep
+(intended for grouping)}
 }
 \description{
 Read in and modify FMLI files

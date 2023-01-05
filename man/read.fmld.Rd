@@ -4,14 +4,15 @@
 \alias{read.fmld}
 \title{Read in and modify FMLD files}
 \usage{
-read.fmld(fp, zp, grp_var_names, ce_dir)
+read.fmld(fp, zp, ce_dir, ...)
 }
 \arguments{
 \item{fp}{File to extract from zip file}
 
 \item{zp}{Zip file path}
 
-\item{grp_var_names}{Variables to keep (intended for grouping)}
+\item{...}{<[`dynamic-dots`][rlang::dyn-dots]> Additional variables to keep
+(intended for grouping)}
 }
 \description{
 Read in and modify FMLD files

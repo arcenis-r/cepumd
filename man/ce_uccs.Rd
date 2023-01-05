@@ -4,14 +4,19 @@
 \alias{ce_uccs}
 \title{Find UCCs for expenditure categories}
 \usage{
-ce_uccs(hg, expenditure, uccs_only = TRUE)
+ce_uccs(hg, expenditure = NULL, ucc_group = NULL, uccs_only = TRUE)
 }
 \arguments{
 \item{hg}{A data frame that has, at least, the title, level, and ucc
 columns of a CE HG file.}
 
 \item{expenditure}{A string that is an expenditure category contained in a
-CE HG file (exact match required).}
+CE HG file (exact match required). Either expenditure or ucc_group is
+required. The default is NULL.}
+
+\item{ucc_group}{A string indicating an expenditure category by UCC group in
+a CE HG file (exact match required). Either expenditure or ucc_group is
+required. The default is NULL.}
 
 \item{uccs_only}{A logical indicating whether to return only the expenditure
 category's component ucc's. If TRUE (default), a vector of UCC's will be
@@ -25,6 +30,10 @@ the lowest hierarchical level for that category.
 }
 \description{
 Find UCCs for expenditure categories
+}
+\details{
+If both a valid expenditure and valid ucc_group are input, ucc_group
+will be used.
 }
 \examples{
 # First generate an HG file

@@ -8,14 +8,14 @@ ce_prepdata(
   year,
   survey,
   uccs,
+  ...,
   recode_variables = FALSE,
   ce_dir = NULL,
   own_codebook = NULL,
   dict_path = NULL,
   int_zp = NULL,
   dia_zp = NULL,
-  hg = NULL,
-  ...
+  hg = NULL
 )
 }
 \arguments{
@@ -26,6 +26,10 @@ symbol.}
 
 \item{uccs}{A character vector of UCCs corresponding to expenditure
 categories in the hierarchical grouping (HG) for a given year and survey.}
+
+\item{...}{Variables to include in the dataset from the family
+characteristics file. This is intended to allow the user to calculate
+estimates for subsets of the data.}
 
 \item{recode_variables}{A logical indicating whether to recode all coded
 variables except 'UCC' using the codes in the CE's excel dictionary which can
@@ -58,10 +62,6 @@ to be stored in temporary memory during function operation.}
 \item{hg}{A data frame that has, at least, the title, level, ucc, and
 factor columns of a CE HG file. Calling \code{\link{ce_hg}} will generate a
 valid HG file.}
-
-\item{...}{Variables to include in the dataset from the family
-characteristics file. This is intended to allow the user to calculate
-estimates for subsets of the data.}
 }
 \value{
 A data frame containing the following columns:
