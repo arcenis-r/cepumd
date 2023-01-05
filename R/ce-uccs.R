@@ -73,7 +73,8 @@ ce_uccs <- function(hg,
       print(length(stringr::str_which(hg$title, expenditure)))
       warning(
         stringr::str_c(
-          "Multiple expenditure matches found. The first match will be used.",
+          "Multiple expenditure matches found. Either the expenditure that",
+          "matches exactly or the first match in order will be used.",
           "To explicitly select the UCC group, please re-run ce_uccs() with",
           "a UCC group that corresponds to the expenditure to limit matches.",
           sep = " "
@@ -90,9 +91,11 @@ ce_uccs <- function(hg,
     if (is.null(expenditure)) {
       warning(
         stringr::str_c(
-          "Multiple 'expenditure' matches found. The first match will be used.",
+          "Multiple expenditure matches found. Either the expenditure that",
+          "matches exactly or the first match in order will be used.",
           "To explicitly select the UCC group, please re-run ce_uccs() with",
-          "a 'ucc_group' that corresponds to 'expenditure' to limit matches."
+          "a UCC group that corresponds to the expenditure to limit matches.",
+          sep = " "
         )
       )
 
