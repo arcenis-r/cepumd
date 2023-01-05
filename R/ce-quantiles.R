@@ -57,6 +57,17 @@ ce_quantiles <- function(ce_data, probs = 0.5) {
     stop("'finlwt21' and the 'cost' variable must be numeric.")
   }
 
+  ce_data <- ce_data %>%
+    dplyr::group_by(survey, newid, ucc) %>%
+    dplyr::summarise(
+      dplyr::across(
+        c(finlwt21, tidyselect::starts_with("wtrep"), mo_scope, popwt),
+        mean
+      ),
+      cost = sum(cost),
+      .groups = "drop"
+    )
+
   df <- ce_data %>%
     dplyr::select(newid, finlwt21, cost) %>%
     dplyr::group_by(newid) %>%

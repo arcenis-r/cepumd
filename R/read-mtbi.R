@@ -32,7 +32,7 @@ read.mtbi <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
 
   df <- df %>%
     dplyr::select(
-      newid, ref_yr, ucc, cost, pubflag
+      newid, ref_yr, ref_mo, ucc, cost, pubflag
     ) %>%
     dplyr::mutate(
       newid = stringr::str_pad(
@@ -52,7 +52,7 @@ read.mtbi <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
     dplyr::mutate(
       cost = cost * as.numeric(as.character((factor)))
     ) %>%
-    dplyr::group_by(newid, ucc) %>%
+    dplyr::group_by(newid, ucc, ref_yr, ref_mo) %>%
     dplyr::summarise(cost = sum(cost), .groups = "drop")
 
   return(df)

@@ -8,14 +8,16 @@
 #' @param ce_dir The directory in which CE PUMD data and metadata are stored. If
 #' \code{NULL} (the default) a directory called "ce-data" will be created in the
 #' temporary directory of the session.
-#' @param grp_var_names Variables to keep (intended for grouping)
+#' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Additional variables to keep
+#' (intended for grouping)
 #'
 #' @importFrom readr read_csv
 #' @importFrom rlang as_string
 #' @importFrom dplyr contains
 #'
 
-read.fmli <- function(fp, zp, year, ce_dir, grp_var_names) {
+read.fmli <- function(fp, zp, year, ce_dir, ...) {
+  grp_vars <- rlang::ensyms(...)
 
   df <- suppressWarnings(
     readr::read_csv(
@@ -28,33 +30,28 @@ read.fmli <- function(fp, zp, year, ce_dir, grp_var_names) {
 
   names(df) <- tolower(names(df))
 
-  if (length(grp_var_names) > 0) {
+  if (length(grp_vars) > 0) {
+    grp_var_names <- purrr::map_chr(
+      grp_vars,
+      ~ rlang::as_string(.x) %>% stringr::str_to_lower()
+    )
 
-    for (g in grp_var_names) {
-      if (!rlang::as_string(g) %in% names(df)) {
-        stop(
-          paste0(
-            "'", g, "' is not a valid variable. ",
-            "Please review the CE PUMD documentation"
-          )
+    if (length(setdiff(grp_var_names, names(df))) > 0) {
+      stop(
+        stringr::str_c(
+          "The following are not valid variable names: ",
+          str_c(grp_var_names, collapse = ", ") %>% stringr::str_to_upper(),
+          "\nPlease review the CE PUMD documentation and select valid variables."
         )
-      }
+      )
     }
-
-    df <- df %>%
-      dplyr::select(
-        newid, qintrvyr, qintrvmo, finlwt21,
-        dplyr::contains("wtrep"), grp_var_names
-      )
-  } else {
-    df <- df %>%
-      dplyr::select(
-        newid, qintrvyr, qintrvmo, finlwt21,
-        dplyr::contains("wtrep")
-      )
   }
 
   df <- df %>%
+    dplyr::select(
+      newid, qintrvyr, qintrvmo, finlwt21,
+      dplyr::contains("wtrep"), !!!grp_vars
+    ) %>%
     dplyr::mutate(
       newid = stringr::str_pad(
         newid, width = 8, side = "left", pad = "0"

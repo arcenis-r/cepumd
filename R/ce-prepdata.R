@@ -131,14 +131,14 @@
 ce_prepdata <- function(year,
                         survey,
                         uccs,
+                        ...,
                         recode_variables = FALSE,
                         ce_dir = NULL,
                         own_codebook = NULL,
                         dict_path = NULL,
                         int_zp = NULL,
                         dia_zp = NULL,
-                        hg = NULL,
-                        ...
+                        hg = NULL
                         ) {
 
   survey <- rlang::ensym(survey)
@@ -221,9 +221,9 @@ ce_prepdata <- function(year,
         )
       }
 
-      if(!all({{grp_var_names}} %in% own_codebook$variable)) {
+      if(!all({{grp_var_names}} %in% tolower(own_codebook$variable))) {
         stop(
-          "Your grouping variable(s) is (are) were not foundin your codebook."
+          "Your grouping variable(s) is (are) were not found in your codebook."
         )
       }
 
@@ -294,10 +294,7 @@ ce_prepdata <- function(year,
     fmli <- purrr::map2_df(
       interview_files$family$Name,
       interview_files$family$zipfile,
-      read.fmli,
-      year = year,
-      ce_dir = ce_dir,
-      grp_var_names = grp_var_names
+      ~ read.fmli(.x, .y, year, ce_dir = ce_dir, !!!grp_vars)
     ) %>%
       dplyr::bind_rows() %>%
       dplyr::mutate(
@@ -342,9 +339,7 @@ ce_prepdata <- function(year,
     fmld <- purrr::map2_df(
       diary_files$family$Name,
       diary_files$family$zipfile,
-      read.fmld,
-      grp_var_names = grp_var_names,
-      ce_dir = ce_dir
+      ~ read.fmld(.x, .y, ce_dir = ce_dir, !!!grp_vars)
     ) %>%
       dplyr::bind_rows() %>%
       dplyr::mutate(

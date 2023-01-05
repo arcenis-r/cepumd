@@ -37,7 +37,7 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
 
   df <- df %>%
     dplyr::select(
-      newid, expnyr, ucc, cost, pub_flag
+      newid, ref_yr = "expnyr", ref_mo = "expnmo", ucc, cost, pub_flag
     ) %>%
     dplyr::mutate(
       newid = stringr::str_pad(
@@ -55,7 +55,7 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
     dplyr::mutate(
       cost = cost * as.numeric(as.character(factor))
     ) %>%
-    dplyr::group_by(newid, ucc) %>%
+    dplyr::group_by(newid, ucc, ref_yr, ref_mo) %>%
     dplyr::summarise(cost = sum(cost), .groups = "drop")
 
   return(df)

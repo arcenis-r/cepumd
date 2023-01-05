@@ -95,6 +95,17 @@ ce_mean <- function(ce_data) {
   # Store a vector of replicate weight variable names
   wtrep_vars <- grep("wtrep", names(ce_data), value = TRUE)
 
+  ce_data <- ce_data %>%
+    dplyr::group_by(survey, newid, ucc) %>%
+    dplyr::summarise(
+      dplyr::across(
+        c(finlwt21, tidyselect::starts_with("wtrep"), mo_scope, popwt),
+        mean
+      ),
+      cost = sum(cost),
+      .groups = "drop"
+    )
+
   # Calculate aggregate weights by survey type
   aggwts <- ce_data %>%
     dplyr::select(survey, newid, popwt) %>%
