@@ -70,7 +70,6 @@ ce_uccs <- function(hg,
         )
       )
     } else if (length(stringr::str_which(hg$title, expenditure)) > 1) {
-      print(length(stringr::str_which(hg$title, expenditure)))
       warning(
         stringr::str_c(
           "Multiple expenditure matches found. Either the expenditure that",
