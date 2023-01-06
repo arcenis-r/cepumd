@@ -47,7 +47,8 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
         newid, width = 8, side = "left", pad = "0"
       ),
       ucc = stringr::str_pad(ucc, width = 6, side = "left", pad = "0"),
-      cost = cost * 13
+      cost = cost * 13,
+      dplyr::across(c(ref_yr, ref_mo), as.numeric)
     )
 
   if (integrate_data) df <- df %>% dplyr::filter(pub_flag %in% "2")
