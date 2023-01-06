@@ -32,7 +32,10 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
 
   if (year >= 1996 & year <= 2011) {
     df <- df %>%
-      dplyr::mutate(expnyr = as.integer(stringr::str_sub(qredate, 7, 10)))
+      dplyr::mutate(
+        expnyr = as.integer(stringr::str_sub(qredate, 7, 10)),
+        expnmo = as.integer(stringr::str_sub(qredate, 3, 4))
+      )
   }
 
   df <- df %>%
