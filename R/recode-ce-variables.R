@@ -8,12 +8,11 @@
 #' code descriptions, and other required columns for recoding variables
 #' @param srvy The survey instrument to be recoded (this is for filtering
 #' the codebook)
-#' @param file_type The type of file, e.g., FMLI, MTBI, FMLD, EXPD.
 #'
 #' @importFrom dplyr select filter
 #'
 
-recode_ce_variables <- function(srvy_data, code_file, srvy, file_type) {
+recode_ce_variables <- function(srvy_data, code_file, srvy) {
   srvy <- stringr::str_to_upper(srvy)
   recode_vars <- names(srvy_data)[names(srvy_data) %in% code_file$variable]
   recode_vars <- recode_vars[!recode_vars %in% "ucc"]

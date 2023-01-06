@@ -64,7 +64,9 @@
 #'
 #' \code{own_codebook} requires the following columns: survey, file, variable,
 #' code_value, code_description, first_year, first_quarter, last_year,
-#' last_quarter
+#' last_quarter. If you choose to use your own codebook, please ensure that
+#' there is only 1 code description for each code value within a survey
+#' instrument category.
 #'
 #' "Months in scope" refers to the proportion of the data collection quarter for
 #' which a CU reported expenditures. For the Diary survey the months in scope is
@@ -229,7 +231,12 @@ ce_prepdata <- function(year,
         )
       }
 
-      ce_codes <- own_codebook
+      ce_codes <- own_codebook %>%
+        dplyr::mutate(
+          variable = stringr::str_to_lower(variable),
+          survey = stringr::str_to_upper(survey) %>% stringr::str_sub(1, 1)
+        )
+
       rm(dict_path)
     } else {
       if (is.null(dict_path)) {
