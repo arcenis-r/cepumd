@@ -54,7 +54,7 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
   if (integrate_data) df <- df %>% dplyr::filter(pub_flag %in% "2")
 
   df <- df %>%
-    dplyr::filter(ucc %in% uccs) %>%
+    dplyr::filter(ref_yr %in% year, ucc %in% uccs) %>%
     dplyr::left_join(dplyr::select(hg, ucc, factor), by = "ucc") %>%
     dplyr::mutate(
       cost = cost * as.numeric(as.character(factor))
