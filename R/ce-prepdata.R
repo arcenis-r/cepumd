@@ -278,6 +278,7 @@ ce_prepdata <- function(year,
   integrate_data <- ifelse(survey_name == "integrated", TRUE, FALSE)
 
   if (survey_name %in% c("interview", "integrated")) {
+    print("Running Interview...")
     # Create a vector of years for which data are required
     if (year >= 2020) {
       int_yrs <- stringr::str_sub(c(year - 1, year), 3, 4)
@@ -329,9 +330,12 @@ ce_prepdata <- function(year,
     if (recode_variables) {
       interview <- recode_ce_variables(interview, ce_codes, "I")
     }
+
+    print("Interview complete...")
   }
 
   if (survey_name %in% c("diary", "integrated")) {
+    print("Running Diary...")
     dia_yrs <- stringr::str_sub(year, 3, 4)
 
     dia_qtrs <- stringr::str_c(stringr::str_sub(year, 3, 4), 1:4)
@@ -372,6 +376,7 @@ ce_prepdata <- function(year,
       dplyr::mutate(survey = "D")
 
     if (recode_variables) diary <- recode_ce_variables(diary, ce_codes, "D")
+    print("Diary Complete...")
   }
 
   if (survey_name == "integrated") {

@@ -30,6 +30,8 @@ get_survey_files <- function(year,
   survey_short <- ifelse(survey %in% "diary", "diary", "intrvw")
 
   if (!is.null(zp_file)) {
+    print(zp_file)
+    print(paste("Files exist?", file.exists(file.path(ce_dir, zp_file))))
 
     if (sum(file.exists(file.path(ce_dir, zp_file))) == 0) {
       zp_file <- NULL
@@ -43,7 +45,12 @@ get_survey_files <- function(year,
         purrr::map2_df(
           zp_file,
           ~ .x %>% dplyr::mutate(zipfile = file.path(ce_dir, .y))
-        ) %>%
+        )
+
+      print("file_df part 1...")
+      print(head(file_df))
+
+      file_df <- file_df %>%
         dplyr::filter(
           stringr::str_detect(
             Name,
@@ -95,6 +102,8 @@ get_survey_files <- function(year,
     expenditure_files <- file_df %>%
       dplyr::filter(stringr::str_detect(Name, expenditure_abbrev))
   }
+
+  print("Getting survey files complete...")
 
   return(list(family = family_files, expenditure = expenditure_files))
 }

@@ -83,9 +83,9 @@ ce_mean <- function(ce_data) {
         sep = " "
       )
     )
-  } else if (
-    length(setdiff(sapply(ce_data[, check_cols], class), "numeric")) > 0
-  ) {
+  }
+
+  if (length(setdiff(sapply(ce_data[, check_cols], class), "numeric")) > 0) {
     stop(
       stringr::str_c(
         "'finlwt21', all replicate weight variables, i.e., 'wtrep01' to",
@@ -98,6 +98,7 @@ ce_mean <- function(ce_data) {
   # Summarise the data at the UCC level. ce_prepdata() summarises at the level
   # of reference year and month to allow for inflation adjustment.
   ce_data <- ce_data %>%
+    tidyr::replace_na(cost = 0) %>%
     dplyr::group_by(survey, newid, ucc) %>%
     dplyr::summarise(
       dplyr::across(
