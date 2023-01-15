@@ -1,3 +1,6 @@
+# cepumd 1.4.1
+Corrected the filter conditions in reading in Diary monthly tabulation files. In computing Diary expenditures the CE does not filter by year. Also added Github CI, a GPL3 License, {pkgdown} files, and files for a vignette.
+
 # cepumd 1.4.0
 * Refactored ce_prepdata to make `...` more useful and allow the user to accept default arguments.
 * Added the "ref_yr" and "ref_mo" variables to the output of `ce_prepdata()` to allow users to make inflation or other adjustments to the "cost" values

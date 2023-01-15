@@ -1,6 +1,8 @@
+cepumd.Rproj
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
 docs
 test-hg
+inst/doc

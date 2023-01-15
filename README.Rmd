@@ -15,6 +15,12 @@ knitr::opts_chunk$set(
 )
 ```
 
+<!-- badges: start -->
+  [![R-CMD-check](
+  https://github.com/arcenis-r/cepumd/actions/workflows/R-CMD-check.yaml/badge.svg)](
+  https://github.com/arcenis-r/cepumd/actions/workflows/R-CMD-check.yaml
+)
+<!-- badges: end -->
 
 # Introduction
 
