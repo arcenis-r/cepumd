@@ -93,38 +93,29 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
     }
   }
 
-  if (year %in% 2013:2014) {
+  if (
+    year %in% 2013:2014 |
+    (survey_name %in% "integrated" & year %in% 1998:2000)
+  ) {
     pos_start <- c(1, 4, 7, 70, 80, 83, 86)
     pos_end <- c(1, 4, 69, 77, 80, 83, NA)
-    c_names <- c(
-      "info_type", "level", "ucc_name", "ucc", "source", "factor",
-      "section"
-    )
-  } else if (year %in% 2015:2020) {
+  } else if (year %in% 2015:2019) {
     pos_start <- c(1, 4, 7, 70, 80, 83, 84)
     pos_end <- c(1, 4, 69, 77, 80, 83, NA)
-    c_names <- c(
-      "info_type", "level", "ucc_name", "ucc", "source", "factor", "section"
-    )
+  } else if (year %in% 2020) {
+    pos_start <- c(1, 4, 7, 70, 83, 86, 89)
+    pos_end <- c(1, 4, 69, 81, 83, 86, NA)
   } else if (survey_name %in% "diary" & year %in% 2000) {
     pos_start <- c(1, 4, 7, 69, 79, 82, 85)
     pos_end <- c(1, 4, 68, 77, 80, 83, NA)
-    c_names <- c(
-      "info_type", "level", "ucc_name", "ucc", "source", "factor", "section"
-    )
-  } else if (survey_name %in% "integrated" & year %in% 1998:2000) {
-    pos_start <- c(1, 4, 7, 70, 80, 83, 86)
-    pos_end <- c(1, 4, 69, 77, 80, 83, NA)
-    c_names <- c(
-      "info_type", "level", "ucc_name", "ucc", "source", "factor", "section"
-    )
   } else {
     pos_start <- c(1, 4, 7, 70, 80, 83, 86)
     pos_end <- c(1, 4, 69, 77, 80, 83, NA)
-    c_names <- c(
-      "info_type", "level", "ucc_name", "ucc", "source", "factor", "section"
-    )
   }
+
+  c_names <- c(
+    "info_type", "level", "ucc_name", "ucc", "source", "factor", "section"
+  )
 
   instrument <- switch(
     survey_name,

@@ -212,10 +212,10 @@ ce_prepdata <- function(year,
         )
       }
 
-      ce_codes <- own_codebook %>%
+      ce_codes <- own_codebook |>
         dplyr::mutate(
           variable = stringr::str_to_lower(variable),
-          survey = stringr::str_to_upper(survey) %>% stringr::str_sub(1, 1)
+          survey = stringr::str_to_upper(survey) |> stringr::str_sub(1, 1)
         )
 
       rm(dict_path)
@@ -233,25 +233,27 @@ ce_prepdata <- function(year,
         value = TRUE
       )
 
-      ce_codes <- readxl::read_excel(
-        file.path(ce_dir, dict_path),
-        sheet = code_sheet,
-        range = readxl::cell_cols("A:J"),
-        guess_max = 4000
-      ) %>%
-        janitor::clean_names() %>%
+      ce_codes <- suppressWarnings(
+        readxl::read_excel(
+          file.path(ce_dir, dict_path),
+          sheet = code_sheet,
+          range = readxl::cell_cols("A:J"),
+          guess_max = 4000
+        )
+      ) |>
+        janitor::clean_names() |>
         dplyr::mutate(
           survey = stringr::str_sub(survey, 1, 1),
           variable = stringr::str_to_lower(variable),
           last_year = tidyr::replace_na(last_year, max(last_year, na.rm = TRUE))
-        ) %>%
+        ) |>
         dplyr::filter(
           first_year <= year,
           last_year >= year,
-        ) %>%
-        dplyr::group_by(survey, file, variable, code_value) %>%
-        dplyr::slice_max(first_year, n = 1, with_ties = FALSE) %>%
-        dplyr::slice_max(first_quarter, n = 1, with_ties = FALSE) %>%
+        ) |>
+        dplyr::group_by(survey, file, variable, code_value) |>
+        dplyr::slice_max(first_year, n = 1, with_ties = FALSE) |>
+        dplyr::slice_max(first_quarter, n = 1, with_ties = FALSE) |>
         dplyr::ungroup()
     }
   }  # end "if (recode_variables)"
