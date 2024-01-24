@@ -221,21 +221,26 @@ ce_prepdata <- function(year,
       rm(dict_path)
     } else {
       if (is.null(dict_path)) {
-        dict_path <- "ce-dict.xlsx"
-        store_ce_dict(dict_path = dict_path, ce_dir = ce_dir)
-      } else if (isFALSE(file.exists(file.path(ce_dir, dict_path)))) {
-        store_ce_dict(dict_path = dict_path, ce_dir = ce_dir)
+        stop(
+          "Please provide a valid file path to your codebook (CE Dictionary) ",
+          "in order to recode variables."
+        )
+      } else if (isFALSE(file.exists(dict_path))) {
+        stop(
+          "Please provide a valid file path to your codebook (CE Dictionary) ",
+          "in order to recode variables."
+        )
       }
 
       code_sheet <- grep(
         "^Codes",
-        readxl::excel_sheets(file.path(ce_dir, dict_path)),
+        readxl::excel_sheets(dict_path),
         value = TRUE
       )
 
       ce_codes <- suppressWarnings(
         readxl::read_excel(
-          file.path(ce_dir, dict_path),
+          dict_path,
           sheet = code_sheet,
           range = readxl::cell_cols("A:J"),
           guess_max = 4000
