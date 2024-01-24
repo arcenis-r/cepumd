@@ -87,8 +87,10 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
     }
   }
 
-  if (!is.null(hg_zip_path) & !file.exists(hg_zip_path) & !valid_hg_file) {
-    stop("The path provided for 'hg_zip_path' does not exist.")
+  if (!is.null(hg_zip_path)) {
+    if (!file.exists(hg_zip_path) & !valid_hg_file) {
+      stop("The path provided for 'hg_zip_path' does not exist.")
+    }
   }
 
   if (year %in% 2013:2014) {
@@ -131,8 +133,8 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
     "integrated" = "Integ"
   )
 
-  if (!is.null(hg_zip_path)) {
-    hg_lines <- readr::read_lines(hg_zip_path)
+  if (!is.null(hg_file_path)) {
+    hg_lines <- readr::read_lines(hg_file_path)
   } else {
     hg_lines <- readr::read_lines(
       unz(
