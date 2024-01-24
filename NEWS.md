@@ -1,3 +1,5 @@
+# cepumd 2.0.1
+
 # cepumd 2.0.0
 * Hard deprecated functions for downloading data and metadata from the BLS website due to a policy change that no longer allows webscraping.
 * Using readr::read_csv() and readr::read_lines() funcitonality for reading directly from a zip file.
