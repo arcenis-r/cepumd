@@ -30,6 +30,10 @@
 #' The default is \code{NULL} which causes the zip file to be stored in
 #' temporary memory during function operation. Automatically changed to
 #' \code{NULL} if a valid input for \code{own_codebook} is given.
+#' @param own_codebook An optional data frame containing a user-defined codebook
+#' containing the same columns as the CE Dictionary "Codes " sheet. If the input
+#' is not a data frame or does not have all of the required columns, the
+#' function will give an error message. See details for the required columns.
 #'
 #' @return A data frame containing the following columns:
 #' \itemize{
@@ -127,7 +131,8 @@ ce_prepdata <- function(year,
                         int_zp = NULL,
                         dia_zp = NULL,
                         recode_variables = FALSE,
-                        dict_path = NULL) {
+                        dict_path = NULL,
+                        own_codebook = NULL) {
 
   survey <- rlang::ensym(survey)
   survey_name <- rlang::as_string(survey) |> tolower()
@@ -178,52 +183,77 @@ ce_prepdata <- function(year,
     }
   }
 
-  if (recode_variables) {  # Want to recode variables... need a codebook
-    if (is.null(dict_path)) {
-      stop("You must provide the path to your codebook (CE Dictionary).")
-    } else if (isFALSE(file.exists(dict_path))) {
-      stop(
-        "Please provide a valid file path to your codebook (CE Dictionary) ",
-        "in order to recode variables."
+  if (recode_variables) {
+    if(!is.null(own_codebook)) {
+      if (
+        !is.data.frame(own_codebook) |
+        !all(
+          c(
+            "survey", "file", "variable", "code_value", "code_description",
+            "first_year", "first_quarter", "last_year", "last_quarter"
+          ) %in%
+          names(janitor::clean_names(own_codebook))
+        )
+      ) {
+        stop(
+          stringr::str_c(
+            "Your codebook either is not a data frame or does not have ",
+            "the required columns. It should have:\n",
+            "survey, file, variable, code_value, code_description, ",
+            "first_year, first_quarter, last_year, last_quarter"
+          )
+        )
+      }
+
+      if(!all({{grp_var_names}} %in% tolower(own_codebook$variable))) {
+        warning(
+          "Some of your grouping variable(s) is (are) were not found in your.",
+          "codebook. Only variables found in the codebook will be recoded."
+        )
+      }
+
+      ce_codes <- own_codebook %>%
+        dplyr::mutate(
+          variable = stringr::str_to_lower(variable),
+          survey = stringr::str_to_upper(survey) %>% stringr::str_sub(1, 1)
+        )
+
+      rm(dict_path)
+    } else {
+      if (is.null(dict_path)) {
+        dict_path <- "ce-dict.xlsx"
+        store_ce_dict(dict_path = dict_path, ce_dir = ce_dir)
+      } else if (isFALSE(file.exists(file.path(ce_dir, dict_path)))) {
+        store_ce_dict(dict_path = dict_path, ce_dir = ce_dir)
+      }
+
+      code_sheet <- grep(
+        "^Codes",
+        readxl::excel_sheets(file.path(ce_dir, dict_path)),
+        value = TRUE
       )
-    } else if (
-      isFALSE(
-        any(grepl("variables", tolower(readxl::excel_sheets(dict_path))))
-      ) |
-      isFALSE(any(grepl("codes", tolower(readxl::excel_sheets(dict_path)))))
-    ) {
-      stop(
-        "Please ensure that your codebook (CE Dictionary) has the 'Codes'",
-        " worksheet."
-      )
+
+      ce_codes <- readxl::read_excel(
+        file.path(ce_dir, dict_path),
+        sheet = code_sheet,
+        range = readxl::cell_cols("A:J"),
+        guess_max = 4000
+      ) %>%
+        janitor::clean_names() %>%
+        dplyr::mutate(
+          survey = stringr::str_sub(survey, 1, 1),
+          variable = stringr::str_to_lower(variable),
+          last_year = tidyr::replace_na(last_year, max(last_year, na.rm = TRUE))
+        ) %>%
+        dplyr::filter(
+          first_year <= year,
+          last_year >= year,
+        ) %>%
+        dplyr::group_by(survey, file, variable, code_value) %>%
+        dplyr::slice_max(first_year, n = 1, with_ties = FALSE) %>%
+        dplyr::slice_max(first_quarter, n = 1, with_ties = FALSE) %>%
+        dplyr::ungroup()
     }
-
-    code_sheet <- grep(
-      "^Codes",
-      readxl::excel_sheets(dict_path),
-      value = TRUE
-    )
-
-    ce_codes <- readxl::read_excel(
-      dict_path,
-      sheet = code_sheet,
-      range = readxl::cell_cols("A:J"),
-      guess_max = 4000
-    ) |>
-      janitor::clean_names() |>
-      dplyr::mutate(
-        survey = stringr::str_sub(survey, 1, 1),
-        variable = stringr::str_to_lower(variable),
-        last_year = tidyr::replace_na(last_year, max(last_year, na.rm = TRUE))
-      ) |>
-      dplyr::filter(
-        first_year <= year,
-        last_year >= year,
-      ) |>
-      dplyr::group_by(survey, file, variable, code_value) |>
-      dplyr::slice_max(first_year, n = 1, with_ties = FALSE) |>
-      dplyr::slice_max(first_quarter, n = 1, with_ties = FALSE) |>
-      dplyr::ungroup()
   }  # end "if (recode_variables)"
 
   if (is.null(int_zp) & is.null(dia_zp)) {
