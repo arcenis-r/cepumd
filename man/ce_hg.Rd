@@ -2,9 +2,9 @@
 % Please edit documentation in R/ce-hg.R
 \name{ce_hg}
 \alias{ce_hg}
-\title{Generate a CE heiarchical grouping file as data frame}
+\title{Convert a CE heiarchical grouping file to a data frame}
 \usage{
-ce_hg(year, survey, ce_dir = NULL, hg_zip_path = NULL)
+ce_hg(year, survey, hg_zip_path = NULL, hg_file_path = NULL)
 }
 \arguments{
 \item{year}{A year between 1996 and the last year of available CE PUMD.}
@@ -12,14 +12,12 @@ ce_hg(year, survey, ce_dir = NULL, hg_zip_path = NULL)
 \item{survey}{The type of HG file, i.e., interview, diary, or
 integrated. Accepted as a character or symbol.}
 
-\item{ce_dir}{The directory in which CE PUMD data and metadata are stored. If
-\code{NULL} (the default) a directory called "ce-data" will be created in the
-temporary directory of the session.}
-
 \item{hg_zip_path}{The path to a zip file containing HG files downloaded
 from the CE website. The structure of the zip file must be exactly as it is
-when downloaded to be useful to this function. The default is \code{NULL}
-(see details).}
+when downloaded to be useful to this function.}
+
+\item{hg_file_path}{The path to a single HG file that has already been
+extracted. If this argument is given 'hg_zip_path' is ignored.}
 }
 \value{
 A data frame containing the following columns:
@@ -40,7 +38,7 @@ year and HG type as data frame.
 }
 \details{
 Interview and Diary HG files are available starting in 1997 and integrated
-files start in 1996. For consistency, this function and other \code{ce_r}
+files start in 1996. For consistency, this function and other \code{cepumd}
 functions only work with data starting in 1997.
 
 The output will contain only expenditure UCCs and not UCCs related
@@ -50,10 +48,6 @@ example, is imputed and calculation of income means goes through a different
 process than do expenditure means. Please see
 \url{https://www.bls.gov/cex/csxguide.pdf}{User's Guide to Income Imputation
 in the CE}
-
-The default argument for \code{hg_zip_path} is \code{NULL}, which will direct
-the function to call \code{\link{store_ce_hg}} and store the zip file to a
-temporary file.
 }
 \examples{
 # 'survey' can be entered as a string

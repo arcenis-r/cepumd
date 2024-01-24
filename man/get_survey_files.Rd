@@ -4,7 +4,7 @@
 \alias{get_survey_files}
 \title{Generate tables of the necessary survey data files}
 \usage{
-get_survey_files(year, survey, file_yrs, qtrs, ce_dir, zp_file)
+get_survey_files(year, survey, file_yrs, qtrs, zp_file)
 }
 \arguments{
 \item{year}{A year between 1996 and the last year of available CE PUMD.}
@@ -16,10 +16,6 @@ symbol.}
 some years files have to be pulled from across different files.}
 
 \item{qtrs}{The quarters to be included in the analysis for a given year.}
-
-\item{ce_dir}{The directory in which CE PUMD data and metadata are stored. If
-\code{NULL} (the default) a directory called "ce-data" will be created in the
-temporary directory of the session.}
 
 \item{zp_file}{Character indicating the zip file containing the CE PUMD for a
 given year}

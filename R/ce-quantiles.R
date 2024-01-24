@@ -19,7 +19,7 @@
 #' @examples
 #' \dontrun{
 #' # Download the HG file keeping the section for expenditures on utilities
-#' utils_hg <- ce_hg(2017, interview) %>%
+#' utils_hg <- ce_hg(2017, interview) |>
 #'   ce_uccs("Utilities, fuels, and public services", uccs_only = FALSE)
 #'
 #' # Download and prepare interview data
@@ -38,10 +38,10 @@
 #'
 #' # Calculate the 25%, 50%, and 75% utilities expenditure quantiles by
 #' # urbanicity
-#' utils_interview %>%
-#'   tidyr::nest(-bls_urbn) %>%
-#'   mutate(quant_utils = purrr::map(data, ce_quantiles, c(0.25, 0.5, 0.75))) %>%
-#'   select(-data) %>%
+#' utils_interview |>
+#'   tidyr::nest(-bls_urbn) |>
+#'   mutate(quant_utils = purrr::map(data, ce_quantiles, c(0.25, 0.5, 0.75))) |>
+#'   select(-data) |>
 #'   unnest(quant_utils)
 #' }
 
@@ -57,8 +57,8 @@ ce_quantiles <- function(ce_data, probs = 0.5) {
     stop("'finlwt21' and the 'cost' variable must be numeric.")
   }
 
-  ce_data <- ce_data %>%
-    dplyr::group_by(survey, newid, ucc) %>%
+  ce_data <- ce_data |>
+    dplyr::group_by(survey, newid, ucc) |>
     dplyr::summarise(
       dplyr::across(
         c(finlwt21, tidyselect::starts_with("wtrep"), mo_scope, popwt),
@@ -68,31 +68,31 @@ ce_quantiles <- function(ce_data, probs = 0.5) {
       .groups = "drop"
     )
 
-  df <- ce_data %>%
-    dplyr::select(newid, finlwt21, cost) %>%
-    dplyr::group_by(newid) %>%
+  df <- ce_data |>
+    dplyr::select(newid, finlwt21, cost) |>
+    dplyr::group_by(newid) |>
     dplyr::summarise(
       cost = sum(cost),
       finlwt21 = mean(finlwt21)
-    ) %>%
+    ) |>
     dplyr::arrange(cost)
 
   results <- numeric(length(probs))
 
   for (i in 1:length(probs)) {
-    below <- df %>%
+    below <- df |>
       dplyr::filter(cumsum(finlwt21) < sum(finlwt21 * probs[i]))
 
-    above <- df %>%
+    above <- df |>
       dplyr::filter(cumsum(finlwt21) > sum(finlwt21 * probs[i]))
 
     if (sum(below$finlwt21) == sum(above$finlwt21)) {
       result <- sum(
-        below %>% dplyr::slice(n()) %>% dplyr::pull(cost),
-        above %>% dplyr::slice(1) %>% dplyr::pull(cost)
+        below |> dplyr::slice(n()) |> dplyr::pull(cost),
+        above |> dplyr::slice(1) |> dplyr::pull(cost)
       ) / 2
     } else {
-      result <- above %>% dplyr::slice(1) %>% dplyr::pull(cost)
+      result <- above |> dplyr::slice(1) |> dplyr::pull(cost)
     }
 
     results[i] <- result

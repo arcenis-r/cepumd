@@ -37,7 +37,7 @@ will be used.
 }
 \examples{
 # First generate an HG file
-my_hg <- ce_hg(2017, interview)
+my_hg <- ce_hg(2021, interview, hg_file_path = CE-HG-Inter-2021.txt)
 
 # Store a vector of UCC's in the "Pets" category
 pet_uccs <- ce_uccs(my_hg, "Pets")

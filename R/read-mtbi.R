@@ -11,17 +11,11 @@
 #'
 #' @importFrom dplyr ungroup
 
-read.mtbi <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
-
-  if (is.null(hg) & integrate_data & year >= 2002) {
-    hg <- ce_hg(year, "integrated")
-  } else if (is.null(hg)) {
-    hg <- ce_hg(year, "interview")
-  }
+read.mtbi <- function(fp, zp, year, uccs, integrate_data, hg) {
 
   df <- suppressWarnings(
     readr::read_csv(
-      unzip(zp, files = fp, exdir = ce_dir),
+      unz(zp, fp),
       na = c("NA", "", " ", "."),
       progress = FALSE,
       show_col_types = FALSE
@@ -30,10 +24,10 @@ read.mtbi <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
 
   names(df) <- tolower(names(df))
 
-  df <- df %>%
+  df <- df |>
     dplyr::select(
       newid, ref_yr, ref_mo, ucc, cost, pubflag
-    ) %>%
+    ) |>
     dplyr::mutate(
       newid = stringr::str_pad(
         newid, width = 8, side = "left", pad = "0"
@@ -42,19 +36,17 @@ read.mtbi <- function(fp, zp, year, uccs, integrate_data, hg, ce_dir) {
       dplyr::across(c(ref_yr, ref_mo), as.numeric)
     )
 
-  if (integrate_data) df <- df %>% dplyr::filter(pubflag %in% "2")
+  if (integrate_data) df <- df |> dplyr::filter(pubflag %in% "2")
 
-  df <- df %>%
-    dplyr::filter(ref_yr %in% year, ucc %in% uccs) %>%
+  df |>
+    dplyr::filter(ref_yr %in% year, ucc %in% uccs) |>
     dplyr::left_join(
-      hg %>% dplyr::select(ucc, factor),
+      hg |> dplyr::select(ucc, factor),
       by = "ucc"
-    ) %>%
+    ) |>
     dplyr::mutate(
       cost = cost * as.numeric(as.character((factor)))
-    ) %>%
-    dplyr::group_by(newid, ucc, ref_yr, ref_mo) %>%
+    ) |>
+    dplyr::group_by(newid, ucc, ref_yr, ref_mo) |>
     dplyr::summarise(cost = sum(cost), .groups = "drop")
-
-  return(df)
 }

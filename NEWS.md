@@ -1,3 +1,9 @@
+# cepumd 2.0.0
+* Hard deprecated functions for downloading data and metadata from the BLS website due to a policy change that no longer allows webscraping.
+* Using readr::read_csv() and readr::read_lines() funcitonality for reading directly from a zip file.
+* No longer requiring all data to be in one single place, but allowing the flexibility to refer to zip files and other metadata files by individual path names.
+* Changed "%>%" pipes to "|>" as well as anonymous function references from "~ .x" notation to "\\(x) " notation
+
 # cepumd 1.4.1
 Corrected the filter conditions in reading in Diary monthly tabulation files. In computing Diary expenditures the CE does not filter by year. Also added Github CI, a GPL3 License, {pkgdown} files, and files for a vignette.
 

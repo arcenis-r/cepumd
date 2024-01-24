@@ -24,7 +24,7 @@ Calculate a CE weighted quantiles
 \examples{
 \dontrun{
 # Download the HG file keeping the section for expenditures on utilities
-utils_hg <- ce_hg(2017, interview) \%>\%
+utils_hg <- ce_hg(2017, interview) |>
   ce_uccs("Utilities, fuels, and public services", uccs_only = FALSE)
 
 # Download and prepare interview data
@@ -43,10 +43,10 @@ ce_quantiles(utils_interview)
 
 # Calculate the 25\%, 50\%, and 75\% utilities expenditure quantiles by
 # urbanicity
-utils_interview \%>\%
-  tidyr::nest(-bls_urbn) \%>\%
-  mutate(quant_utils = purrr::map(data, ce_quantiles, c(0.25, 0.5, 0.75))) \%>\%
-  select(-data) \%>\%
+utils_interview |>
+  tidyr::nest(-bls_urbn) |>
+  mutate(quant_utils = purrr::map(data, ce_quantiles, c(0.25, 0.5, 0.75))) |>
+  select(-data) |>
   unnest(quant_utils)
 }
 }

@@ -4,7 +4,7 @@
 \alias{recode_ce_variables}
 \title{Recode variables in interview and diary data}
 \usage{
-recode_ce_variables(srvy_data, code_file, srvy, file_type)
+recode_ce_variables(srvy_data, code_file, srvy)
 }
 \arguments{
 \item{srvy_data}{A data frame containing either Interview or Diary data that
@@ -15,8 +15,6 @@ code descriptions, and other required columns for recoding variables}
 
 \item{srvy}{The survey instrument to be recoded (this is for filtering
 the codebook)}
-
-\item{file_type}{The type of file, e.g., FMLI, MTBI, FMLD, EXPD.}
 }
 \description{
 Recode variables in interview and diary data

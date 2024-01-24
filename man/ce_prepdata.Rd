@@ -7,15 +7,13 @@
 ce_prepdata(
   year,
   survey,
+  hg,
   uccs,
   ...,
-  recode_variables = FALSE,
-  ce_dir = NULL,
-  own_codebook = NULL,
-  dict_path = NULL,
   int_zp = NULL,
   dia_zp = NULL,
-  hg = NULL
+  recode_variables = FALSE,
+  dict_path = NULL
 )
 }
 \arguments{
@@ -24,33 +22,16 @@ ce_prepdata(
 \item{survey}{One of either interview, diary, or integrated as a character or
 symbol.}
 
+\item{hg}{A data frame that has, at least, the title, level, ucc, and
+factor columns of a CE HG file. Calling \code{\link{ce_hg}} will generate a
+valid HG file.}
+
 \item{uccs}{A character vector of UCCs corresponding to expenditure
 categories in the hierarchical grouping (HG) for a given year and survey.}
 
 \item{...}{Variables to include in the dataset from the family
 characteristics file. This is intended to allow the user to calculate
 estimates for subsets of the data.}
-
-\item{recode_variables}{A logical indicating whether to recode all coded
-variables except 'UCC' using the codes in the CE's excel dictionary which can
-be downloaded from the
-\href{https://www.bls.gov/cex/pumd_doc.htm}{CE Documentation Page}}
-
-\item{ce_dir}{The directory in which CE PUMD data and metadata are stored. If
-\code{NULL} (the default) a directory called "ce-data" will be created in the
-temporary directory of the session.}
-
-\item{own_codebook}{An optional data frame containing a user-defined codebook
-containing the same columns as the CE Dictionary "Codes " sheet. If the input
-is not a data frame or does not have all of the required columns, the
-function will give an error message. See details for the required columns.}
-
-\item{dict_path}{A string indicating the path where the CE PUMD dictionary
-is stored if already stored. If the file does not exist and
-\code{recode_variables = TRUE} the dictionary will be stored in this path.
-The default is \code{NULL} which causes the zip file to be stored in
-temporary memory during function operation. Automatically changed to
-\code{NULL} if a valid input for \code{own_codebook} is given.}
 
 \item{int_zp}{String indicating the path of the Interview data zip file(s) if
 already stored. If the file(s) does not exist its corresponding zip file will
@@ -59,9 +40,17 @@ to be stored in temporary memory during function operation.}
 
 \item{dia_zp}{Same as \code{int_zp} above, but for Diary data.}
 
-\item{hg}{A data frame that has, at least, the title, level, ucc, and
-factor columns of a CE HG file. Calling \code{\link{ce_hg}} will generate a
-valid HG file.}
+\item{recode_variables}{A logical indicating whether to recode all coded
+variables except 'UCC' using the codes in the CE's excel dictionary which can
+be downloaded from the
+\href{https://www.bls.gov/cex/pumd_doc.htm}{CE Documentation Page}}
+
+\item{dict_path}{A string indicating the path where the CE PUMD dictionary
+is stored if already stored. If the file does not exist and
+\code{recode_variables = TRUE} the dictionary will be stored in this path.
+The default is \code{NULL} which causes the zip file to be stored in
+temporary memory during function operation. Automatically changed to
+\code{NULL} if a valid input for \code{own_codebook} is given.}
 }
 \value{
 A data frame containing the following columns:
@@ -92,10 +81,6 @@ CE microdata include 45 weights. The primary weight that is used for
 calculating estimated means and medians is finlwt21. The 44 replicate weights
 are computed using Balanced Repeated Replication (BRR) and are used for
 calculating weighted standard errors.
-
-\code{own_codebook} requires the following columns: survey, file, variable,
-code_value, code_description, first_year, first_quarter, last_year,
-last_quarter
 
 "Months in scope" refers to the proportion of the data collection quarter for
 which a CU reported expenditures. For the Diary survey the months in scope is
@@ -130,7 +115,7 @@ complete listing: \url{https://www.bls.gov/cex/ce_source_integrate.xlsx}.
 # potentially calculate means by sex of the reference person.
 
 # First generate an HG file
-my_hg <- ce_hg(2021, integrated)
+my_hg <- ce_hg(2021, integrated, "CE-HG-Inter-2021.txt")
 
 # Store a vector of UCC's in the "Pets" category
 pet_uccs <- ce_uccs(my_hg, "Pets")
@@ -141,9 +126,9 @@ pets_dia <- ce_prepdata(
   year = 2021,
   survey = integrated,
   uccs = pet_uccs,
-  integrate_data = TRUE,
-  recode_variables = TRUE,
+  integrate_data = FALSE,
   hg = my_hg,
+  dia_zip = "diary21.zip"
   sex_ref
 )
 }

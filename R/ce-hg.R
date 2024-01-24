@@ -1,4 +1,4 @@
-#' Generate a CE heiarchical grouping file as data frame
+#' Convert a CE heiarchical grouping file to a data frame
 #'
 #' @description A CE heiarchical grouping ('HG') file shows the levels of
 #' aggregation for expenditure categories used to produce official CE
@@ -8,13 +8,11 @@
 #' @param year A year between 1996 and the last year of available CE PUMD.
 #' @param survey The type of HG file, i.e., interview, diary, or
 #' integrated. Accepted as a character or symbol.
-#' @param ce_dir The directory in which CE PUMD data and metadata are stored. If
-#' \code{NULL} (the default) a directory called "ce-data" will be created in the
-#' temporary directory of the session.
 #' @param hg_zip_path The path to a zip file containing HG files downloaded
 #' from the CE website. The structure of the zip file must be exactly as it is
-#' when downloaded to be useful to this function. The default is \code{NULL}
-#' (see details).
+#' when downloaded to be useful to this function.
+#' @param hg_file_path The path to a single HG file that has already been
+#' extracted. If this argument is given 'hg_zip_path' is ignored.
 #'
 #' @return A data frame containing the following columns:
 #' * level - hierarchical level of the expenditure category
@@ -28,7 +26,7 @@
 #'
 #' @details
 #' Interview and Diary HG files are available starting in 1997 and integrated
-#' files start in 1996. For consistency, this function and other \code{ce_r}
+#' files start in 1996. For consistency, this function and other \code{cepumd}
 #' functions only work with data starting in 1997.
 #'
 #' The output will contain only expenditure UCCs and not UCCs related
@@ -38,10 +36,6 @@
 #' process than do expenditure means. Please see
 #' \url{https://www.bls.gov/cex/csxguide.pdf}{User's Guide to Income Imputation
 #' in the CE}
-#'
-#' The default argument for \code{hg_zip_path} is \code{NULL}, which will direct
-#' the function to call \code{\link{store_ce_hg}} and store the zip file to a
-#' temporary file.
 #'
 #' @export
 #'
@@ -60,13 +54,14 @@
 #' # 'survey' can also be entered as a symbol
 #' ce_hg(2016, integrated)
 
-ce_hg <- function(year, survey, ce_dir = NULL, hg_zip_path = NULL) {
+ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
 
   survey <- rlang::ensym(survey)
-  survey_name <- rlang::as_name(survey) %>% tolower
+  survey_name <- rlang::as_name(survey) |> tolower()
 
   ###### Check for bad arguments ######
-  max_year <- max(ce_pumd_years())
+  max_year <- 2022
+  valid_hg_file <- FALSE
 
   if (!year %in% 1997:max_year) {
     stop(
@@ -80,33 +75,32 @@ ce_hg <- function(year, survey, ce_dir = NULL, hg_zip_path = NULL) {
     stop("'survey' must be one of interview, diary, or integrated")
   }
 
-  # Ensure that there's a directory to put files into
-  if (is.null(ce_dir)) {
-    if (!file.exists(file.path(tempdir(), "ce-data"))) {
-      dir.create(file.path(tempdir(), "ce-data"))
-    }
-
-    ce_dir <- file.path(tempdir(), "ce-data")
+  if (is.null(hg_zip_path) & is.null(hg_file_path)) {
+    stop("Either 'hg_zip_path' or 'hg_file_path' is required.")
   }
 
-  if (is.null(hg_zip_path)) {
-    hg_zip_path <- "ce-stubs.zip"
-
-    if (isFALSE(file.exists(file.path(ce_dir, hg_zip_path)))) {
-      store_ce_hg(ce_dir, hg_zip_path)
+  if (!is.null(hg_file_path)) {
+    if (!file.exists(hg_file_path)) {
+      stop("The path provided for 'hg_file_path' does not exist.")
+    } else {
+      valid_hg_file <- TRUE
     }
+  }
+
+  if (!is.null(hg_zip_path) & !file.exists(hg_zip_path) & !valid_hg_file) {
+    stop("The path provided for 'hg_zip_path' does not exist.")
   }
 
   if (year %in% 2013:2014) {
-    pos_start <- c(1, 4, 7, 70, 80, 83, 86, 89)
-    pos_end <- c(1, 4, 69, 77, 80, 83, 86, NA)
+    pos_start <- c(1, 4, 7, 70, 80, 83, 86)
+    pos_end <- c(1, 4, 69, 77, 80, 83, NA)
     c_names <- c(
-      "info_type", "level", "ucc_name", "ucc", "x", "source", "factor",
+      "info_type", "level", "ucc_name", "ucc", "source", "factor",
       "section"
     )
   } else if (year %in% 2015:2020) {
-    pos_start <- c(1, 4, 7, 70, 83, 86, 89)
-    pos_end <- c(1, 4, 69, 77, 83, 86, NA)
+    pos_start <- c(1, 4, 7, 70, 80, 83, 84)
+    pos_end <- c(1, 4, 69, 77, 80, 83, NA)
     c_names <- c(
       "info_type", "level", "ucc_name", "ucc", "source", "factor", "section"
     )
@@ -117,8 +111,8 @@ ce_hg <- function(year, survey, ce_dir = NULL, hg_zip_path = NULL) {
       "info_type", "level", "ucc_name", "ucc", "source", "factor", "section"
     )
   } else if (survey_name %in% "integrated" & year %in% 1998:2000) {
-    pos_start <- c(1, 4, 7, 70, 83, 86, 89)
-    pos_end <- c(1, 4, 69, 77, 83, 86, NA)
+    pos_start <- c(1, 4, 7, 70, 80, 83, 86)
+    pos_end <- c(1, 4, 69, 77, 80, 83, NA)
     c_names <- c(
       "info_type", "level", "ucc_name", "ucc", "source", "factor", "section"
     )
@@ -137,87 +131,67 @@ ce_hg <- function(year, survey, ce_dir = NULL, hg_zip_path = NULL) {
     "integrated" = "Integ"
   )
 
-  # Declare a function that conditionally removes an extra column that
-  # was added only for the 2013 and 2014 years of the hg files
-  cond_select <- function(df, yr) {
-    if (yr %in% 2013:2014) {
-      as.data.frame(df) %>%
-        dplyr::select(-x)
-    } else {
-      df
-    }
+  if (!is.null(hg_zip_path)) {
+    hg_lines <- readr::read_lines(hg_zip_path)
+  } else {
+    hg_lines <- readr::read_lines(
+      unz(
+        hg_zip_path,
+        stringr::str_c("stubs/CE-HG-", instrument, "-", year, ".txt")
+      )
+    )
   }
 
-  hg_lines_temp <- tempfile("ce-stub-lines-", tmpdir = ce_dir)
-
-  hg_lines <- readr::read_lines(
-    unzip(
-      file.path(ce_dir, hg_zip_path),
-      stringr::str_c("stubs/CE-HG-", instrument, "-", year, ".txt"),
-      exdir = hg_lines_temp
-    )
-  )
-
-  removals <- which(
-    stringr::str_sub(hg_lines, 1, 6) %in% c("*  UCC", "*  NEW")
-  )
+  removals <- which(stringr::str_sub(hg_lines, 1, 6) %in% c("*  UCC", "*  NEW"))
 
   if (length(removals > 0)) hg_lines <- hg_lines[-removals]
 
   hg_lines <- stringr::str_replace_all(hg_lines, "[#]", "")
 
-  hg_tmp_clean <- tempfile("ce-stub-lines-clean-", tmpdir = ce_dir)
+  first_line <- match("1", stringr::str_sub(hg_lines, 1, 1))
 
-  readr::write_lines(hg_lines, hg_tmp_clean)
+  hg_lines <- hg_lines[first_line:length(hg_lines)]
 
-  first_line <- match(
-    "1",
-    stringr::str_sub(readr::read_lines(hg_tmp_clean), 1, 1)
-  )
-
-  hg <- readr::read_fwf(
-    hg_tmp_clean,
-    col_positions = readr::fwf_positions(pos_start, pos_end, c_names),
-    skip = (first_line - 1),
-    show_col_types = FALSE
-  ) %>%
-    cond_select(year) %>%
-    dplyr::select(1:7) %>%
+  purrr::map(
+    hg_lines,
+    \(x) purrr::map2(
+      pos_start,
+      pos_end,
+      \(y, z) stringr::str_sub(x, y, dplyr::if_else(is.na(z), nchar(x), z)) |>
+        stringr::str_squish()
+    ) |>
+      rlang::set_names(c_names) |>
+      dplyr::bind_cols()
+  ) |>
+    dplyr::bind_rows() |>
+    dplyr::select(1:7) |>
     rlang::set_names(
       c("linenum", "level", "title", "ucc", "survey", "factor", "group")
-    ) %>%
-    dplyr::mutate(
-      dplyr::across(
-        tidyselect::everything(),
-        ~ stringr::str_trim(.x) %>% stringr::str_squish()
-      )
-    ) %>%
+    ) |>
 
     # Collapse all multi-line titles down to one line each
-    dplyr::mutate(line_group = cumsum(as.numeric(linenum == "1"))) %>%
-    tidyr::fill(group, level, survey, ucc, factor, .direction = "down") %>%
-    tidyr::nest(data = -line_group) %>%
+    dplyr::mutate(line_group = cumsum(as.numeric(linenum == "1"))) |>
+    mutate(
+      across(c(level, ucc, survey, factor, group), \(x) dplyr::na_if(x, ""))
+    ) |>
+    tidyr::fill(group, level, survey, ucc, factor, .direction = "down") |>
+    tidyr::nest(data = -line_group) |>
     dplyr::mutate(
       data = purrr::map(
         data,
-        ~ .x %>%
-          dplyr::group_by(group, level, survey, ucc, factor) %>%
+        \(x) x |>
+          dplyr::group_by(group, level, survey, ucc, factor) |>
           dplyr::summarise(
             title = stringr::str_c(title, collapse = " "),
             .groups = "drop"
           )
       )
-    ) %>%
-    dplyr::select(-line_group) %>%
-    tidyr::unnest(data) %>%
+    ) |>
+    dplyr::select(-line_group) |>
+    tidyr::unnest(data) |>
 
     # Keep only expenditure groups
-    dplyr::filter(group %in% c("FOOD", "EXPEND")) %>%
-    dplyr::select(level, title, ucc, survey, factor) %>%
+    dplyr::filter(group %in% c("FOOD", "EXPEND")) |>
+    dplyr::select(level, title, ucc, survey, factor) |>
     dplyr::mutate(title = stringr::str_replace_all(title, " #$", ""))
-
-  unlink(hg_lines_temp, recursive = TRUE)
-  unlink(hg_tmp_clean, recursive = TRUE)
-
-  return(hg)
 }

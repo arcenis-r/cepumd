@@ -8,12 +8,12 @@
 #' (intended for grouping)
 #'
 
-read.fmld <- function(fp, zp, ce_dir, ...) {
+read.fmld <- function(fp, zp, ...) {
   grp_vars <- rlang::ensyms(...)
 
   df <- suppressWarnings(
     readr::read_csv(
-      unzip(zp, files = fp, exdir = ce_dir),
+      unz(zp, fp),
       na = c("NA", "", " ", "."),
       progress = FALSE,
       show_col_types = FALSE
@@ -25,24 +25,24 @@ read.fmld <- function(fp, zp, ce_dir, ...) {
   if (length(grp_vars) > 0) {
     grp_var_names <- purrr::map_chr(
       grp_vars,
-      ~ rlang::as_string(.x) %>% stringr::str_to_lower()
+      \(x) rlang::as_string(x) |> stringr::str_to_lower()
     )
 
     if (length(setdiff(grp_var_names, names(df))) > 0) {
       stop(
         stringr::str_c(
           "The following are not valid variable names: ",
-          str_c(grp_var_names, collapse = ", ") %>% stringr::str_to_upper(),
+          str_c(grp_var_names, collapse = ", ") |> stringr::str_to_upper(),
           "\nPlease review the CE PUMD documentation and select valid variables."
         )
       )
     }
   }
 
-  df <- df %>%
+  df <- df |>
     dplyr::select(
       newid, finlwt21, dplyr::contains("wtrep"), !!!grp_vars
-    ) %>%
+    ) |>
     dplyr::mutate(
       newid = stringr::str_pad(
         newid, width = 8, side = "left", pad = "0"

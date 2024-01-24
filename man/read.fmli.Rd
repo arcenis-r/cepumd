@@ -4,7 +4,7 @@
 \alias{read.fmli}
 \title{Read in and modify FMLI files}
 \usage{
-read.fmli(fp, zp, year, ce_dir, ...)
+read.fmli(fp, zp, year, ...)
 }
 \arguments{
 \item{fp}{File to extract from zip file}
@@ -12,10 +12,6 @@ read.fmli(fp, zp, year, ce_dir, ...)
 \item{zp}{Zip file path within ce_dir}
 
 \item{year}{Year}
-
-\item{ce_dir}{The directory in which CE PUMD data and metadata are stored. If
-\code{NULL} (the default) a directory called "ce-data" will be created in the
-temporary directory of the session.}
 
 \item{...}{<[`dynamic-dots`][rlang::dyn-dots]> Additional variables to keep
 (intended for grouping)}

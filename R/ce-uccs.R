@@ -24,7 +24,7 @@
 #'
 #' @examples
 #' # First generate an HG file
-#' my_hg <- ce_hg(2017, interview)
+#' my_hg <- ce_hg(2021, interview, hg_file_path = CE-HG-Inter-2021.txt)
 #'
 #' # Store a vector of UCC's in the "Pets" category
 #' pet_uccs <- ce_uccs(my_hg, "Pets")
@@ -62,12 +62,9 @@ ce_uccs <- function(hg,
 
     if (is.null(expenditure)) {
       stop(
-        stringr::str_c(
-          "Either a valid 'expenditure' or valid 'ucc_group' is required and",
-          "it must match exactly the spelling in the HG file corresponding",
-          "column. Please see details in the ce_ucc() documentation.",
-          sep = " "
-        )
+        "Either a valid 'expenditure' or valid 'ucc_group' is required and ",
+        "it must match exactly the spelling in the HG file corresponding ",
+        "column. Please see details in the ce_ucc() documentation."
       )
     } else if (length(stringr::str_which(hg$title, expenditure)) > 1) {
       warning(
@@ -100,12 +97,12 @@ ce_uccs <- function(hg,
 
       title_row <- match(expenditure, hg$title)
     } else {
-      combos <- hg %>%
-        dplyr::mutate(hg_row = dplyr::row_number()) %>%
+      combos <- hg |>
+        dplyr::mutate(hg_row = dplyr::row_number()) |>
         dplyr::filter(ucc %in% ucc_group, title %in% expenditure)
 
       if (nrow(combos) == 1) {
-        title_row <- pull(combos, hg_row)
+        title_row <- dplyr::pull(combos, hg_row)
       } else {
         stop(
           stringr::str_c(

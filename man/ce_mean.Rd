@@ -37,7 +37,7 @@ Respondent Confidentiality}
 
 # Download the HG file keeping the section for expenditures on utilities
 \dontrun{
-utils_hg <- ce_hg(2017, interview) \%>\%
+utils_hg <- ce_hg(2017, interview) |>
   ce_uccs("Utilities, fuels, and public services", uccs_only = FALSE)
 }
 
@@ -59,10 +59,10 @@ utils_interview <- ce_prepdata(
 
 # Calculate the mean expenditure on utilities by urbanicity
 \dontrun{
-utils_interview \%>\%
-  tidyr::nest(-bls_urbn) \%>\%
-  mutate(mean_utils = purrr::map(data, ce_mean)) \%>\%
-  select(-data) \%>\%
+utils_interview |>
+  tidyr::nest(-bls_urbn) |>
+  mutate(mean_utils = purrr::map(data, ce_mean)) |>
+  select(-data) |>
   unnest(mean_utils)
 }
 
