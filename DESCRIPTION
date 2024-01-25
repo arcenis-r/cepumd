@@ -1,7 +1,7 @@
 Package: cepumd
 Type: Package
 Title: Calculate Consumer Expenditure Survey (CE) Annual Estimates
-Version: 2.0.1
+Version: 2.0.2
 Date: 2022-12-19
 Author: Arcenis Rojas <arcenis.rojas@tutanota.com>
 Maintainer: Arcenis Rojas <arcenis.rojas@tutanota.com>
