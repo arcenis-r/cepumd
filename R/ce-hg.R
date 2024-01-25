@@ -99,9 +99,9 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
   ) {
     pos_start <- c(1, 4, 7, 70, 80, 83, 86)
     pos_end <- c(1, 4, 69, 77, 80, 83, NA)
-  } else if (year %in% 2015:2019) {
-    pos_start <- c(1, 4, 7, 70, 80, 83, 84)
-    pos_end <- c(1, 4, 69, 77, 80, 83, NA)
+  } else if (year %in% 2015:2020) {
+    pos_start <- c(1, 4, 7, 70, 83, 86, 89)
+    pos_end <- c(1, 4, 69, 81, 83, 86, NA)
   } else if (year %in% 2020) {
     pos_start <- c(1, 4, 7, 70, 83, 86, 89)
     pos_end <- c(1, 4, 69, 81, 83, 86, NA)
