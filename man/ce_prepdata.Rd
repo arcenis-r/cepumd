@@ -13,7 +13,8 @@ ce_prepdata(
   int_zp = NULL,
   dia_zp = NULL,
   recode_variables = FALSE,
-  dict_path = NULL
+  dict_path = NULL,
+  own_codebook = NULL
 )
 }
 \arguments{
@@ -51,6 +52,11 @@ is stored if already stored. If the file does not exist and
 The default is \code{NULL} which causes the zip file to be stored in
 temporary memory during function operation. Automatically changed to
 \code{NULL} if a valid input for \code{own_codebook} is given.}
+
+\item{own_codebook}{An optional data frame containing a user-defined codebook
+containing the same columns as the CE Dictionary "Codes " sheet. If the input
+is not a data frame or does not have all of the required columns, the
+function will give an error message. See details for the required columns.}
 }
 \value{
 A data frame containing the following columns:

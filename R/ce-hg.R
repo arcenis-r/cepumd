@@ -60,12 +60,14 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
   survey_name <- rlang::as_name(survey) |> tolower()
 
   ###### Check for bad arguments ######
-  max_year <- 2022
   valid_hg_file <- FALSE
 
-  if (!year %in% 1997:max_year) {
+  if (year < 1997) {
     stop(
-      stringr::str_c("'year' must be a number between 1997 and ", max_year, ".")
+      paste(
+        "This function can only convert hierarchical grouping files from 1997",
+        "onward."
+      )
     )
   }
 
@@ -93,21 +95,16 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
     }
   }
 
-  if (
-    year %in% 2013:2014 |
-    (survey_name %in% "integrated" & year %in% 1998:2000)
-  ) {
-    pos_start <- c(1, 4, 7, 70, 80, 83, 86)
-    pos_end <- c(1, 4, 69, 77, 80, 83, NA)
-  } else if (year %in% 2015:2020) {
+  instrument <- switch(
+    survey_name,
+    "diary" = "Diary",
+    "interview" = "Inter",
+    "integrated" = "Integ"
+  )
+
+  if (year %in% 2013:2020 | (year %in% 1998:2000 & instrument %in% "Integ")) {
     pos_start <- c(1, 4, 7, 70, 83, 86, 89)
-    pos_end <- c(1, 4, 69, 81, 83, 86, NA)
-  } else if (year %in% 2020) {
-    pos_start <- c(1, 4, 7, 70, 83, 86, 89)
-    pos_end <- c(1, 4, 69, 81, 83, 86, NA)
-  } else if (survey_name %in% "diary" & year %in% 2000) {
-    pos_start <- c(1, 4, 7, 69, 79, 82, 85)
-    pos_end <- c(1, 4, 68, 77, 80, 83, NA)
+    pos_end <- c(1, 4, 69, 77, 83, 86, NA)
   } else {
     pos_start <- c(1, 4, 7, 70, 80, 83, 86)
     pos_end <- c(1, 4, 69, 77, 80, 83, NA)
@@ -115,13 +112,6 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
 
   c_names <- c(
     "info_type", "level", "ucc_name", "ucc", "source", "factor", "section"
-  )
-
-  instrument <- switch(
-    survey_name,
-    "diary" = "Diary",
-    "interview" = "Inter",
-    "integrated" = "Integ"
   )
 
   if (!is.null(hg_file_path)) {
