@@ -6,8 +6,8 @@
 #' year and HG type as data frame.
 #'
 #' @param year A year between 1996 and the last year of available CE PUMD.
-#' @param survey The type of HG file, i.e., interview, diary, or
-#' integrated. Accepted as a character or symbol.
+#' @param survey The type of HG file; one of "interview", "diary", or
+#' "integrated". Accepted as a character or symbol.
 #' @param hg_zip_path The path to a zip file containing HG files downloaded
 #' from the CE website. The structure of the zip file must be exactly as it is
 #' when downloaded to be useful to this function.
@@ -48,11 +48,13 @@
 #' @importFrom purrr map
 #'
 #' @examples
+#' \dontrun{
 #' # 'survey' can be entered as a string
-#' ce_hg(2016, "integrated")
+#' ce_hg(2016, "integrated", "hg-files.zip")
 #'
 #' # 'survey' can also be entered as a symbol
-#' ce_hg(2016, integrated)
+#' ce_hg(2016, integrated, "hg-files.zip")
+#' }
 
 ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
 
@@ -111,7 +113,7 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
   }
 
   c_names <- c(
-    "info_type", "level", "ucc_name", "ucc", "source", "factor", "section"
+    "linenum", "level", "title", "ucc", "survey", "factor", "group"
   )
 
   if (!is.null(hg_file_path)) {
@@ -147,34 +149,40 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
       dplyr::bind_cols()
   ) |>
     dplyr::bind_rows() |>
-    dplyr::select(1:7) |>
-    rlang::set_names(
-      c("linenum", "level", "title", "ucc", "survey", "factor", "group")
-    ) |>
 
     # Collapse all multi-line titles down to one line each
-    dplyr::mutate(line_group = cumsum(as.numeric(linenum == "1"))) |>
     mutate(
-      across(c(level, ucc, survey, factor, group), \(x) dplyr::na_if(x, ""))
+      line_group = cumsum(as.numeric(.data$linenum == "1")),
+      across(
+        all_of(c("level", "ucc", "survey", "factor", "group")),
+        \(x) dplyr::na_if(x, "")
+      )
     ) |>
-    tidyr::fill(group, level, survey, ucc, factor, .direction = "down") |>
-    tidyr::nest(data = -line_group) |>
+    tidyr::fill(
+      all_of(c("group", "level", "survey", "ucc", "factor")),
+      .direction = "down"
+    ) |>
+    dplyr::group_by(.data$line_group) |>
+    tidyr::nest(.key = "stub_df") |>
     dplyr::mutate(
       data = purrr::map(
-        data,
+        .data$stub_df,
         \(x) x |>
-          dplyr::group_by(group, level, survey, ucc, factor) |>
+          dplyr::group_by(
+            .data$group, .data$level, .data$survey, .data$ucc, .data$factor
+          ) |>
           dplyr::summarise(
-            title = stringr::str_c(title, collapse = " "),
+            title = stringr::str_c(.data$title, collapse = " "),
             .groups = "drop"
           )
       )
     ) |>
-    dplyr::select(-line_group) |>
-    tidyr::unnest(data) |>
+    tidyr::unnest(one_of("stub_df")) |>
+    dplyr::ungroup() |>
+    dplyr::select(!.data$line_group) |>
 
     # Keep only expenditure groups
-    dplyr::filter(group %in% c("FOOD", "EXPEND")) |>
-    dplyr::select(level, title, ucc, survey, factor) |>
-    dplyr::mutate(title = stringr::str_replace_all(title, " #$", ""))
+    dplyr::filter(.data$group %in% c("FOOD", "EXPEND")) |>
+    dplyr::select(all_of(c("level", "title", "ucc", "survey", "factor"))) |>
+    dplyr::mutate(title = stringr::str_replace_all(.data$title, " #$", ""))
 }

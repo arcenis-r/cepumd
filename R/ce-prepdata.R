@@ -142,12 +142,8 @@ ce_prepdata <- function(year,
     unlist() |>
     tolower()
 
-  max_year <- 2022
-
-  if (!year %in% 1997:max_year) {
-    stop(
-      stringr::str_c("'year' must be a number between 1997 and ", max_year, ".")
-    )
+  if (year < 1997) {
+    stop("cepumd only works with data from 1997 onward.")
   }
 
   if (!survey_name %in% c("interview", "diary", "integrated")) {
