@@ -40,11 +40,14 @@
 #' @export
 #'
 #' @importFrom rlang ensym
+#' @importFrom rlang .data
 #' @importFrom dplyr summarise across filter select group_by
 #' @importFrom stringr str_replace_all str_c
 #' @importFrom readr read_lines
 #' @importFrom tidyr fill nest unnest
 #' @importFrom tidyselect everything
+#' @importFrom tidyselect all_of
+#' @importFrom tidyselect one_of
 #' @importFrom purrr map
 #'
 #' @examples
@@ -179,7 +182,7 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
     ) |>
     tidyr::unnest(one_of("stub_df")) |>
     dplyr::ungroup() |>
-    dplyr::select(!.data$line_group) |>
+    dplyr::select(!one_of("line_group")) |>
 
     # Keep only expenditure groups
     dplyr::filter(.data$group %in% c("FOOD", "EXPEND")) |>

@@ -58,41 +58,47 @@ ce_quantiles <- function(ce_data, probs = 0.5) {
   }
 
   ce_data <- ce_data |>
-    dplyr::group_by(survey, newid, ucc) |>
+    dplyr::group_by(.data$survey, .data$newid, .data$ucc) |>
     dplyr::summarise(
       dplyr::across(
-        c(finlwt21, tidyselect::starts_with("wtrep"), mo_scope, popwt),
+        c(
+          tidyselect::starts_with("wtrep"),
+          all_of(c("finlwt21", "mo_scope", "popwt"))
+        ),
         mean
       ),
-      cost = sum(cost),
+      cost = sum(.data$cost),
       .groups = "drop"
     )
 
   df <- ce_data |>
-    dplyr::select(newid, finlwt21, cost) |>
-    dplyr::group_by(newid) |>
+    dplyr::select(all_of(c("newid", "finlwt21", "cost"))) |>
+    dplyr::group_by(.data$newid) |>
     dplyr::summarise(
-      cost = sum(cost),
-      finlwt21 = mean(finlwt21)
+      cost = sum(.data$cost),
+      finlwt21 = mean(.data$finlwt21)
     ) |>
-    dplyr::arrange(cost)
+    dplyr::arrange(.data$cost)
 
   results <- numeric(length(probs))
 
   for (i in 1:length(probs)) {
     below <- df |>
-      dplyr::filter(cumsum(finlwt21) < sum(finlwt21 * probs[i]))
+      dplyr::filter(cumsum(.data$finlwt21) < sum(.data$finlwt21 * probs[i]))
 
     above <- df |>
-      dplyr::filter(cumsum(finlwt21) > sum(finlwt21 * probs[i]))
+      dplyr::filter(.data$cumsum(finlwt21) > sum(.data$finlwt21 * probs[i]))
 
     if (sum(below$finlwt21) == sum(above$finlwt21)) {
       result <- sum(
-        below |> dplyr::slice(n()) |> dplyr::pull(cost),
-        above |> dplyr::slice(1) |> dplyr::pull(cost)
+        below[length(below), "cost"],
+        above[1, "cost"]
+        # below |> dplyr::slice(n()) |> dplyr::pull(.data$cost),
+        # above |> dplyr::slice(1) |> dplyr::pull(.data$cost)
       ) / 2
     } else {
-      result <- above |> dplyr::slice(1) |> dplyr::pull(cost)
+      above[1, "cost"]
+      # result <- above |> dplyr::slice(1) |> dplyr::pull(cost)
     }
 
     results[i] <- result

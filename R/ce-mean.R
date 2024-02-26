@@ -98,25 +98,28 @@ ce_mean <- function(ce_data) {
   # Summarise the data at the UCC level. ce_prepdata() summarises at the level
   # of reference year and month to allow for inflation adjustment.
   ce_data <- ce_data |>
-    tidyr::replace_na(list(cost = 0)) |>
-    dplyr::group_by(survey, newid, ucc) |>
+    tidyr::replace_na(list(.data$cost = 0)) |>
+    dplyr::group_by(.data$survey, .data$newid, .data$ucc) |>
     dplyr::summarise(
       dplyr::across(
-        c(finlwt21, tidyselect::starts_with("wtrep"), mo_scope, popwt),
+        c(
+          all_of(c("finlwt21", "mo_scope", "popwt")),
+          tidyselect::starts_with("wtrep")
+        ),
         mean
       ),
-      cost = sum(cost),
+      cost = sum(.data$cost),
       .groups = "drop"
     )
 
   # Calculate aggregate weights by survey type
   aggwts <- ce_data |>
-    dplyr::select(survey, newid, popwt) |>
-    dplyr::group_by(survey, newid, popwt) |>
+    dplyr::select(all_of(c("survey", "newid", "popwt"))) |>
+    dplyr::group_by(.data$survey, .data$newid, .data$popwt) |>
     dplyr::slice(1) |>
     dplyr::ungroup() |>
-    dplyr::group_by(survey) |>
-    dplyr::summarise(aggwt = sum(popwt)) |>
+    dplyr::group_by(.data$survey) |>
+    dplyr::summarise(aggwt = sum(.data$popwt)) |>
     dplyr::ungroup()
 
   ce_data |>
@@ -126,7 +129,7 @@ ce_mean <- function(ce_data) {
     dplyr::mutate(
       # Generate an aggregate expenditure column by multiplying the cost by the
       # consumer unit's weight
-      agg_exp = finlwt21 * cost,
+      agg_exp = .data$finlwt21 * .data$cost,
 
       # Adjust each of the weight variables by multiplying it by the expenditure
       # and dividing by the aggregate weight variable, which represents the
@@ -135,28 +138,31 @@ ce_mean <- function(ce_data) {
       # of the expenditures of the population representation by a given consumer
       # unit to the total population
       dplyr::across(
-        c(finlwt21, tidyselect::all_of(wtrep_vars)),
-        \(x) (x * cost) / aggwt
+        c(tidyselect::all_of(c("finlwt21", wtrep_vars))),
+        \(x) (x * .data$cost) / .data$aggwt
       )
     ) |>
 
     # Group by UCC
-    dplyr::group_by(ucc) |>
+    dplyr::group_by(.data$ucc) |>
 
     # Collapse (sum) each adjusted weight column by UCC, which will result in
     # an aggregate expenditure, a mean expenditure, and 44 replicate mean
     # expenditures for each UCC.
     dplyr::summarise(
-      dplyr::across(c(dplyr::contains("wtrep"), finlwt21, agg_exp), sum),
+      dplyr::across(
+        c(dplyr::contains("wtrep"), .data$finlwt21, .data$agg_exp),
+        sum
+      ),
       .groups = "drop"
     ) |>
 
     # Drop the observation that accounts for households not having reported any
     # expenditures in the selected categories
-    tidyr::drop_na(ucc) |>
+    tidyr::drop_na(!.data$ucc) |>
 
     # Drop the UCC column
-    dplyr::select(-ucc) |>
+    dplyr::select(one_of("ucc")) |>
 
     # Get the sum of the mean and each of the replicate means
     dplyr::summarise(dplyr::across(tidyselect::everything(), sum)) |>
@@ -166,16 +172,24 @@ ce_mean <- function(ce_data) {
       # replicate means then square those differences. Upon running the next
       # command, the values in the "adj_finlwt21" column will represent the
       # estimated means for each of the UCCs.
-      dplyr::across(tidyselect::all_of(wtrep_vars), \(x) (finlwt21 - x) ^ 2),
-
-      # Sum up the 44 squared differences
-      sum_sqrs = rowSums(across(tidyselect::all_of(wtrep_vars))),
-
+      dplyr::across(
+        tidyselect::all_of(wtrep_vars),
+        \(x) (.data$finlwt21 - x) ^ 2
+      )
+    ) |>
+    dplyr::rowwise() |>
+    # Sum up the 44 squared differences
+    dplyr::mutate(
+      sum_sqrs = sum(dplyr::c_across(tidyselect::all_of(wtrep_vars)))
+    ) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(
       # Generate a standard error column by taking the sum of the 44 squared
       # differences, dividing it by 44, then taking the square root of the
       # result
-      se = sqrt((sum_sqrs / 44)),
-      cv = (se * 100) / finlwt21
+      se = sqrt((.data$sum_sqrs / 44)),
+      cv = (.data$se * 100) / .data$finlwt21
     ) |>
-    dplyr::select(agg_exp, mean_exp = "finlwt21", se, cv)
+    dplyr::select(all_of(c("agg_exp", "finlwt21", "se", "cv"))) |>
+    dplyr::rename(mean_exp = "finlwt21")
 }

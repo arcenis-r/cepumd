@@ -99,10 +99,10 @@ ce_uccs <- function(hg,
     } else {
       combos <- hg |>
         dplyr::mutate(hg_row = dplyr::row_number()) |>
-        dplyr::filter(ucc %in% ucc_group, title %in% expenditure)
+        dplyr::filter(.data$ucc %in% ucc_group, .data$title %in% expenditure)
 
       if (nrow(combos) == 1) {
-        title_row <- dplyr::pull(combos, hg_row)
+        title_row <- dplyr::pull(combos, .data$hg_row)
       } else {
         stop(
           stringr::str_c(
