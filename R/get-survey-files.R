@@ -13,7 +13,7 @@
 #'
 #' @importFrom purrr map map2_df
 #' @importFrom dplyr contains filter
-#'
+#' @importFrom utils unzip
 
 get_survey_files <- function(year, survey, file_yrs, qtrs, zp_file) {
 
@@ -28,21 +28,21 @@ get_survey_files <- function(year, survey, file_yrs, qtrs, zp_file) {
       # Make a dataframe of the required files from all of the zip files
       file_df <- purrr::map(
         zp_file,
-        \(x) unzip(x, list = TRUE) |> dplyr::mutate(zip_file = x)
+        \(x) utils::unzip(x, list = TRUE) |> dplyr::mutate(zip_file = x)
       ) |>
         purrr::list_rbind() |>
         dplyr::filter(
           stringr::str_detect(
-            Name,
-            stringr::str_c(qtrs, collapse = "|")
+            .data$Name,
+            stringr::str_c(.data$qtrs, collapse = "|")
           )
         )
 
       family_files <- file_df |>
-        dplyr::filter(stringr::str_detect(Name, family_abbrev))
+        dplyr::filter(stringr::str_detect(.data$Name, family_abbrev))
 
       expenditure_files <- file_df |>
-        dplyr::filter(stringr::str_detect(Name, expenditure_abbrev))
+        dplyr::filter(stringr::str_detect(.data$Name, expenditure_abbrev))
 
       if (
         nrow(family_files) != length(qtrs) |

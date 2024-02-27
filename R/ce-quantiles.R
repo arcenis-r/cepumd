@@ -87,7 +87,7 @@ ce_quantiles <- function(ce_data, probs = 0.5) {
       dplyr::filter(cumsum(.data$finlwt21) < sum(.data$finlwt21 * probs[i]))
 
     above <- df |>
-      dplyr::filter(.data$cumsum(finlwt21) > sum(.data$finlwt21 * probs[i]))
+      dplyr::filter(cumsum(.data$finlwt21) > sum(.data$finlwt21 * probs[i]))
 
     if (sum(below$finlwt21) == sum(above$finlwt21)) {
       result <- sum(

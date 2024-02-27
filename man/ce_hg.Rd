@@ -9,8 +9,8 @@ ce_hg(year, survey, hg_zip_path = NULL, hg_file_path = NULL)
 \arguments{
 \item{year}{A year between 1996 and the last year of available CE PUMD.}
 
-\item{survey}{The type of HG file, i.e., interview, diary, or
-integrated. Accepted as a character or symbol.}
+\item{survey}{The type of HG file; one of "interview", "diary", or
+"integrated". Accepted as a character or symbol.}
 
 \item{hg_zip_path}{The path to a zip file containing HG files downloaded
 from the CE website. The structure of the zip file must be exactly as it is
@@ -50,9 +50,11 @@ process than do expenditure means. Please see
 in the CE}
 }
 \examples{
+\dontrun{
 # 'survey' can be entered as a string
-ce_hg(2016, "integrated")
+ce_hg(2016, "integrated", "hg-files.zip")
 
 # 'survey' can also be entered as a symbol
-ce_hg(2016, integrated)
+ce_hg(2016, integrated, "hg-files.zip")
+}
 }

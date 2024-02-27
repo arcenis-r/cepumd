@@ -11,6 +11,11 @@
 read.fmld <- function(fp, zp, ...) {
   grp_vars <- rlang::ensyms(...)
 
+  grp_var_names <- purrr::map_chr(
+    grp_vars,
+    \(x) rlang::as_string(x) |> stringr::str_to_lower()
+  )
+
   df <- suppressWarnings(
     readr::read_csv(
       unz(zp, fp),
@@ -23,11 +28,6 @@ read.fmld <- function(fp, zp, ...) {
   names(df) <- tolower(names(df))
 
   if (length(grp_vars) > 0) {
-    grp_var_names <- purrr::map_chr(
-      grp_vars,
-      \(x) rlang::as_string(x) |> stringr::str_to_lower()
-    )
-
     if (length(setdiff(grp_var_names, names(df))) > 0) {
       stop(
         stringr::str_c(
@@ -41,14 +41,19 @@ read.fmld <- function(fp, zp, ...) {
 
   df <- df |>
     dplyr::select(
-      newid, finlwt21, dplyr::contains("wtrep"), !!!grp_vars
+      tidyselect::all_of(c("newid", "finlwt21")),
+      tidyselect::contains("wtrep"),
+      tidyselect::any_of(grp_var_names)
     ) |>
     dplyr::mutate(
       newid = stringr::str_pad(
-        newid, width = 8, side = "left", pad = "0"
+        .data$newid,
+        width = 8,
+        side = "left",
+        pad = "0"
       ),
       mo_scope = 3,
-      popwt = (finlwt21 / 4) * (mo_scope / 3)
+      popwt = (.data$finlwt21 / 4) * (.data$mo_scope / 3)
     )
 
   return(df)

@@ -26,27 +26,32 @@ read.mtbi <- function(fp, zp, year, uccs, integrate_data, hg) {
 
   df <- df |>
     dplyr::select(
-      newid, ref_yr, ref_mo, ucc, cost, pubflag
+      tidyselect::all_of(
+        c("newid", "ref_yr", "ref_mo", "ucc", "cost", "pubflag")
+      )
     ) |>
     dplyr::mutate(
       newid = stringr::str_pad(
-        newid, width = 8, side = "left", pad = "0"
+        .data$newid,
+        width = 8,
+        side = "left",
+        pad = "0"
       ),
-      ucc = stringr::str_pad(ucc, width = 6, side = "left", pad = "0"),
-      dplyr::across(c(ref_yr, ref_mo), as.numeric)
+      ucc = stringr::str_pad(.data$ucc, width = 6, side = "left", pad = "0"),
+      dplyr::across(tidyselect::all_of(c("ref_yr", "ref_mo")), as.numeric)
     )
 
-  if (integrate_data) df <- df |> dplyr::filter(pubflag %in% "2")
+  if (integrate_data) df <- df |> dplyr::filter(.data$pubflag %in% "2")
 
   df |>
-    dplyr::filter(ref_yr %in% year, ucc %in% uccs) |>
+    dplyr::filter(.data$ref_yr %in% year, .data$ucc %in% uccs) |>
     dplyr::left_join(
-      hg |> dplyr::select(ucc, factor),
+      hg |> dplyr::select(tidyselect::all_of(c("ucc", "factor"))),
       by = "ucc"
     ) |>
     dplyr::mutate(
-      cost = cost * as.numeric(as.character((factor)))
+      cost = .data$cost * as.numeric(as.character((.data$factor)))
     ) |>
-    dplyr::group_by(newid, ucc, ref_yr, ref_mo) |>
-    dplyr::summarise(cost = sum(cost), .groups = "drop")
+    dplyr::group_by(.data$newid, .data$ucc, .data$ref_yr, .data$ref_mo) |>
+    dplyr::summarise(cost = sum(.data$cost), .groups = "drop")
 }

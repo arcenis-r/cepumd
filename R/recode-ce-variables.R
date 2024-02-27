@@ -18,13 +18,17 @@ recode_ce_variables <- function(srvy_data, code_file, srvy) {
   recode_vars <- recode_vars[!recode_vars %in% "ucc"]
 
   ce_codes_srvy <- code_file |>
-    dplyr::filter(survey == srvy, variable %in% recode_vars) |>
-    dplyr::select(variable, code_value, code_description)
+    dplyr::filter(.data$survey == srvy, .data$variable %in% recode_vars) |>
+    dplyr::select(
+      tidyselect::all_of(
+        c("variable", "code_value", "code_description")
+      )
+    )
 
   for (i in recode_vars) {
     code_col <- srvy_data[[i]]
     codes_df <- ce_codes_srvy |>
-      dplyr::filter(variable %in% i)
+      dplyr::filter(.data$variable %in% i)
 
     srvy_data[, i] <- factor(
       code_col,

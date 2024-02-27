@@ -98,7 +98,8 @@ ce_mean <- function(ce_data) {
   # Summarise the data at the UCC level. ce_prepdata() summarises at the level
   # of reference year and month to allow for inflation adjustment.
   ce_data <- ce_data |>
-    tidyr::replace_na(list(.data$cost = 0)) |>
+    dplyr::mutate(cost = dplyr::if_else(is.na(.data$cost), 0, .data$cost)) |>
+    # tidyr::replace_na(list(.data$cost = 0)) |>
     dplyr::group_by(.data$survey, .data$newid, .data$ucc) |>
     dplyr::summarise(
       dplyr::across(

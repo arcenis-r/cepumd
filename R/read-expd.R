@@ -27,34 +27,46 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg) {
   if (year >= 1996 & year <= 2011) {
     df <- df |>
       dplyr::mutate(
-        expnyr = as.integer(stringr::str_sub(qredate, 7, 10)),
-        expnmo = as.integer(stringr::str_sub(qredate, 3, 4))
+        expnyr = as.integer(stringr::str_sub(.data$qredate, 7, 10)),
+        expnmo = as.integer(stringr::str_sub(.data$qredate, 3, 4))
       )
   }
 
   df <- df |>
     dplyr::select(
-      newid, ref_yr = "expnyr", ref_mo = "expnmo", ucc, cost, pub_flag
+      tidyselect::all_of(
+        c("newid", "ref_yr", "ref_mo", "ucc", "cost", "pub_flag")
+      )
     ) |>
+    dplyr::rename(
+      ref_yr = "expnyr",
+      ref_mo = "expnmo"
+    )
     dplyr::mutate(
       newid = stringr::str_pad(
-        newid, width = 8, side = "left", pad = "0"
+        .data$newid,
+        width = 8,
+        side = "left",
+        pad = "0"
       ),
-      ucc = stringr::str_pad(ucc, width = 6, side = "left", pad = "0"),
-      cost = cost * 13,
-      dplyr::across(c(ref_yr, ref_mo), as.numeric)
+      ucc = stringr::str_pad(.data$ucc, width = 6, side = "left", pad = "0"),
+      cost = .data$cost * 13,
+      dplyr::across(tidyselect::all_of(c("ref_yr", "ref_mo"), as.numeric))
     )
 
-  if (integrate_data) df <- df |> dplyr::filter(pub_flag %in% "2")
+  if (integrate_data) df <- df |> dplyr::filter(.data$pub_flag %in% "2")
 
   df <- df |>
-    dplyr::filter(ucc %in% uccs) |>
-    dplyr::left_join(dplyr::select(hg, ucc, factor), by = "ucc") |>
-    dplyr::mutate(
-      cost = cost * as.numeric(as.character(factor))
+    dplyr::filter(.data$ucc %in% uccs) |>
+    dplyr::left_join(
+      dplyr::select(tidyselect::all_of(c("hg", "ucc", "factor"))),
+      by = "ucc"
     ) |>
-    dplyr::group_by(newid, ucc, ref_yr, ref_mo) |>
-    dplyr::summarise(cost = sum(cost), .groups = "drop")
+    dplyr::mutate(
+      cost = .data$cost * as.numeric(as.character(.data$factor))
+    ) |>
+    dplyr::group_by(.data$newid, .data$ucc, .data$ref_yr, .data$ref_mo) |>
+    dplyr::summarise(cost = sum(.data$cost), .groups = "drop")
 
   return(df)
 }
