@@ -1,7 +1,10 @@
 test_that("'year' accepts only valid years", {
   expect_error(
     ce_hg(1990, "interview"),
-    "'year' must be a number between 1997 and 2022"
+    paste(
+      "This function can only convert hierarchical grouping files from 1997",
+      "onward."
+    )
   )
 })
 

@@ -35,13 +35,13 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg) {
   df <- df |>
     dplyr::select(
       tidyselect::all_of(
-        c("newid", "ref_yr", "ref_mo", "ucc", "cost", "pub_flag")
+        c("newid", "expnyr", "expnmo", "ucc", "cost", "pub_flag")
       )
     ) |>
     dplyr::rename(
       ref_yr = "expnyr",
       ref_mo = "expnmo"
-    )
+    ) |>
     dplyr::mutate(
       newid = stringr::str_pad(
         .data$newid,
@@ -51,7 +51,7 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg) {
       ),
       ucc = stringr::str_pad(.data$ucc, width = 6, side = "left", pad = "0"),
       cost = .data$cost * 13,
-      dplyr::across(tidyselect::all_of(c("ref_yr", "ref_mo"), as.numeric))
+      dplyr::across(tidyselect::all_of(c("ref_yr", "ref_mo")), as.numeric)
     )
 
   if (integrate_data) df <- df |> dplyr::filter(.data$pub_flag %in% "2")
@@ -59,7 +59,7 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg) {
   df <- df |>
     dplyr::filter(.data$ucc %in% uccs) |>
     dplyr::left_join(
-      dplyr::select(tidyselect::all_of(c("hg", "ucc", "factor"))),
+      hg |> dplyr::select(tidyselect::all_of(c("ucc", "factor"))),
       by = "ucc"
     ) |>
     dplyr::mutate(

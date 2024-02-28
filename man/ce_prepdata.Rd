@@ -116,6 +116,7 @@ the Interview. Please download the CE Source Selection Document for a
 complete listing: \url{https://www.bls.gov/cex/ce_source_integrate.xlsx}.
 }
 \examples{
+\dontrun{
 # The following workflow will prepare a dataset for calculating integrated
 # pet expenditures for 2021 keep the "sex_ref" variable in the data to
 # potentially calculate means by sex of the reference person.
@@ -127,7 +128,6 @@ my_hg <- ce_hg(2021, integrated, "CE-HG-Inter-2021.txt")
 pet_uccs <- ce_uccs(my_hg, "Pets")
 
 # Store the diary data (not run)
-\dontrun{
 pets_dia <- ce_prepdata(
   year = 2021,
   survey = integrated,

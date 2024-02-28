@@ -34,5 +34,5 @@ test_that("dataset all required variables are numeric", {
 })
 
 test_that("correct mean is calculated", {
-  expect_equal(round(ce_mean(ce_diary_pets21)$mean_exp, 2), 410.55)
+  expect_equal(round(ce_mean(ce_diary_pets21)$mean_exp, 2), 676.62)
 })

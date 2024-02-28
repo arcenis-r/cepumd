@@ -34,7 +34,7 @@ get_survey_files <- function(year, survey, file_yrs, qtrs, zp_file) {
         dplyr::filter(
           stringr::str_detect(
             .data$Name,
-            stringr::str_c(.data$qtrs, collapse = "|")
+            stringr::str_c(qtrs, collapse = "|")
           )
         )
 

@@ -23,6 +23,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # First generate an HG file
 #' my_hg <- ce_hg(2021, interview, hg_file_path = CE-HG-Inter-2021.txt)
 #'
@@ -30,6 +31,7 @@
 #' pet_uccs <- ce_uccs(my_hg, "Pets")
 #' pet_uccs
 #' # [1] "610320" "620410" "620420"
+#' }
 
 ce_uccs <- function(hg,
                     expenditure = NULL,
@@ -62,9 +64,11 @@ ce_uccs <- function(hg,
 
     if (is.null(expenditure)) {
       stop(
-        "Either a valid 'expenditure' or valid 'ucc_group' is required and ",
-        "it must match exactly the spelling in the HG file corresponding ",
-        "column. Please see details in the ce_ucc() documentation."
+        paste(
+          "Either a valid 'expenditure' or valid 'ucc_group' is required and",
+          "it must match exactly the spelling in the HG file corresponding",
+          "column. Please see details in the ce_ucc() documentation."
+        )
       )
     } else if (length(stringr::str_which(hg$title, expenditure)) > 1) {
       warning(

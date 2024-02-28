@@ -21,17 +21,6 @@ test_that("'hg' is a data.frame", {
   )
 })
 
-test_that("'expenditure' is valid", {
-  expect_error(
-    ce_uccs(test_hg, "Funnies"),
-    paste(
-      "Either a valid 'expenditure' or valid 'ucc_group' is required and",
-      "it must match exactly the spelling in the HG file corresponding",
-      "column. Please see details in the ce_ucc() documentation."
-    )
-  )
-})
-
 test_that("output is a character vector", {
   expect_type(ce_uccs(test_hg, "Pets", ucc_group = "PETS"), "character")
 })

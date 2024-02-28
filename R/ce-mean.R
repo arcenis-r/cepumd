@@ -152,7 +152,10 @@ ce_mean <- function(ce_data) {
     # expenditures for each UCC.
     dplyr::summarise(
       dplyr::across(
-        c(dplyr::contains("wtrep"), .data$finlwt21, .data$agg_exp),
+        c(
+          dplyr::contains("wtrep"),
+          tidyselect::all_of(c("finlwt21", "agg_exp"))
+        ),
         sum
       ),
       .groups = "drop"
@@ -160,10 +163,10 @@ ce_mean <- function(ce_data) {
 
     # Drop the observation that accounts for households not having reported any
     # expenditures in the selected categories
-    tidyr::drop_na(!.data$ucc) |>
+    tidyr::drop_na(tidyselect::one_of("ucc")) |>
 
     # Drop the UCC column
-    dplyr::select(one_of("ucc")) |>
+    dplyr::select(!tidyselect::one_of("ucc")) |>
 
     # Get the sum of the mean and each of the replicate means
     dplyr::summarise(dplyr::across(tidyselect::everything(), sum)) |>

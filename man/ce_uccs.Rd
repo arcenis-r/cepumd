@@ -36,6 +36,7 @@ If both a valid expenditure and valid ucc_group are input, ucc_group
 will be used.
 }
 \examples{
+\dontrun{
 # First generate an HG file
 my_hg <- ce_hg(2021, interview, hg_file_path = CE-HG-Inter-2021.txt)
 
@@ -43,4 +44,5 @@ my_hg <- ce_hg(2021, interview, hg_file_path = CE-HG-Inter-2021.txt)
 pet_uccs <- ce_uccs(my_hg, "Pets")
 pet_uccs
 # [1] "610320" "620410" "620420"
+}
 }

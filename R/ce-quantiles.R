@@ -93,12 +93,9 @@ ce_quantiles <- function(ce_data, probs = 0.5) {
       result <- sum(
         below[length(below), "cost"],
         above[1, "cost"]
-        # below |> dplyr::slice(n()) |> dplyr::pull(.data$cost),
-        # above |> dplyr::slice(1) |> dplyr::pull(.data$cost)
       ) / 2
     } else {
-      above[1, "cost"]
-      # result <- above |> dplyr::slice(1) |> dplyr::pull(cost)
+      result <- above[1, "cost"]
     }
 
     results[i] <- result
@@ -106,7 +103,7 @@ ce_quantiles <- function(ce_data, probs = 0.5) {
 
   result_names <- paste0(format(probs * 100, trim = TRUE), "%")
 
-  result_df <- data.frame(probs = result_names, quantile = results)
+  result_df <- data.frame(probs = result_names, quantile = unlist(results))
 
   return(result_df)
 }
