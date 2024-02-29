@@ -104,7 +104,7 @@ ce_mean <- function(ce_data) {
     dplyr::summarise(
       dplyr::across(
         c(
-          all_of(c("finlwt21", "mo_scope", "popwt")),
+          tidyselect::all_of(c("finlwt21", "mo_scope", "popwt")),
           tidyselect::starts_with("wtrep")
         ),
         mean

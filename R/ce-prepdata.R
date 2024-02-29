@@ -307,13 +307,13 @@ ce_prepdata <- function(year,
 
       \(x, y) read.fmli(x, y, year, !!!grp_vars)
     ) |>
-      dplyr::bind_rows() |>
-      dplyr::mutate(
-        dplyr::across(
-          dplyr::contains("wtrep"),
-          \(x) dplyr::if_else(is.na(x), 0, x) # tidyr::replace_na(x, 0)
-        )
-      )
+      dplyr::bind_rows()
+      # dplyr::mutate(
+      #   dplyr::across(
+      #     dplyr::contains("wtrep"),
+      #     \(x) dplyr::if_else(is.na(x), 0, x) # tidyr::replace_na(x, 0)
+      #   )
+      # )
 
     mtbi <- purrr::map2_df(
       interview_files$expenditure$Name,
@@ -356,13 +356,13 @@ ce_prepdata <- function(year,
       diary_files$family$zip_file,
       \(x, y) read.fmld(x, y, !!!grp_vars)
     ) |>
-      dplyr::bind_rows() |>
-      dplyr::mutate(
-        dplyr::across(
-          dplyr::contains("wtrep"),
-          \(x) dplyr::if_else(is.na(x), 0, x) # tidyr::replace_na(x, 0)
-        )
-      )
+      dplyr::bind_rows()
+      # dplyr::mutate(
+      #   dplyr::across(
+      #     dplyr::contains("wtrep"),
+      #     \(x) dplyr::if_else(is.na(x), 0, x) # tidyr::replace_na(x, 0)
+      #   )
+      # )
 
     expd <- purrr::map2_df(
       diary_files$expenditure$Name,
@@ -372,7 +372,7 @@ ce_prepdata <- function(year,
         y,
         year = year,
         uccs = uccs,
-        integrate_data = FALSE,
+        integrate_data = integrate_data,
         hg = hg
       )
     ) |>

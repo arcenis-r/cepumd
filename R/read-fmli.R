@@ -65,11 +65,12 @@ read.fmli <- function(fp, zp, year, ...) {
       ),
       dplyr::across(tidyselect::any_of(grp_var_names), as.character),
       mo_scope = dplyr::case_when(
-        .data$qintrvyr %in% (.data$year + 1) ~ 4 - .data$qintrvmo,
+        .data$qintrvyr %in% (year + 1) ~ 4 - .data$qintrvmo,
         .data$qintrvmo %in% 1:3 ~ .data$qintrvmo - 1,
         .default = 3
       ),
-      popwt = (.data$finlwt21 / 4) * (.data$mo_scope / 3)
+      popwt = (.data$finlwt21 / 4) * (.data$mo_scope / 3),
+      dplyr::across(tidyselect::contains("wtrep"), \(x) tidyr::replace_na(x, 0))
     ) |>
     dplyr::select(!tidyselect::any_of(c("qintrvyr", "qintrvmo")))
 }

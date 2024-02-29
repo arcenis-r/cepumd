@@ -58,7 +58,8 @@ read.fmld <- function(fp, zp, ...) {
       ),
       dplyr::across(tidyselect::any_of(grp_var_names), as.character),
       mo_scope = 3,
-      popwt = (.data$finlwt21 / 4) * (.data$mo_scope / 3)
+      popwt = (.data$finlwt21 / 4) * (.data$mo_scope / 3),
+      dplyr::across(tidyselect::contains("wtrep"), \(x) tidyr::replace_na(x, 0))
     )
 
   return(df)

@@ -50,20 +50,20 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg) {
         pad = "0"
       ),
       ucc = stringr::str_pad(.data$ucc, width = 6, side = "left", pad = "0"),
-      cost = .data$cost * 13,
-      dplyr::across(tidyselect::all_of(c("ref_yr", "ref_mo")), as.numeric)
+      # cost = .data$cost * 13,
+      dplyr::across(tidyselect::all_of(c("ref_yr", "ref_mo", "cost")), as.numeric)
     )
 
   if (integrate_data) df <- df |> dplyr::filter(.data$pub_flag %in% "2")
 
   df <- df |>
-    dplyr::filter(.data$ucc %in% uccs) |>
+    dplyr::filter(.data$ref_yr %in% year, .data$ucc %in% uccs) |>
     dplyr::left_join(
       hg |> dplyr::select(tidyselect::all_of(c("ucc", "factor"))),
       by = "ucc"
     ) |>
     dplyr::mutate(
-      cost = .data$cost * as.numeric(as.character(.data$factor))
+      cost = .data$cost * 13 * as.numeric(as.character(.data$factor))
     ) |>
     dplyr::group_by(.data$newid, .data$ucc, .data$ref_yr, .data$ref_mo) |>
     dplyr::summarise(cost = sum(.data$cost), .groups = "drop")
