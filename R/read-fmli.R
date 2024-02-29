@@ -60,10 +60,7 @@ read.fmli <- function(fp, zp, year, ...) {
       qintrvmo = as.integer(.data$qintrvmo),
       qintrvyr = as.integer(.data$qintrvyr),
       dplyr::across(
-        c(
-          tidyselect::one_of("finlwt21"),
-          tidyselect::contains("wtrep")
-        ),
+        c(tidyselect::one_of("finlwt21"), tidyselect::contains("wtrep")),
         as.numeric
       ),
       dplyr::across(tidyselect::any_of(grp_var_names), as.character),
