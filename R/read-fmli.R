@@ -59,6 +59,14 @@ read.fmli <- function(fp, zp, year, ...) {
       ),
       qintrvmo = as.integer(.data$qintrvmo),
       qintrvyr = as.integer(.data$qintrvyr),
+      dplyr::across(
+        c(
+          tidyselect::one_of("finlwt21"),
+          tidyselect::contains("wtrep")
+        ),
+        as.numeric
+      ),
+      dplyr::across(tidyselect::any_of(grp_var_names), as.character),
       mo_scope = dplyr::case_when(
         .data$qintrvyr %in% (.data$year + 1) ~ 4 - .data$qintrvmo,
         .data$qintrvmo %in% 1:3 ~ .data$qintrvmo - 1,

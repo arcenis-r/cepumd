@@ -52,6 +52,11 @@ read.fmld <- function(fp, zp, ...) {
         side = "left",
         pad = "0"
       ),
+      dplyr::across(
+        c(tidyselect::one_of("finlwt21"), tidyselect::contains("wtrep")),
+        as.numeric
+      ),
+      dplyr::across(tidyselect::any_of(grp_var_names), as.character),
       mo_scope = 3,
       popwt = (.data$finlwt21 / 4) * (.data$mo_scope / 3)
     )
