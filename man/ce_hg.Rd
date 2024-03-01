@@ -48,7 +48,7 @@ to household characteristics, income, assets, or liabilities. The scope of
 the functions in this package is limited to expenditures. Income, for
 example, is imputed and calculation of income means goes through a different
 process than do expenditure means. Please see
-\link\href{https://www.bls.gov/cex/csxguide.pdf}{User's Guide to Income Imputation in the CE}
+\link \href{https://www.bls.gov/cex/csxguide.pdf}{User's Guide to Income Imputation in the CE}
 }
 \examples{
 \dontrun{
