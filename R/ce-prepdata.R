@@ -153,9 +153,9 @@ ce_prepdata <- function(year,
     stop("'survey' must be one of 'interview,' 'diary,' or 'integrated.'")
   }
 
-  if (length(uccs) > 0 & is.character(uccs)) {
+  if (length(uccs) > 0 && is.character(uccs)) {
     for (u in uccs) {
-      if (is.na(as.numeric(u)) | nchar(u) != 6) {
+      if (is.na(as.numeric(u)) || nchar(u) != 6) {
         stop(
           paste0(
             "'", u, "' is not a valid UCC. Please review the CE PUMD",
@@ -170,8 +170,8 @@ ce_prepdata <- function(year,
 
   if (!is.null(hg)) {
     if (
-      !is.data.frame(hg) |
-      !all(c("title", "level", "ucc", "factor") %in% names(hg))
+      !is.data.frame(hg) ||
+        !all(c("title", "level", "ucc", "factor") %in% names(hg))
     ) {
       stop(
         paste(
@@ -183,16 +183,16 @@ ce_prepdata <- function(year,
   }
 
   if (recode_variables) {
-    if(!is.null(own_codebook)) {
+    if (!is.null(own_codebook)) {
       if (
-        !is.data.frame(own_codebook) |
-        !all(
-          c(
-            "survey", "file", "variable", "code_value", "code_description",
-            "first_year", "first_quarter", "last_year", "last_quarter"
-          ) %in%
-          names(janitor::clean_names(own_codebook))
-        )
+        !is.data.frame(own_codebook) ||
+          !all(
+            c(
+              "survey", "file", "variable", "code_value", "code_description",
+              "first_year", "first_quarter", "last_year", "last_quarter"
+            ) %in%
+              names(janitor::clean_names(own_codebook))
+          )
       ) {
         stop(
           stringr::str_c(
@@ -204,7 +204,7 @@ ce_prepdata <- function(year,
         )
       }
 
-      if(!all({{grp_var_names}} %in% tolower(own_codebook$variable))) {
+      if (!all({{grp_var_names}} %in% tolower(own_codebook$variable))) {
         warning(
           "Some of your grouping variable(s) is (are) were not found in your.",
           "codebook. Only variables found in the codebook will be recoded."
@@ -268,7 +268,7 @@ ce_prepdata <- function(year,
     }
   }  # end "if (recode_variables)"
 
-  if (is.null(int_zp) & is.null(dia_zp)) {
+  if (is.null(int_zp) && is.null(dia_zp)) {
     stop(
       "You must provide at least 1 zip file with data for either 'dia_zip' or ",
       "'int_zip'. In previous versions of 'cepumd' can no longer download ",
@@ -311,14 +311,16 @@ ce_prepdata <- function(year,
     mtbi <- purrr::map2_df(
       interview_files$expenditure$Name,
       interview_files$expenditure$zip_file,
-      \(x, y) read.mtbi(
-        x,
-        y,
-        year = year,
-        uccs = uccs,
-        integrate_data = integrate_data,
-        hg = hg
-      )
+      \(x, y) {
+        read.mtbi(
+          x,
+          y,
+          year = year,
+          uccs = uccs,
+          integrate_data = integrate_data,
+          hg = hg
+        )
+      }
     ) |>
       dplyr::bind_rows()
 
@@ -354,14 +356,16 @@ ce_prepdata <- function(year,
     expd <- purrr::map2_df(
       diary_files$expenditure$Name,
       diary_files$expenditure$zip_file,
-      \(x, y) read.expd(
-        x,
-        y,
-        year = year,
-        uccs = uccs,
-        integrate_data = integrate_data,
-        hg = hg
-      )
+      \(x, y) {
+        read.expd(
+          x,
+          y,
+          year = year,
+          uccs = uccs,
+          integrate_data = integrate_data,
+          hg = hg
+        )
+      }
     ) |>
       dplyr::bind_rows()
 

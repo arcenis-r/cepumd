@@ -82,7 +82,7 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
     stop("'survey' must be one of interview, diary, or integrated")
   }
 
-  if (is.null(hg_zip_path) & is.null(hg_file_path)) {
+  if (is.null(hg_zip_path) && is.null(hg_file_path)) {
     stop("Either 'hg_zip_path' or 'hg_file_path' is required.")
   }
 
@@ -95,7 +95,7 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
   }
 
   if (!is.null(hg_zip_path)) {
-    if (!file.exists(hg_zip_path) & !valid_hg_file) {
+    if (!file.exists(hg_zip_path) && !valid_hg_file) {
       stop("The path provided for 'hg_zip_path' does not exist.")
     }
   }
@@ -107,7 +107,7 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
     "integrated" = "Integ"
   )
 
-  if (year %in% 2013:2020 | (year %in% 1998:2000 & instrument %in% "Integ")) {
+  if (year %in% 2013:2020 || (year %in% 1998:2000 && instrument %in% "Integ")) {
     pos_start <- c(1, 4, 7, 70, 83, 86, 89)
     pos_end <- c(1, 4, 69, 77, 83, 86, NA)
   } else {
@@ -142,14 +142,18 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
 
   purrr::map(
     hg_lines,
-    \(x) purrr::map2(
-      pos_start,
-      pos_end,
-      \(y, z) stringr::str_sub(x, y, dplyr::if_else(is.na(z), nchar(x), z)) |>
-        stringr::str_squish()
-    ) |>
-      rlang::set_names(c_names) |>
-      dplyr::bind_cols()
+    \(x) {
+      purrr::map2(
+        pos_start,
+        pos_end,
+        \(y, z) {
+          stringr::str_sub(x, y, dplyr::if_else(is.na(z), nchar(x), z)) |>
+            stringr::str_squish()
+        }
+      ) |>
+        rlang::set_names(c_names) |>
+        dplyr::bind_cols()
+    }
   ) |>
     dplyr::bind_rows() |>
 

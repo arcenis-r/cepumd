@@ -24,7 +24,7 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg) {
 
   names(df) <- tolower(names(df))
 
-  if (year >= 1996 & year <= 2011) {
+  if (year >= 1996 && year <= 2011) {
     df <- df |>
       dplyr::mutate(
         expnyr = as.integer(stringr::str_sub(.data$qredate, 7, 10)),

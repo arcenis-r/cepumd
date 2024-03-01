@@ -39,8 +39,8 @@ ce_uccs <- function(hg,
                     uccs_only = TRUE) {
 
   if (
-    !is.data.frame(hg) |
-    !all(c("title", "level", "ucc", "factor") %in% names(hg))
+    !is.data.frame(hg) ||
+      !all(c("title", "level", "ucc", "factor") %in% names(hg))
   ) {
     stop(
       stringr::str_c(
@@ -52,11 +52,11 @@ ce_uccs <- function(hg,
   }
 
   if (!is.null(ucc_group)) {
-    if (!ucc_group %in% hg$ucc) {ucc_group <- NULL}
+    if (!ucc_group %in% hg$ucc) ucc_group <- NULL
   }
 
   if (!is.null(expenditure)) {
-    if (!expenditure %in% hg$title) {expenditure <- NULL}
+    if (!expenditure %in% hg$title) expenditure <- NULL
   }
 
 
@@ -137,4 +137,3 @@ ce_uccs <- function(hg,
 
   if (uccs_only) return(uccs) else return(hg[title_row:stop_row, ])
 }
-

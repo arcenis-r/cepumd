@@ -19,7 +19,6 @@ get_survey_files <- function(year, survey, file_yrs, qtrs, zp_file) {
 
   family_abbrev <- ifelse(survey %in% "diary", "fmld", "fmli")
   expenditure_abbrev <- ifelse(survey %in% "diary", "expd", "mtbi")
-  survey_short <- ifelse(survey %in% "diary", "diary", "intrvw")
 
   if (!is.null(zp_file)) {
     if (sum(file.exists(zp_file)) == 0) {
@@ -45,8 +44,8 @@ get_survey_files <- function(year, survey, file_yrs, qtrs, zp_file) {
         dplyr::filter(stringr::str_detect(.data$Name, expenditure_abbrev))
 
       if (
-        nrow(family_files) != length(qtrs) |
-        nrow(expenditure_files) != length(qtrs)
+        nrow(family_files) != length(qtrs) ||
+          nrow(expenditure_files) != length(qtrs)
       ) {
         warning(
           "The number of files in the zip does not match the number of ",
