@@ -12,16 +12,14 @@ Description: Provides functions and data files to help CE PUMD users
     <https://www.bls.gov/cex>.  For further reading on CE estimate
     calculations please see the CE Calculation section of the BLS Handbook
     of Methods at <https://www.bls.gov/opub/hom/cex/calculation.htm>. For
-    further informaiton about CE PUMD please visit
+    further information about CE PUMD please visit
     <https://www.bls.gov/cex/pumd.htm>.
 License: GPL (>= 3)
 Depends:
     R (>= 3.5.0)
 Imports: 
     dplyr (>= 1.0.0),
-    glue,
     janitor,
-    lifecycle,
     purrr,
     readr,
     readxl,

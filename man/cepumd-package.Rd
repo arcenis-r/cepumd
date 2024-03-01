@@ -6,6 +6,8 @@
 \alias{cepumd-package}
 \title{cepumd: Calculate Consumer Expenditure Survey (CE) Annual Estimates}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Provides functions and data files to help CE PUMD users calculate annual estimated expenditure means, standard errors, and quantiles according to the methods used by the CE using Public-Use Microdata (PUMD). For more information on the CE please visit \url{https://www.bls.gov/cex}. For further reading on CE estimate calculations please see the CE Calculation section of the BLS Handbook of Methods at \url{https://www.bls.gov/opub/hom/cex/calculation.htm}. For further informaiton about CE PUMD please visit \url{https://www.bls.gov/cex/pumd.htm}.
 }
 \seealso{
