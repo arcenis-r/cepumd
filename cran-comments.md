@@ -5,7 +5,7 @@
 * This is a new release.
 
 ## Explanation of notes from devtools::check_rhub()
-I ran both the standard RMD check and the check for Windows. The two sections below each show the same three notes. The first of the three notes relates to word spelling and the possible problems with validity of hyperlinks. I have checked all of these and the words are either acronyms, proper nouns, or words that are common in the domain and the hyperlinks are all valid. The next two notes are about files or directories that were found (''NULL'' and 'lastMiKTeXException'). I cannot actually find these files anywhere within the package files, so I'm not sure how to address this issue.
+I ran both the standard RMD check and the check for Windows. The two sections below each show the same three notes. The first of the three notes relates to word spelling and the possible problems with validity of hyperlinks. I have checked all of these and the words are either acronyms, proper nouns, or words that are common in the domain and the hyperlinks are all valid. The next two notes are about files or directories that were found (''NULL'' and 'lastMiKTeXException'). I cannot actually find these files anywhere within the package files, so I'm not sure how to address this issue, but it does not seem to hamper functionality.
 
 
 ## devtools::check_rhub() results
