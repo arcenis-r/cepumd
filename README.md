@@ -6,7 +6,7 @@
 coverage](https://codecov.io/gh/arcenis-r/cepumd/branch/master/graph/badge.svg)](https://app.codecov.io/gh/arcenis-r/cepumd?branch=master)
 <!-- badges: end -->
 
-# Introduction
+# cepumd <a href="https://arcenis-r.github.io/cepumd/"><img src="man/figures/logo.png" align="right" height="139" alt="cepumd website" /></a>
 
 The purpose of cepumd is to make working with Consumer Expenditure
 Surveys (CE) Public-Use Microdata (PUMD) easier toward calculating mean,
@@ -26,7 +26,7 @@ underlying the package are as follows:
   consumer unit (CU), i.e., not income, not assets, not liabilities, not
   gifts.
 
-## Challenges addressed by {cepumd}
+## Challenges addressed by `cepumd`
 
 `cepumd` seeks to address challenges in three categories: data
 gathering/organization; managing data inconsistencies; and calculating
