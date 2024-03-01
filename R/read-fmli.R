@@ -38,7 +38,7 @@ read.fmli <- function(fp, zp, year, ...) {
         stringr::str_c(
           "The following are not valid variable names: ",
           str_c(grp_var_names, collapse = ", ") |> stringr::str_to_upper(),
-          "\nPlease review the CE PUMD documentation and select valid variables."
+          "\nPlease review the CE PUMD documentation for valid variables."
         )
       )
     }

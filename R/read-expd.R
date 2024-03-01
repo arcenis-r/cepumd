@@ -50,7 +50,10 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg) {
         pad = "0"
       ),
       ucc = stringr::str_pad(.data$ucc, width = 6, side = "left", pad = "0"),
-      dplyr::across(tidyselect::all_of(c("ref_yr", "ref_mo", "cost")), as.numeric)
+      dplyr::across(
+        tidyselect::all_of(c("ref_yr", "ref_mo", "cost")),
+        as.numeric
+      )
     )
 
   if (integrate_data) df <- df |> dplyr::filter(.data$pub_flag %in% "2")

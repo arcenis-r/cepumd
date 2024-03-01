@@ -52,7 +52,7 @@ ce_quantiles <- function(ce_data, probs = 0.5) {
   if (length(setdiff(check_cols, names(ce_data))) > 0) {
     stop("Your dataset needs to include 'finlwt21' and the 'cost' variable")
   } else if (
-    length(setdiff(sapply(ce_data[, check_cols], class), "numeric")) > 0
+    !all(vapply(ce_data[, check_cols], class, character(1)) == "numeric")
   ) {
     stop("'finlwt21' and the 'cost' variable must be numeric.")
   }
@@ -82,7 +82,7 @@ ce_quantiles <- function(ce_data, probs = 0.5) {
 
   results <- numeric(length(probs))
 
-  for (i in 1:length(probs)) {
+  for (i in seq_along(probs)) {
     below <- df |>
       dplyr::filter(cumsum(.data$finlwt21) < sum(.data$finlwt21 * probs[i]))
 

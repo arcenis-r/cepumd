@@ -85,7 +85,7 @@ ce_mean <- function(ce_data) {
     )
   }
 
-  if (length(setdiff(sapply(ce_data[, check_cols], class), "numeric")) > 0) {
+  if (!all(vapply(ce_data[, check_cols], class, character(1)) == "numeric")) {
     stop(
       stringr::str_c(
         "'finlwt21', all replicate weight variables, i.e., 'wtrep01' to",
