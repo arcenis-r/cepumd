@@ -25,7 +25,7 @@ test_that("dataset all required variables are numeric", {
   expect_error(
     ce_diary_pets21 %>%
       dplyr::mutate(wtrep04 = as.character(wtrep04)) %>%
-        ce_mean,
+      ce_mean,
     paste(
       "'finlwt21', all replicate weight variables, i.e., 'wtrep01' to",
       "'wtrep44', and the 'cost' variable must be numeric."

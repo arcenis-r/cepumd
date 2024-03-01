@@ -20,7 +20,7 @@ test_that("dataset all required variables are numeric", {
   expect_error(
     ce_diary_pets21 |>
       dplyr::mutate(cost = as.character(cost)) |>
-        ce_quantiles(),
+      ce_quantiles(),
     "'finlwt21' and the 'cost' variable must be numeric."
   )
 })

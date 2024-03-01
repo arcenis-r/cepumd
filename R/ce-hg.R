@@ -174,14 +174,16 @@ ce_hg <- function(year, survey, hg_zip_path = NULL, hg_file_path = NULL) {
     dplyr::mutate(
       data = purrr::map(
         .data$stub_df,
-        \(x) x |>
-          dplyr::group_by(
-            .data$group, .data$level, .data$survey, .data$ucc, .data$factor
-          ) |>
-          dplyr::summarise(
-            title = stringr::str_c(.data$title, collapse = " "),
-            .groups = "drop"
-          )
+        \(x) {
+          x |>
+            dplyr::group_by(
+              .data$group, .data$level, .data$survey, .data$ucc, .data$factor
+            ) |>
+            dplyr::summarise(
+              title = stringr::str_c(.data$title, collapse = " "),
+              .groups = "drop"
+            )
+        }
       )
     ) |>
     tidyr::unnest(one_of("stub_df")) |>
