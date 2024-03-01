@@ -14,7 +14,7 @@
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarise
 #'
-#' @seealso \code{\link{ce_mean}}
+#' @seealso [ce_mean()]
 #'
 #' @examples
 #' \dontrun{

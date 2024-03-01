@@ -21,14 +21,16 @@ extracted. If this argument is given 'hg_zip_path' is ignored.}
 }
 \value{
 A data frame containing the following columns:
-* level - hierarchical level of the expenditure category
-* title - the title of the expenditure category
-* ucc - the Universal Classification Code (UCC) for the expenditure category
-* survey - the survey instrument from which the data for a given UCC are
-           sourced. This is most helpful when data for a type of expenditure
-           are collected in both the Interview and the Diary.
-* factor - the factor by which to multiply the expenditure in the calculation
-           of estimated means / medians
+\itemize{
+\item level - hierarchical level of the expenditure category
+\item title - the title of the expenditure category
+\item ucc - the Universal Classification Code (UCC) for the expenditure category
+\item survey - the survey instrument from which the data for a given UCC are
+sourced. This is most helpful when data for a type of expenditure
+are collected in both the Interview and the Diary.
+\item factor - the factor by which to multiply the expenditure in the calculation
+of estimated means / medians
+}
 }
 \description{
 A CE heiarchical grouping ('HG') file shows the levels of

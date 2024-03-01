@@ -21,7 +21,7 @@
 #' @importFrom dplyr bind_rows across
 #' @importFrom tidyselect all_of contains everything
 #'
-#' @seealso \code{\link{ce_quantiles}} \code{\link{ce_prepdata}}
+#' @seealso [ce_quantiles()] [ce_prepdata()]
 #'
 #' @examples
 #'
@@ -62,8 +62,8 @@
 #' published estimates released by the CE in most cases. The CE's published
 #' estimates are based on confidential data that are not topcoded nor have
 #' records suppressed. You can learn more at
-#' \href{https://www.bls.gov/cex/pumd_disclosure.htm}{CE Protection of
-#' Respondent Confidentiality}
+#' [CE Protection of
+#' Respondent Confidentiality](https://www.bls.gov/cex/pumd_disclosure.htm)
 
 ce_mean <- function(ce_data) {
 
@@ -99,7 +99,6 @@ ce_mean <- function(ce_data) {
   # of reference year and month to allow for inflation adjustment.
   ce_data <- ce_data |>
     dplyr::mutate(cost = dplyr::if_else(is.na(.data$cost), 0, .data$cost)) |>
-    # tidyr::replace_na(list(.data$cost = 0)) |>
     dplyr::group_by(.data$survey, .data$newid, .data$ucc) |>
     dplyr::summarise(
       dplyr::across(

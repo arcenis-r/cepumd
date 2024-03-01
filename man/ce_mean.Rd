@@ -14,10 +14,10 @@ indicator column. All but the survey column must be numeric.}
 \value{
 A 1-row dataframe containing the following columns:
 \itemize{
-  \item agg_exp - The estimated aggregate expenditure
-  \item mean_exp - The estimated mean expenditure
-  \item se - The estimated standard error of the estimated mean expenditure
-  \item cv - The coefficient of variation of the estimated mean expenditure
+\item agg_exp - The estimated aggregate expenditure
+\item mean_exp - The estimated mean expenditure
+\item se - The estimated standard error of the estimated mean expenditure
+\item cv - The coefficient of variation of the estimated mean expenditure
 }
 }
 \description{
@@ -30,8 +30,7 @@ records suppressed to protect respondent confidentiality, will not match the
 published estimates released by the CE in most cases. The CE's published
 estimates are based on confidential data that are not topcoded nor have
 records suppressed. You can learn more at
-\href{https://www.bls.gov/cex/pumd_disclosure.htm}{CE Protection of
-Respondent Confidentiality}
+\href{https://www.bls.gov/cex/pumd_disclosure.htm}{CE Protection of Respondent Confidentiality}
 }
 \examples{
 
@@ -68,5 +67,5 @@ utils_interview |>
 
 }
 \seealso{
-\code{\link{ce_quantiles}} \code{\link{ce_prepdata}}
+\code{\link[=ce_quantiles]{ce_quantiles()}} \code{\link[=ce_prepdata]{ce_prepdata()}}
 }

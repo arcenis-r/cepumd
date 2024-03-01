@@ -26,7 +26,7 @@
 #'
 #' @details
 #' Interview and Diary HG files are available starting in 1997 and integrated
-#' files start in 1996. For consistency, this function and other \code{cepumd}
+#' files start in 1996. For consistency, this function and other `cepumd`
 #' functions only work with data starting in 1997.
 #'
 #' The output will contain only expenditure UCCs and not UCCs related
@@ -34,7 +34,7 @@
 #' the functions in this package is limited to expenditures. Income, for
 #' example, is imputed and calculation of income means goes through a different
 #' process than do expenditure means. Please see
-#' \url{https://www.bls.gov/cex/csxguide.pdf}{User's Guide to Income Imputation
+#' <https://www.bls.gov/cex/csxguide.pdf>{User's Guide to Income Imputation
 #' in the CE}
 #'
 #' @export

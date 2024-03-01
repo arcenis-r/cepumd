@@ -10,7 +10,7 @@
 #' @param uccs A character vector of UCCs corresponding to expenditure
 #' categories in the hierarchical grouping (HG) for a given year and survey.
 #' @param hg A data frame that has, at least, the title, level, ucc, and
-#' factor columns of a CE HG file. Calling \code{\link{ce_hg}} will generate a
+#' factor columns of a CE HG file. Calling [ce_hg()] will generate a
 #' valid HG file.
 #' @param ... Variables to include in the dataset from the family
 #' characteristics file. This is intended to allow the user to calculate
@@ -18,18 +18,18 @@
 #' @param recode_variables A logical indicating whether to recode all coded
 #' variables except 'UCC' using the codes in the CE's excel dictionary which can
 #' be downloaded from the
-#' \href{https://www.bls.gov/cex/pumd_doc.htm}{CE Documentation Page}
+#' [CE Documentation Page](https://www.bls.gov/cex/pumd_doc.htm)
 #' @param int_zp String indicating the path of the Interview data zip file(s) if
 #' already stored. If the file(s) does not exist its corresponding zip file will
-#' be stored in that path. The default is \code{NULL} which causes the zip file
+#' be stored in that path. The default is `NULL` which causes the zip file
 #' to be stored in temporary memory during function operation.
-#' @param dia_zp Same as \code{int_zp} above, but for Diary data.
+#' @param dia_zp Same as `int_zp` above, but for Diary data.
 #' @param dict_path A string indicating the path where the CE PUMD dictionary
 #' is stored if already stored. If the file does not exist and
-#' \code{recode_variables = TRUE} the dictionary will be stored in this path.
-#' The default is \code{NULL} which causes the zip file to be stored in
+#' `recode_variables = TRUE` the dictionary will be stored in this path.
+#' The default is `NULL` which causes the zip file to be stored in
 #' temporary memory during function operation. Automatically changed to
-#' \code{NULL} if a valid input for \code{own_codebook} is given.
+#' `NULL` if a valid input for `own_codebook` is given.
 #' @param own_codebook An optional data frame containing a user-defined codebook
 #' containing the same columns as the CE Dictionary "Codes " sheet. If the input
 #' is not a data frame or does not have all of the required columns, the
@@ -84,7 +84,10 @@
 #' will be taken from for a given UCC. For example, of the 4 UCC's in the "Pets"
 #' category in 2017 two were sourced for publication from the Diary and two from
 #' the Interview. Please download the CE Source Selection Document for a
-#' complete listing: \url{https://www.bls.gov/cex/ce_source_integrate.xlsx}.
+#' complete listing: <https://www.bls.gov/cex/ce_source_integrate.xlsx>.
+#'
+#' Family characteristic variables added through "..." will be read in as
+#' character data type.
 #'
 #' @export
 #'
@@ -251,10 +254,6 @@ ce_prepdata <- function(year,
             max(.data$last_year, na.rm = TRUE),
             .data$last_year
           )
-          # last_year = tidyr::replace_na(
-          #   .data$last_year,
-          #   max(.data$last_year, na.rm = TRUE)
-          # )
         ) |>
         dplyr::filter(
           .data$first_year <= year,
@@ -308,12 +307,6 @@ ce_prepdata <- function(year,
       \(x, y) read.fmli(x, y, year, !!!grp_vars)
     ) |>
       dplyr::bind_rows()
-      # dplyr::mutate(
-      #   dplyr::across(
-      #     dplyr::contains("wtrep"),
-      #     \(x) dplyr::if_else(is.na(x), 0, x) # tidyr::replace_na(x, 0)
-      #   )
-      # )
 
     mtbi <- purrr::map2_df(
       interview_files$expenditure$Name,
@@ -357,12 +350,6 @@ ce_prepdata <- function(year,
       \(x, y) read.fmld(x, y, !!!grp_vars)
     ) |>
       dplyr::bind_rows()
-      # dplyr::mutate(
-      #   dplyr::across(
-      #     dplyr::contains("wtrep"),
-      #     \(x) dplyr::if_else(is.na(x), 0, x) # tidyr::replace_na(x, 0)
-      #   )
-      # )
 
     expd <- purrr::map2_df(
       diary_files$expenditure$Name,

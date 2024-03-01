@@ -51,5 +51,5 @@ utils_interview |>
 }
 }
 \seealso{
-\code{\link{ce_mean}}
+\code{\link[=ce_mean]{ce_mean()}}
 }

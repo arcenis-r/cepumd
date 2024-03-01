@@ -1,40 +1,45 @@
-Package: cepumd
 Type: Package
+Package: cepumd
 Title: Calculate Consumer Expenditure Survey (CE) Annual Estimates
 Version: 2.0.2
 Date: 2022-12-19
 Author: Arcenis Rojas <arcenis.rojas@tutanota.com>
 Maintainer: Arcenis Rojas <arcenis.rojas@tutanota.com>
-Description: Provides functions and data files to help CE PUMD users calculate 
-    annual estimated expenditure means, standard errors, and quantiles according
-    to the methods used by the CE using Public-Use Microdata (PUMD). For more
-    information on the CE please visit <https://www.bls.gov/cex>. 
-    For further reading on CE estimate calculations please see the CE 
-    Calculation section of the BLS Handbook of Methods at 
-    <https://www.bls.gov/opub/hom/cex/calculation.htm>. For further informaiton 
-    about CE PUMD please visit <https://www.bls.gov/cex/pumd.htm>.
+Description: Provides functions and data files to help CE PUMD users
+    calculate annual estimated expenditure means, standard errors, and
+    quantiles according to the methods used by the CE using Public-Use
+    Microdata (PUMD). For more information on the CE please visit
+    <https://www.bls.gov/cex>.  For further reading on CE estimate
+    calculations please see the CE Calculation section of the BLS Handbook
+    of Methods at <https://www.bls.gov/opub/hom/cex/calculation.htm>. For
+    further informaiton about CE PUMD please visit
+    <https://www.bls.gov/cex/pumd.htm>.
 License: GPL (>= 3)
-Encoding: UTF-8
-LazyData: true
-RoxygenNote: 7.3.1
 Depends:
     R (>= 3.5.0)
 Imports: 
     dplyr (>= 1.0.0),
-    tidyr,
-    stringr,
-    rlang,
-    readr,
+    glue,
+    janitor,
+    lifecycle,
     purrr,
-    utils,
+    readr,
     readxl,
+    rlang,
+    stringr,
+    tidyr,
     tidyselect (>= 1.2.0),
-    janitor
+    utils
 Suggests: 
-    testthat (>= 2.1.0),
+    covr,
     knitr,
     rmarkdown,
-    covr,
-    spelling
+    spelling,
+    testthat (>= 2.1.0)
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
 Language: en-US
-VignetteBuilder: knitr
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1

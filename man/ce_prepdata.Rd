@@ -24,7 +24,7 @@ ce_prepdata(
 symbol.}
 
 \item{hg}{A data frame that has, at least, the title, level, ucc, and
-factor columns of a CE HG file. Calling \code{\link{ce_hg}} will generate a
+factor columns of a CE HG file. Calling \code{\link[=ce_hg]{ce_hg()}} will generate a
 valid HG file.}
 
 \item{uccs}{A character vector of UCCs corresponding to expenditure
@@ -61,20 +61,20 @@ function will give an error message. See details for the required columns.}
 \value{
 A data frame containing the following columns:
 \itemize{
-  \item newid - A consumer unit (CU), or household, identifier
-  \item finlwt21 - CU weight variable
-  \item wtrep01 through wtrep44 - CU replicate weight variables (see details)
-  \item ... - Any family characteristics variables that were kept
-  \item mo_scope - Months in scope (see details)
-  \item popwt - An adjusted weight meant to account for the fact that a CUs
-        value of finlwt21 is meant to be representative of only 1 quarter of
-        data (see details)
-  \item ucc - The UCC for a given expenditure
-  \item ref_yr - The year in which the corresponding expenditure occurred
-  \item ref_mo - The month in which the corresponding expenditure occurred
-  \item cost - The value of the expenditure (in U.S. Dollars)
-  \item survey - An indicator of which survey the data come from: "I" for
-        Interview and "D" for Diary.
+\item newid - A consumer unit (CU), or household, identifier
+\item finlwt21 - CU weight variable
+\item wtrep01 through wtrep44 - CU replicate weight variables (see details)
+\item ... - Any family characteristics variables that were kept
+\item mo_scope - Months in scope (see details)
+\item popwt - An adjusted weight meant to account for the fact that a CUs
+value of finlwt21 is meant to be representative of only 1 quarter of
+data (see details)
+\item ucc - The UCC for a given expenditure
+\item ref_yr - The year in which the corresponding expenditure occurred
+\item ref_mo - The month in which the corresponding expenditure occurred
+\item cost - The value of the expenditure (in U.S. Dollars)
+\item survey - An indicator of which survey the data come from: "I" for
+Interview and "D" for Diary.
 }
 }
 \description{
@@ -114,6 +114,9 @@ will be taken from for a given UCC. For example, of the 4 UCC's in the "Pets"
 category in 2017 two were sourced for publication from the Diary and two from
 the Interview. Please download the CE Source Selection Document for a
 complete listing: \url{https://www.bls.gov/cex/ce_source_integrate.xlsx}.
+
+Family characteristic variables added through "..." will be read in as
+character data type.
 }
 \examples{
 \dontrun{

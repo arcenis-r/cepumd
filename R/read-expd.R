@@ -50,7 +50,6 @@ read.expd <- function(fp, zp, year, uccs, integrate_data, hg) {
         pad = "0"
       ),
       ucc = stringr::str_pad(.data$ucc, width = 6, side = "left", pad = "0"),
-      # cost = .data$cost * 13,
       dplyr::across(tidyselect::all_of(c("ref_yr", "ref_mo", "cost")), as.numeric)
     )
 

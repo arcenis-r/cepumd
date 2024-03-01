@@ -11,7 +11,7 @@ read.fmld(fp, zp, ...)
 
 \item{zp}{Zip file path}
 
-\item{...}{<[`dynamic-dots`][rlang::dyn-dots]> Additional variables to keep
+\item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Additional variables to keep
 (intended for grouping)}
 }
 \description{
