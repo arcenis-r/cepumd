@@ -14,6 +14,9 @@ Description: Provides functions and data files to help CE PUMD users
     further information about CE PUMD please visit
     <https://www.bls.gov/cex/pumd.htm>.
 License: GPL (>= 3)
+URL: https://arcenis-r.github.io/cepumd/,
+    https://github.com/arcenis-r/cepumd
+BugReports: https://github.com/arcenis-r/cepumd/issues
 Depends:
     R (>= 3.5.0)
 Imports: 
@@ -40,5 +43,3 @@ Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
-URL: https://arcenis-r.github.io/cepumd/, https://github.com/arcenis-r/cepumd
-BugReports: https://github.com/arcenis-r/cepumd/issues
