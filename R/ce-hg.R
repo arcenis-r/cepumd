@@ -34,7 +34,7 @@
 #' the functions in this package is limited to expenditures. Income, for
 #' example, is imputed and calculation of income means goes through a different
 #' process than do expenditure means. Please see
-#' \link[User's Guide to Income Imputation in the CE]{https://www.bls.gov/cex/csxguide.pdf}
+#' \link[User's Guide to Income Imputation in the CE](https://www.bls.gov/cex/csxguide.pdf)
 #'
 #' @export
 #'
