@@ -41,4 +41,5 @@ Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
-URL: https://arcenis-r.github.io/cepumd/
+URL: https://arcenis-r.github.io/cepumd/, https://github.com/arcenis-r/cepumd
+BugReports: https://github.com/arcenis-r/cepumd/issues
