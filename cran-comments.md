@@ -4,6 +4,10 @@
 
 * This is a new release.
 
+## Explanation of notes from devtools::check_rhub()
+I ran both the standard RMD check and the check for Windows. The two sections below each show the same three notes. The first of the three notes relates to word spelling and the possible problems with validity of hyperlinks. I have checked all of these and the words are either acronyms, proper nouns, or words that are common in the domain and the hyperlinks are all valid. The next two notes are about files or directories that were found (''NULL'' and 'lastMiKTeXException'). I cannot actually find these files anywhere within the package files, so I'm not sure how to address this issue.
+
+
 ## devtools::check_rhub() results
 
 ✔  checking for file 'C:\r-projects\cepumd/DESCRIPTION' ... 
@@ -233,3 +237,61 @@
   Build ID:   cepumd_2.1.0.tar.gz-2078a72a8130461fbb75e86f605a063f
   Platform:   Fedora Linux, R-devel, clang, gfortran
   Submitted:  10m 1.9s ago
+
+## RMD check results for Windows
+
+Build ID:	cepumd_2.1.0.tar.gz-faec93ed305d443fa186d722ce18fc37
+Platform:	Windows Server 2022, R-devel, 64 bit
+Submitted:	8 minutes 9.7 seconds ago
+Build time:	7 minutes 47 seconds
+NOTES:
+* checking CRAN incoming feasibility ... [12s] NOTE
+Maintainer: 'Arcenis Rojas <arcenis.rojas@gmail.com>'
+
+New submission
+
+Possibly misspelled words in DESCRIPTION:
+  BLS (12:63)
+  Microdata (10:5)
+  PUMD (7:59, 10:16, 14:34)
+
+Found the following (possibly) invalid URLs:
+  URL: https://www.bls.gov/cex
+    From: DESCRIPTION
+          man/cepumd-package.Rd
+    Status: 403
+    Message: Forbidden
+  URL: https://www.bls.gov/cex/ce_source_integrate.xlsx
+    From: man/ce_prepdata.Rd
+    Status: 403
+    Message: Forbidden
+  URL: https://www.bls.gov/cex/csxguide.pdf
+    From: man/ce_hg.Rd
+    Status: 403
+    Message: Forbidden
+  URL: https://www.bls.gov/cex/pumd.htm
+    From: DESCRIPTION
+          man/cepumd-package.Rd
+    Status: 403
+    Message: Forbidden
+  URL: https://www.bls.gov/cex/pumd_disclosure.htm
+    From: man/ce_mean.Rd
+    Status: 403
+    Message: Forbidden
+  URL: https://www.bls.gov/cex/pumd_doc.htm
+    From: man/ce_prepdata.Rd
+    Status: 403
+    Message: Forbidden
+  URL: https://www.bls.gov/opub/hom/cex/calculation.htm
+    From: DESCRIPTION
+          man/cepumd-package.Rd
+    Status: 403
+    Message: Forbidden
+
+Size of tarball: 49069291 bytes
+* checking for non-standard things in the check directory ... NOTE
+Found the following files/directories:
+  ''NULL''
+* checking for detritus in the temp directory ... NOTE
+Found the following files/directories:
+  'lastMiKTeXException'
