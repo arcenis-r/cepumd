@@ -1,3 +1,7 @@
+# cepumd 2.1.0
+* Refactored code to resolve variable bindings warnings
+* Corrected calculation of CE annual estimates
+
 # cepumd 2.0.2
 
 # cepumd 2.0.1

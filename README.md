@@ -1,5 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- badges: start -->
+
+[![Codecov test
+coverage](https://codecov.io/gh/arcenis-r/cepumd/branch/master/graph/badge.svg)](https://app.codecov.io/gh/arcenis-r/cepumd?branch=master)
+<!-- badges: end -->
 
 # Introduction
 
