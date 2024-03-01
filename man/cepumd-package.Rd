@@ -14,6 +14,8 @@ Provides functions and data files to help CE PUMD users calculate annual estimat
 Useful links:
 \itemize{
   \item \url{https://arcenis-r.github.io/cepumd/}
+  \item \url{https://github.com/arcenis-r/cepumd}
+  \item Report bugs at \url{https://github.com/arcenis-r/cepumd/issues}
 }
 
 }
