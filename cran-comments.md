@@ -1,3 +1,150 @@
+## Reduced size of tarball
+The manual review of this package found the tarball to be 5MB and the maintainer
+was asked to reduce the size and it is now about 1/5 of the original size.
+
+─  Building package
+─  Uploading package
+─  Preparing build, see status at
+   https://builder.r-hub.io/status/cepumd_2.1.0.tar.gz-f41f1c2f767346918ea01d60a24f8722
+   https://builder.r-hub.io/status/cepumd_2.1.0.tar.gz-d7c25235505f4c9289da4ce932a0788d
+   https://builder.r-hub.io/status/cepumd_2.1.0.tar.gz-4f4d0b24442f44a69e595fa5e2f3cc91
+─  Build started
+─  Creating new user
+─  Downloading and unpacking package file
+─  Querying package dependencies
+─  Installing package dependencies
+─  Running R CMD check
+   setting _R_CHECK_FORCE_SUGGESTS_ to false
+   setting R_COMPILE_AND_INSTALL_PACKAGES to never
+   setting R_REMOTES_STANDALONE to true
+   setting R_REMOTES_NO_ERRORS_FROM_WARNINGS to true
+   setting _R_CHECK_FORCE_SUGGESTS_ to true
+   setting _R_CHECK_CRAN_INCOMING_USE_ASPELL_ to true
+   'getOption("repos")' replaces Bioconductor standard repositories, see
+   'help("repositories", package = "BiocManager")' for details.
+   Replacement repositories:
+       CRAN: https://cloud.r-project.org
+─  using log directory 'C:/Users/USERmjgpWxkuNt/cepumd.Rcheck'
+─  using R Under development (unstable) (2024-03-01 r86033 ucrt)
+─  using platform: x86_64-w64-mingw32 (1.6s)
+─  R was compiled by
+       gcc.exe (GCC) 12.3.0
+       GNU Fortran (GCC) 12.3.0
+─  running under: Windows Server 2022 x64 (build 20348) (817ms)
+─  using session charset: UTF-8
+─  using option '--as-cran'
+✔  checking for file 'cepumd/DESCRIPTION'
+─  checking extension type ... Package (818ms)
+─  this is package 'cepumd' version '2.1.0'
+─  package encoding: UTF-8
+─  checking CRAN incoming feasibility ... [11s] NOTE
+   Maintainer: 'Arcenis Rojas <arcenis.rojas@gmail.com>'
+   
+   New submission
+   
+   Possibly misspelled words in DESCRIPTION:
+     BLS (12:63)
+     Microdata (10:5)
+     PUMD (7:59, 10:16, 14:34)
+   
+   Found the following (possibly) invalid URLs:
+     URL: https://www.bls.gov/cex
+       From: DESCRIPTION
+             man/cepumd-package.Rd
+       Status: 403
+       Message: Forbidden
+     URL: https://www.bls.gov/cex/ce_source_integrate.xlsx
+       From: man/ce_prepdata.Rd
+       Status: 403
+       Message: Forbidden
+       From: man/ce_hg.Rd
+       Status: 403
+       Message: Forbidden
+     URL: https://www.bls.gov/cex/pumd.htm
+       From: DESCRIPTION
+             man/cepumd-package.Rd
+       Status: 403
+       Message: Forbidden
+     URL: https://www.bls.gov/cex/pumd_disclosure.htm
+       From: man/ce_mean.Rd
+       Status: 403
+       Message: Forbidden
+     URL: https://www.bls.gov/cex/pumd_doc.htm
+       From: man/ce_prepdata.Rd
+       Status: 403
+       Message: Forbidden
+     URL: https://www.bls.gov/opub/hom/cex/calculation.htm
+       From: DESCRIPTION
+             man/cepumd-package.Rd
+       Status: 403
+       Message: Forbidden
+   
+   Size of tarball: 11695018 bytes
+     URL: https://www.bls.gov/cex/csxguide.pdf
+✔  checking package namespace information
+✔  checking package dependencies (906ms)
+✔  checking if this is a source package
+✔  checking if there is a namespace
+✔  checking for executable files
+✔  checking for hidden files and directories (833ms)
+✔  checking for portable file names
+✔  checking whether package 'cepumd' can be installed
+✔  checking installed package size
+✔  checking package directory (822ms)
+✔  checking for future file timestamps
+✔  checking 'build' directory
+✔  checking DESCRIPTION meta-information
+✔  checking top-level files (824ms)
+✔  checking for left-over files
+✔  checking index information
+✔  checking package subdirectories
+✔  checking R files for non-ASCII characters (1.6s)
+✔  checking R files for syntax errors
+✔  checking whether the package can be loaded
+✔  checking whether the package can be loaded with stated dependencies
+✔  checking whether the package can be unloaded cleanly (818ms)
+✔  checking whether the namespace can be loaded with stated dependencies
+✔  checking whether the namespace can be unloaded cleanly
+✔  checking loading without being on the library search path
+✔  checking use of S3 registration (820ms)
+✔  checking dependencies in R code
+✔  checking S3 generic/method consistency
+✔  checking replacement functions
+✔  checking foreign function calls (820ms)
+✔  checking R code for possible problems
+✔  checking Rd files
+✔  checking Rd metadata
+✔  checking Rd line widths (814ms)
+✔  checking Rd cross-references
+✔  checking for missing documentation entries
+✔  checking for code/documentation mismatches
+✔  checking Rd \usage sections (816ms)
+✔  checking Rd contents
+✔  checking for unstated dependencies in examples
+✔  checking installed files from 'inst/doc'
+✔  checking files in 'vignettes' (1.6s)
+✔  checking examples
+✔  checking for unstated dependencies in 'tests'
+─  checking tests
+✔  Running 'spelling.R' (815ms)
+    [69s] OK
+   * checking for unstated dependencies in vignettes ... OK
+   * checking package vignettes ... OK
+   * checking re-building of vignette outputs ... OK
+   * checking PDF version of manual ... [12s] OK
+   * checking HTML version of manual ... OK
+   * checking for non-standard things in the check directory ... NOTE
+   Found the following files/directories:
+     ''NULL''
+   * checking for detritus in the temp directory ... NOTE
+   Found the following files/directories:
+     'lastMiKTeXException'
+   * DONE
+   
+   Status: 3 NOTEs
+─  Done with R CMD check
+─  Cleaning up files and user
+
 ## R CMD check results
 
 0 errors | 0 warnings | 1 note
