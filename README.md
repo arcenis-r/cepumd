@@ -4,6 +4,9 @@
 
 [![Codecov test
 coverage](https://codecov.io/gh/arcenis-r/cepumd/branch/master/graph/badge.svg)](https://app.codecov.io/gh/arcenis-r/cepumd?branch=master)
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/cepumd)](https://CRAN.R-project.org/package=cepumd)
 <!-- badges: end -->
 
 # cepumd <a href="https://arcenis-r.github.io/cepumd/"><img src="man/figures/logo.png" align="right" height="139" alt="cepumd website" /></a>
@@ -58,6 +61,8 @@ weighted, annual metrics.
   - Integrate Interview and Diary data as necessary
 
 ## Installation
+
+Install the production version with `install.packages("cepumd")`
 
 You can install the development version of `cepumd` from
 [GitHub](https://github.com), but you’ll first need the `devtools`

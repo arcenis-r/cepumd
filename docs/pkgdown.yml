@@ -1,7 +1,9 @@
 pandoc: 2.19.2
 pkgdown: 2.0.6
 pkgdown_sha: ~
+template:
+  bootstrap: 5
+  bootswatch: flatly
 articles:
   cepumd: cepumd.html
 last_built: 2023-01-15T14:53Z
-
