@@ -64,6 +64,12 @@
 <li class="nav-item">
   <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="articles/simple-workflow.html">Simple workflow</a>
+  </div>
+</li>
 <li class="nav-item">
   <a class="nav-link" href="news/index.html">Changelog</a>
 </li>
@@ -87,6 +93,7 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9">
+<p><a href="https://CRAN.R-project.org/package=cepumd" class="external-link"><img src="https://www.r-pkg.org/badges/version/cepumd" alt="CRAN status"></a> <!-- badges: end --></p>
 <div class="section level1">
 <div class="page-header">
 <img src="logo.png" class="logo" alt=""><h1 id="cepumd-">cepumd 
@@ -140,6 +147,7 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<p>Install the production version with <code>install.packages("cepumd")</code></p>
 <p>You can install the development version of <code>cepumd</code> from <a href="https://github.com" class="external-link">GitHub</a>, but you’ll first need the <code>devtools</code> package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"devtools"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="st">"Package"</span><span class="op">]</span><span class="op">)</span> <span class="op">{</span></span>
