@@ -11,5 +11,5 @@
 ^\.github$
 ^revdep$
 ^CRAN-SUBMISSION$
-^.git\
-.\docs
+^\.git\
+^\docs
