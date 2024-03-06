@@ -1,4 +1,7 @@
 ## Reduced size of tarball
+UPDATE: Upon further review the tarball was still a little over 11MB and is now
+below the 5MB threshold after reducing the size of the test data further.
+
 The manual review of this package found the tarball to be 5MB and the maintainer
 was asked to reduce the size and it is now about 1/5 of the original size.
 
