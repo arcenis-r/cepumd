@@ -3,7 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   cepumd: cepumd.html
-last_built: 2024-03-06T16:01Z
+last_built: 2024-03-07T02:13Z
 urls:
   reference: https://arcenis-r.github.io/cepumd/reference
   article: https://arcenis-r.github.io/cepumd/articles
