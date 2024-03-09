@@ -101,7 +101,7 @@
 #' @importFrom janitor clean_names
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # The following workflow will prepare a dataset for calculating integrated
 #' # pet expenditures for 2021 keep the "sex_ref" variable in the data to
 #' # potentially calculate means by sex of the reference person.

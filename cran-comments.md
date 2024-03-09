@@ -1,3 +1,8 @@
+## Calls to \dontrun{}
+The functions `ce_uccs()` and `ce_prepdata()` both contain examples that are
+wrapped in `\dontrun{}` because in both cases the examples include calls to file
+names that may be different on the user's machine.
+
 ## Reduced size of tarball
 UPDATE: Upon further review the tarball was still a little over 11MB and is now
 below the 5MB threshold after reducing the size of the test data further.

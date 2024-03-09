@@ -2,15 +2,13 @@ Type: Package
 Package: cepumd
 Title: Calculate Consumer Expenditure Survey (CE) Annual Estimates
 Version: 2.1.0
-Author: Arcenis Rojas <arcenis.rojas@gmail.com>
-Maintainer: Arcenis Rojas <arcenis.rojas@gmail.com>
-Description: Provides functions and data files to help CE PUMD users
-    calculate annual estimated expenditure means, standard errors, and
-    quantiles according to the methods used by the CE using Public-Use
-    Microdata (PUMD). For more information on the CE please visit
-    <https://www.bls.gov/cex>.  For further reading on CE estimate
-    calculations please see the CE Calculation section of the BLS Handbook
-    of Methods at <https://www.bls.gov/opub/hom/cex/calculation.htm>. For
+Description: Provides functions and data files to help CE Public-Use
+    Microdata (PUMD) users calculate annual estimated expenditure means,
+    standard errors, and quantiles according to the methods used by the CE with
+    PUMD. For more information on the CE please visit <https://www.bls.gov/cex>.
+    For further reading on CE estimate calculations please see the CE
+    Calculation section of the U.S. Bureau of Labor Statistics (BLS) Handbook of
+    Methods at <https://www.bls.gov/opub/hom/cex/calculation.htm>. For
     further information about CE PUMD please visit
     <https://www.bls.gov/cex/pumd.htm>.
 License: GPL (>= 3)
@@ -43,3 +41,5 @@ Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
+Authors@R: 
+    person("Arcenis", "Rojas", , "arcenis.rojas@gmail.com", role = c("aut", "cre", "cph"))
