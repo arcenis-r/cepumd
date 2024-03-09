@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Provides functions and data files to help CE PUMD users calculate annual estimated expenditure means, standard errors, and quantiles according to the methods used by the CE using Public-Use Microdata (PUMD). For more information on the CE please visit \url{https://www.bls.gov/cex}. For further reading on CE estimate calculations please see the CE Calculation section of the BLS Handbook of Methods at \url{https://www.bls.gov/opub/hom/cex/calculation.htm}. For further information about CE PUMD please visit \url{https://www.bls.gov/cex/pumd.htm}.
+Provides functions and data files to help CE Public-Use Microdata (PUMD) users calculate annual estimated expenditure means, standard errors, and quantiles according to the methods used by the CE with PUMD. For more information on the CE please visit \url{https://www.bls.gov/cex}. For further reading on CE estimate calculations please see the CE Calculation section of the U.S. Bureau of Labor Statistics (BLS) Handbook of Methods at \url{https://www.bls.gov/opub/hom/cex/calculation.htm}. For further information about CE PUMD please visit \url{https://www.bls.gov/cex/pumd.htm}.
 }
 \seealso{
 Useful links:
@@ -17,6 +17,10 @@ Useful links:
   \item \url{https://github.com/arcenis-r/cepumd}
   \item Report bugs at \url{https://github.com/arcenis-r/cepumd/issues}
 }
+
+}
+\author{
+\strong{Maintainer}: Arcenis Rojas \email{arcenis.rojas@gmail.com} [copyright holder]
 
 }
 \keyword{internal}
