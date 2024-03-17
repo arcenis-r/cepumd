@@ -1,3 +1,17 @@
+## Arguments with Non-Standard Evaluation
+The exported functions of the package are designed to allow unquoted arguments, i.e., non-standard evaluation. For example, the last argument in the example in ce_prepdata() (shown below) will be read as a "..." argument and be quoted inside of the function. If the example were run with a valid file path for the "dia_zip" argument the function would run as intended.
+
+ pets_dia <- ce_prepdata(
+   year = 2021,
+   survey = integrated,
+   uccs = pet_uccs,
+   integrate_data = FALSE,
+   hg = my_hg,
+   dia_zip = "diary21.zip"
+   sex_ref
+ )
+
+
 ## Calls to \dontrun{}
 The functions `ce_uccs()` and `ce_prepdata()` both contain examples that are
 wrapped in `\dontrun{}` because in both cases the examples include calls to file
