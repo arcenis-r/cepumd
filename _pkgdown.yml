@@ -1,4 +1,8 @@
 url: https://arcenis-r.github.io/cepumd/
 template:
   bootstrap: 5
+  bootswatch: flatly
+articles:
+- title: Articles
+  navbar: Articles
 

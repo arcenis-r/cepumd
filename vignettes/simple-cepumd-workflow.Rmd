@@ -1,0 +1,64 @@
+---
+title: "Simple cepumd Workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{simple-cepumd-workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(cepumd)
+library(gt)
+```
+
+```{r store-data-dir, echo=FALSE}
+ce_data_dir <- "C:/r-projects/ce_data_dir"
+```
+
+The following is an example of using `cepumd` to calculate a 2021 annual, weighted estimate of mean expenditures on pets for all of the U.S. using CE integrated data. 
+
+The below code assumes that CE PUMD zip files and the hierarchical grouping zip file are stored in a path the name of which is stored in a variable called `ce_data_dir` as follows.
+```{r show-data-dir, eval=FALSE}
+ce_data_dir <- "~/Users/ce-pumd-data"
+```
+
+The first step in the workflow is to load the 2021 hierarchical grouping file for integrated expenditures using `ce_hg()`. This file is used to get the correct UCCs associated with pet expenditures.
+```{r read-hg}
+integ21_hg <- ce_hg(
+  2021,
+  integrated,
+  hg_zip_path = file.path(ce_data_dir, "stubs.zip")
+)
+```
+
+Next, one can use `ce_prep_data()` to correctly merge all of the Interview and Diary survey files for calculating annual estimates.
+```{r prepare-data}
+pet_data <- ce_prepdata(
+  2021,
+  integrated,
+  integ21_hg,
+  uccs = ce_uccs(integ21_hg, expenditure = "Pets", ucc_group = "PETS"),
+  dia_zp = file.path(ce_data_dir, "diary21.zip"),
+  int_zp = c(
+    file.path(ce_data_dir, "intrvw20.zip"),
+    file.path(ce_data_dir, "intrvw21.zip")
+  )
+)
+
+gt(head(pet_data))
+```
+
+The last step is to run `ce_mean()` to get annual, weighted pet expenditure estimates.
+```{r calculate-estimate}
+ce_mean(pet_data) |>
+  gt()
+```
+

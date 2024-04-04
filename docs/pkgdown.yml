@@ -1,9 +1,10 @@
-pandoc: 2.19.2
-pkgdown: 2.0.6
+pandoc: 3.1.1
+pkgdown: 2.0.7
 pkgdown_sha: ~
-template:
-  bootstrap: 5
-  bootswatch: flatly
 articles:
   cepumd: cepumd.html
-last_built: 2023-01-15T14:53Z
+last_built: 2024-03-30T03:29Z
+urls:
+  reference: https://arcenis-r.github.io/cepumd/reference
+  article: https://arcenis-r.github.io/cepumd/articles
+
