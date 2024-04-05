@@ -1,78 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/articles/ce-estimates-by-demographics.html</loc>
   </url>
   <url>
-    <loc>/articles/cepumd.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/articles/inconsistent-code-definitions.html</loc>
   </url>
   <url>
-    <loc>/articles/index.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/articles/index.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/articles/inflation-adjusted-estimates.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/articles/simple-cepumd-workflow.html</loc>
   </url>
   <url>
-    <loc>/news/index.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/authors.html</loc>
   </url>
   <url>
-    <loc>/reference/ce_cleanup.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/CODE_OF_CONDUCT.html</loc>
   </url>
   <url>
-    <loc>/reference/ce_download.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/CONTRIBUTING.html</loc>
   </url>
   <url>
-    <loc>/reference/ce_hg.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/index.html</loc>
   </url>
   <url>
-    <loc>/reference/ce_mean.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/reference/ce_prepdata.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/news/index.html</loc>
   </url>
   <url>
-    <loc>/reference/ce_pumd_years.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/reference/cepumd-package.html</loc>
   </url>
   <url>
-    <loc>/reference/ce_quantiles.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/reference/ce_hg.html</loc>
   </url>
   <url>
-    <loc>/reference/ce_uccs.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/reference/ce_mean.html</loc>
   </url>
   <url>
-    <loc>/reference/cepumd-package.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/reference/ce_prepdata.html</loc>
   </url>
   <url>
-    <loc>/reference/get_survey_files.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/reference/ce_quantiles.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/reference/ce_uccs.html</loc>
   </url>
   <url>
-    <loc>/reference/read.expd.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/reference/get_survey_files.html</loc>
   </url>
   <url>
-    <loc>/reference/read.fmld.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/read.fmli.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/reference/read.expd.html</loc>
   </url>
   <url>
-    <loc>/reference/read.mtbi.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/reference/read.fmld.html</loc>
   </url>
   <url>
-    <loc>/reference/recode_ce_variables.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/reference/read.fmli.html</loc>
   </url>
   <url>
-    <loc>/reference/store_ce_dict.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/reference/read.mtbi.html</loc>
   </url>
   <url>
-    <loc>/reference/store_ce_hg.html</loc>
+    <loc>https://arcenis-r.github.io/cepumd/reference/recode_ce_variables.html</loc>
+  </url>
+  <url>
+    <loc>https://arcenis-r.github.io/cepumd/SUPPORT.html</loc>
   </url>
 </urlset>

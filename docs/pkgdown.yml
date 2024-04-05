@@ -2,8 +2,11 @@ pandoc: 3.1.1
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  cepumd: cepumd.html
-last_built: 2024-03-30T03:29Z
+  ce-estimates-by-demographics: ce-estimates-by-demographics.html
+  inconsistent-code-definitions: inconsistent-code-definitions.html
+  inflation-adjusted-estimates: inflation-adjusted-estimates.html
+  simple-cepumd-workflow: simple-cepumd-workflow.html
+last_built: 2024-04-05T03:52Z
 urls:
   reference: https://arcenis-r.github.io/cepumd/reference
   article: https://arcenis-r.github.io/cepumd/articles
