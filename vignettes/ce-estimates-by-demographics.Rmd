@@ -1,5 +1,5 @@
 ---
-title: "ce-estimates-by-demographics"
+title: "CE Estimates by Demographic Category"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{ce-estimates-by-demographics}
@@ -26,7 +26,7 @@ ce_data_dir <- "C:/r-projects/ce_data_dir"
 
 The below example shows how one can use `cepumd` to generate annual, weighted expenditure means and quantiles for the different categories of a grouping variable. This example will focus on getting these estimates for used cars and trucks using 2021 Interview data since reports of vehicle purchases are only taken from the Interview survey. It's also useful to show how to calculate weighted quantiles of expenditures since this is only statistically valid when using a single survey instrument. 
 
-The below code assumes that CE PUMD zip files and the hierarchical grouping zip file are stored in a path the name of which is stored in a variable called `ce_data_dir` as follows.
+The below code assumes that CE PUMD zip files and the hierarchical grouping zip file are stored in a path the name of which is stored in a variable called `ce_data_dir` as shown below. CSV files can be acquired from the [CE PUMD Data Files page](https://www.bls.gov/cex/pumd_data.htm#csv) and hierarchical grouping files can be acquired from the [CE PUMD Documentation page](https://www.bls.gov/cex/pumd_doc.htm)
 ```{r show-data-dir, eval=FALSE}
 ce_data_dir <- "~/Users/ce-pumd-data"
 ```

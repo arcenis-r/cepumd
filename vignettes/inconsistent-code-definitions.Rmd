@@ -1,0 +1,155 @@
+---
+title: "Using cepumd to Deal with Inconsistent Code Definitions"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{inconsistent-code-definitions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message=FALSE}
+library(cepumd)
+library(tidyverse)
+library(readxl)
+library(gt)
+```
+
+```{r store-data-dir, echo=FALSE}
+ce_data_dir <- "C:/r-projects/ce_data_dir"
+```
+
+In this workflow I’m going to calculate estimated mean utilities expenditures for 2015 using integrated data by CU composition using the FAM_TYPE variable. In this case I’m going to start by looking at the codes for that variable to show how one might run into an inconsistency in code definitions across survey instruments.
+
+The below code assumes that CE PUMD zip files and the hierarchical grouping zip file are stored in a path the name of which is stored in a variable called `ce_data_dir` as shown below. CSV files can be acquired from the [CE PUMD Data Files page](https://www.bls.gov/cex/pumd_data.htm#csv) and hierarchical grouping files can be acquired from the [CE PUMD Documentation page](https://www.bls.gov/cex/pumd_doc.htm)
+```{r show-data-dir, eval=FALSE}
+ce_data_dir <- "~/Users/ce-pumd-data"
+```
+
+First, I’ll load the "Codes " worksheet from the CE Data Dictionary, which can be downloaded from the [CE PUMD Documentation page](https://www.bls.gov/cex/pumd_doc.htm). Then I'll look at code descriptions for the “FAM_TYPE” variable in the dictionary and I’m going to focus on the code values of 3, 5, and 7.
+```{r show-fam-type-codes, message=FALSE, warning=FALSE}
+ce_codes <- read_excel(
+  file.path(ce_data_dir, "ce-data-dict.xlsx"),
+  sheet = "Codes "
+)
+
+ce_codes |>
+  janitor::clean_names() |>
+  filter(
+    variable %in% "FAM_TYPE",
+  first_year <= 2015,
+  (last_year >= 2015 | is.na(last_year)),
+  code_value %in% c("3", "5", "7")
+  ) |>
+  select(survey, code_value, code_description) |>
+  arrange(code_value, survey) |>
+  gt()
+```
+
+The code descriptions for these 3 code values are different across instruments. To resolve this I’m going to create a table containing only codes from the Interview survey.
+```{r change-fam-type-codes}
+fam_type_codes <- ce_codes |>
+  janitor::clean_names() |>
+  filter(
+    variable %in% "FAM_TYPE",
+    first_year <= 2015,
+    (last_year >= 2015 | is.na(last_year))
+  )
+
+codes2keep <- fam_type_codes |>
+  filter(survey %in% "INTERVIEW") |>
+  select(code_value, code_description)
+
+fam_type_codes <- fam_type_codes |>
+  select(-code_description) |>
+  left_join(codes2keep, by = "code_value") |>
+  relocate(code_description, .after = code_value)
+
+fam_type_codes |>
+  filter(code_value %in% c("3", "5", "7")) |>
+  select(survey, code_value, code_description) |>
+  arrange(code_value, survey) |>
+  gt()
+```
+
+Now the codes are consistent across survey instruments and I can use this code-book in my call to `ce_prepdata()` using the `own_code_book` argument.
+
+Next I’ll load the integrated hierarchical grouping file for 2015 and find the title for the utilities category.
+```{r get-2015-stub}
+integ15_hg <- ce_hg(
+  2015,
+  integrated,
+  hg_zip_path = file.path(ce_data_dir, "stubs.zip")
+)
+
+integ15_hg |>
+  filter(str_detect(str_to_lower(title), "utilities")) |>
+  gt()
+```
+
+The expenditure category associated with utilities is “Utilities, fuels, and public services”. I’ll store that title to work with later and narrow down the section of the stub file that includes only these expenditures. I'll use this title to filter out the UCC data from the stub file that make up the utilities category to check which survey these expenditures come from to calculate estimates.
+```{r store-utilities-ucc-data}
+utilities_title <- integ15_hg |>
+  filter(str_detect(str_to_lower(title), "utilities")) |>
+  pull(title)
+
+utilities_hg <- ce_uccs(
+  integ15_hg,
+  expenditure = utilities_title,
+  uccs_only = FALSE
+)
+
+gt(utilities_hg)
+```
+
+To check what survey instruments the expenditures are collected through for published estimates I'll check what surveys are listed in the "survey" column of the hierarchical grouping data for utilities.
+```{r check-utilities-instrument}
+utilities_hg |> distinct(survey) |> gt()
+```
+
+It seems utilities expenditures are collected only through the Interview survey (the “G” stands for “UCC group”), so I’ll only need to use Interview data files to calculate estimates.
+```{r calculate-utilies-estimates}
+fam_type_utilities <- ce_prepdata(
+  2015,
+  interview,
+  utilities_hg,
+  uccs = ce_uccs(utilities_hg, expenditure = utilities_title),
+  fam_type, 
+  int_zp = file.path(ce_data_dir, "intrvw15.zip"),
+  recode_variables = TRUE,
+  dict_path = file.path(ce_data_dir, "ce-data-dict.xlsx")
+) |>
+  group_nest(fam_type) |>
+  mutate(ce_mean_df = map(data, ce_mean)) |>
+  select(-data) |>
+  unnest(ce_mean_df)
+
+fam_type_utilities |>
+  arrange(fam_type) |>
+  gt()
+```
+
+And finally, a quick lollipop plot to visualize the data.
+```{r utilities-lollipop, fig.align='center', fig.height=6, fig.width=8}
+fam_type_utilities |>
+  mutate(fam_type = fct_reorder(fam_type, mean_exp)) |>
+  ggplot(aes(x = mean_exp, y = fam_type, mean_exp)) +
+  geom_segment(aes(x = 0, xend = mean_exp, yend = fam_type)) +
+  geom_point(color = "red", size = 5) +
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 25)) +
+  scale_x_continuous(labels = scales::dollar) +
+  labs(
+    y = "CU composition (FAM_TYPE)",
+    x = "Estimated, weighted, annual mean expenditure",
+    title =
+      "Estimated annual mean utilities expenditures by CU composition"
+  ) +
+  theme_bw()
+```
+
