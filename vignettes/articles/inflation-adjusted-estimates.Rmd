@@ -1,10 +1,5 @@
 ---
 title: "Adjusting CE Estimates for Inflation"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{inflation-adjusted-estimates}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}

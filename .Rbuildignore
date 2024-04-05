@@ -12,3 +12,4 @@
 ^revdep$
 ^CRAN-SUBMISSION$
 ^\.git$
+^vignettes/articles$

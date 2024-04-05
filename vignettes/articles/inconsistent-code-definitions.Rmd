@@ -1,10 +1,5 @@
 ---
 title: "Using cepumd to Deal with Inconsistent Code Definitions"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{inconsistent-code-definitions}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
