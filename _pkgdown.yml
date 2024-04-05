@@ -6,10 +6,10 @@ articles:
 - title: Articles
   navbar: ~
   contents:
-  - simple-cepumd-workflow
-  - ce-estimates-by-demographics
-  - inflation-adjusted-estimates
-  - inconsistent-code-definitions
+  - articles/simple-cepumd-workflow
+  - articles/ce-estimates-by-demographics
+  - articles/inflation-adjusted-estimates
+  - articles/inconsistent-code-definitions
 navbar:
   structure:
     right: [search, linkedin, github]
