@@ -35,7 +35,8 @@ Suggests:
     spelling,
     testthat (>= 2.1.0),
     tidyverse,
-    blsR
+    blsR,
+    gt
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
