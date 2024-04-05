@@ -4,5 +4,22 @@ template:
   bootswatch: flatly
 articles:
 - title: Articles
-  navbar: Articles
+  navbar: ~
+  contents:
+  - simple-cepumd-workflow
+  - ce-estimates-by-demographics
+  - inflation-adjusted-estimates
+  - inconsistent-code-definitions
+navbar:
+  structure:
+    right: [search, linkedin, github]
+  components:
+    linkedin:
+      icon: fa-linkedin
+      href: https://linkedin.com/in/arcenisrojas
+      aria-label: LinkedIn
+    github:
+      icon: fa-github
+      href: https://github.com/arcenis-r/cepumd/
+      aria-label: GitHub
 

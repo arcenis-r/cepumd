@@ -132,9 +132,7 @@ summary(as.numeric(food_away_data_10$fam_size))
 
 Some households have as many as 14 people which would make for more categories than I’d like, so I’ll create a FAM_SIZE label with any number greater than 4 taking on the value “5+” (remembering, of course, that all grouping variables are read in as character types, so I’ll have to use as.numeric()). Next, I’ll prepare the 2020 data and row bind it with the 2010 data as well as create the “fam_size_label” variable. I’m also going to convert “ref_mo” and “ref_yr” to character to make it compatible with the CPI data that I’ll get later. Here’s a look at just a snippet of the data. Please take note that `ce_prepdata()` does not add the year to the data set.
 
-<br>
-
-::: {.note style="background-color: #D3D3D3; padding-top: 1em; padding-right: 1em; padding-bottom: 1em; padding-left: 1em; width: 70%; margin: auto"}
+::: {.note style="background-color: #D3D3D3; padding-top: 1em; padding-right: 1em; padding-bottom: 1em; padding-left: 1em; width: 80%; margin: auto; margin-top: 1em; margin-bottom: 1em"}
 Note that the code to prepare the 2020 data calls two Interview zip files. This is because the Interview is a recall survey and the file from the last quarter of the previous year is required to calculate a weighted, estimated mean. In previous years the files were all stored together, but the CE changed how it organizes files in 2020. For more information, please review the [Interview Survey file conventions section of the "Getting Started Guide"](https://www.bls.gov/cex/pumd-getting-started-guide.htm#section3)
 :::
 
