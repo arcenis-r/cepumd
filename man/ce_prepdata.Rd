@@ -125,7 +125,7 @@ character data type.
 # potentially calculate means by sex of the reference person.
 
 # First generate an HG file
-my_hg <- ce_hg(2021, integrated, "CE-HG-Inter-2021.txt")
+my_hg <- ce_hg(2021, "integrated", "CE-HG-Inter-2021.txt")
 
 # Store a vector of UCC's in the "Pets" category
 pet_uccs <- ce_uccs(my_hg, "Pets")
@@ -133,7 +133,7 @@ pet_uccs <- ce_uccs(my_hg, "Pets")
 # Store the diary data (not run)
 pets_dia <- ce_prepdata(
   year = 2021,
-  survey = integrated,
+  survey = "integrated",
   uccs = pet_uccs,
   integrate_data = FALSE,
   hg = my_hg,
