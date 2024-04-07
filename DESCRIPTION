@@ -33,7 +33,8 @@ Suggests:
     knitr,
     rmarkdown,
     spelling,
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    tidyverse
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
