@@ -12,4 +12,4 @@
 ^revdep$
 ^CRAN-SUBMISSION$
 ^\.git$
-^vignettes/articles/*\.Rmd$
+^vignettes/articles/.+\.Rmd$
