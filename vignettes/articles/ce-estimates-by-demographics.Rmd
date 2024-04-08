@@ -1,0 +1,169 @@
+---
+title: "CE Estimates by Demographic Category"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message=FALSE}
+library(cepumd)
+library(tidyverse)
+library(gt)
+```
+
+## Introduction
+The below example shows how one can use `cepumd` to generate annual, weighted expenditure means and quantiles for the different categories of a grouping variable. This example will focus on getting these estimates for used cars and trucks using 2021 Interview data since reports of vehicle purchases are only taken from the Interview survey. It's also useful to show how to calculate weighted quantiles of expenditures since this is only statistically valid when using a single survey instrument.
+
+I'll need the following data and metadata sources:
+
+* Interview survey data zip files for 2020 and 2021
+* Hierarchical grouping zip files
+* CE Data Dictionary
+
+## Data gathering
+Data files can be downloaded from the [CE PUMD Data Files page](https://www.bls.gov/cex/pumd_data.htm#csv) (it's easiest to use CSV) and hierarchical grouping files can be downloaded from the [CE PUMD Documentation page](https://www.bls.gov/cex/pumd_doc.htm)
+
+To get the files I'll first create a temporary directory and download all of the files that I need from the BLS website into this directory. You might choose to store your files differently, but this convention will keep the files organized, it will keep the code simple, and everything will be in a folder that will be easy to clean up after. Since the BLS blocks third party applications I'll add a user-agent to identify myself in the download function that is stored in a variable called `cepumd_ua` (not shown).
+
+```{r store-ua, echo=FALSE}
+cepumd_ua <- "Arcenis Rojas (arcenis.rojas@gmail.com)"
+```
+
+```{r store-data, message=FALSE, warning=FALSE}
+ce_data_dir <- tempdir()
+
+download.file(
+  "https://www.bls.gov/cex/pumd/data/comma/intrvw21.zip",
+  fs::path(ce_data_dir, "intrvw21.zip"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+
+download.file(
+  "https://www.bls.gov/cex/pumd/data/comma/intrvw20.zip",
+  fs::path(ce_data_dir, "intrvw20.zip"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+
+download.file(
+  "https://www.bls.gov/cex/pumd/stubs.zip",
+  fs::path(ce_data_dir, "stubs.zip"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+
+download.file(
+  "https://www.bls.gov/cex/pumd/ce-pumd-interview-diary-dictionary.xlsx",
+  fs::path(ce_data_dir, "ce-data-dict.xlsx"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+```
+
+## Calculate CE weighted mean estimate by urbanicity
+Now that I have the files I'll start the analysis. First I’ll load the hierarchical grouping file and filter it for categories of used cars or used trucks.
+```{r read-hg}
+int21_hg <- ce_hg(
+  2021,
+  interview,
+  hg_zip_path = file.path(ce_data_dir, "stubs.zip")
+)
+
+int21_hg |>
+  filter(str_detect(title, "Used (cars|trucks)")) |>
+  gt()
+```
+
+These are the UCCs for “Used cars and trucks. I’ll use the code above to set the `uccs` argument in `ce_prepdata()`. I’ll also include the `bls_urbn` variable in the `...` argument to get estimates by urbanicity.
+```{r prepare-data, warning=FALSE}
+car_data <- ce_prepdata(
+  2021,
+  interview,
+  int21_hg,
+  uccs = int21_hg |>
+    filter(str_detect(title, "Used (cars|trucks)"), !is.na(as.numeric(ucc))) |>
+    pull(ucc),
+  bls_urbn,  # <------- this is the variable for urbanicity
+  int_zp = c(
+    file.path(ce_data_dir, "intrvw20.zip"),
+    file.path(ce_data_dir, "intrvw21.zip")
+  ),
+  recode_variables = TRUE,
+  dict_path = file.path(ce_data_dir, "ce-data-dict.xlsx")
+)
+
+gt(head(car_data))
+```
+
+With the table output of `ce_prepdata()` one can now split up the data by the demographic variable of interest and operate on each of the subsets independently to calculate estimates. Below I'll show the workflow for calculating estimated mean expenditures only for urban consumers.
+```{r show-urban-mean}
+car_data_urban <- filter(car_data, bls_urbn %in% "Urban")
+
+ce_mean(car_data_urban) |>
+  gt()
+```
+
+Since I'm intersted in seeing this mean for all categories of urbanicity, in the next step I'll nest the car data by urbanicity in order to be able to operate on subsets of the data independently. For this I'll use the `nest()` function from the `tidyr` package.
+```{r nest-data}
+car_data_nested <- nest(car_data, .by = "bls_urbn")
+
+car_data_nested
+```
+
+With the data now grouped and subset by urbanicity I'll now use `map()` from the `purrr` package to apply `ce_mean()` to the subsets of data.
+```{r get-estimated-means}
+car_data_nested |>
+  mutate(ce_ann_means = map(data, ce_mean)) |>
+  select(-data) |>
+  unnest(ce_ann_means) |>
+  gt()
+```
+
+Getting the annual, weighted estimate of the median (or another quantile) would be just as easy. Here I’ll calculate the first percentile the median, the 95th percentile, and the 99.1 percentile through 99.9 percentile for the overall sample.
+```{r get-overall-quantiles}
+ce_quantiles(
+  car_data,
+  probs = c(0.01, 0.5, 0.95, seq(0.99, 0.999, by = 0.001))
+) |>
+  gt()
+```
+
+# Calculate CE weighted quantile estimates by urbanicity
+Performing the operation by urbanicity would be similar to the way it's done with nested means. Here I'll get the same quantiles by urbanicity and pivot the table to compare the categories side-by-side using the nested data.
+
+```{r urbanicity-quantiles}
+car_data_nested |>
+  mutate(
+    ce_ann_quantiles = map(
+      data,
+      \(x) ce_quantiles(
+        x,
+        probs = c(0.01, 0.50, 0.95, seq(0.99, 0.999, by = 0.001))
+      )
+    )
+  ) |>
+  select(-data) |>
+  unnest(ce_ann_quantiles) |>
+  pivot_wider(values_from = quantile, names_from = bls_urbn) |>
+  gt()
+```
+
+## Clean-up
+Finally, now that the analysis is done, I'll delete the temporary directory that contains all the CE data.
+```{r unlink-temp}
+unlink(ce_data_dir, recursive = TRUE, force = TRUE)
+```
+

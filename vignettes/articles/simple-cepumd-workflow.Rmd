@@ -1,0 +1,112 @@
+---
+title: "Simple cepumd Workflow"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(cepumd)
+library(gt)
+```
+
+## Introduction
+The following is an example of using `cepumd` to calculate a 2021 annual, weighted estimate of mean expenditures on pets for all of the U.S. using CE integrated data.
+
+I'll need the following data and metadata sources:
+
+* Interview survey data zip files for 2020 and 2021
+* Diary survey data zip files for 2021
+* Hierarchical grouping zip files
+
+## Data gathering
+Data files can be downloaded from the [CE PUMD Data Files page](https://www.bls.gov/cex/pumd_data.htm#csv) (it's easiest to use CSV) and hierarchical grouping files can be downloaded from the [CE PUMD Documentation page](https://www.bls.gov/cex/pumd_doc.htm)
+
+To get the files I'll first create a temporary directory and download all of the files that I need from the BLS website into this directory. You might choose to store your files differently, but this convention will keep the files organized, it will keep the code simple, and everything will be in a folder that will be easy to clean up after. Since the BLS blocks third party applications I'll add a user-agent to identify myself in the download function that is stored in a variable called `cepumd_ua` (not shown).
+
+```{r store-ua, echo=FALSE}
+cepumd_ua <- "Arcenis Rojas (arcenis.rojas@gmail.com)"
+```
+
+```{r store-data, message=FALSE, warning=FALSE}
+ce_data_dir <- tempdir()
+
+download.file(
+  "https://www.bls.gov/cex/pumd/data/comma/intrvw21.zip",
+  fs::path(ce_data_dir, "intrvw21.zip"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+
+download.file(
+  "https://www.bls.gov/cex/pumd/data/comma/intrvw20.zip",
+  fs::path(ce_data_dir, "intrvw20.zip"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+
+download.file(
+  "https://www.bls.gov/cex/pumd/data/comma/diary21.zip",
+  fs::path(ce_data_dir, "diary21.zip"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+
+download.file(
+  "https://www.bls.gov/cex/pumd/stubs.zip",
+  fs::path(ce_data_dir, "stubs.zip"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+```
+
+## Calculate CE weighted mean estimate
+The first step in the workflow is to load the 2021 hierarchical grouping file for integrated expenditures using `ce_hg()`. This file is used to get the correct UCCs associated with pet expenditures.
+```{r read-hg}
+integ21_hg <- ce_hg(
+  2021,
+  integrated,
+  hg_zip_path = file.path(ce_data_dir, "stubs.zip")
+)
+```
+
+Next, one can use `ce_prep_data()` to correctly merge all of the Interview and Diary survey files for calculating annual estimates.
+```{r prepare-data}
+pet_data <- ce_prepdata(
+  2021,
+  integrated,
+  integ21_hg,
+  uccs = ce_uccs(integ21_hg, expenditure = "Pets", ucc_group = "PETS"),
+  dia_zp = file.path(ce_data_dir, "diary21.zip"),
+  int_zp = c(
+    file.path(ce_data_dir, "intrvw20.zip"),
+    file.path(ce_data_dir, "intrvw21.zip")
+  )
+)
+
+gt(head(pet_data))
+```
+
+The last step is to run `ce_mean()` to get annual, weighted pet expenditure estimates.
+```{r calculate-estimate}
+ce_mean(pet_data) |>
+  gt()
+```
+
+## Clean-up
+Finally, now that the analysis is done, I'll delete the temporary directory that contains all the CE data.
+```{r unlink-temp}
+unlink(ce_data_dir, recursive = TRUE, force = TRUE)
+```

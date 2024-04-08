@@ -1,0 +1,346 @@
+---
+title: "Calcluating Inflation-Adjusted CE Estimates"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message=FALSE}
+library(cepumd)
+library(tidyverse)
+library(readxl)
+library(blsR)
+library(gt)
+```
+
+## Introduction
+In this example I'm going to compare mean annual expenditures on food away from home between 2010 and 2020 by household size and I want to convert expenditures to 2023 dollars using the CPI.
+
+I'll need the following data and metadata sources:
+
+* Interview survey data zip files for 2010, 2019, and 2020
+* Diary survey data zip files for 2010 and 2020
+* Hierarchical grouping zip files
+* CE Data Dictionary
+
+## Data gathering
+Data files can be downloaded from the [CE PUMD Data Files page](https://www.bls.gov/cex/pumd_data.htm#csv) (it's easiest to use CSV) and hierarchical grouping files can be downloaded from the [CE PUMD Documentation page](https://www.bls.gov/cex/pumd_doc.htm)
+
+To get the files I'll first create a temporary directory and download all of the files that I need from the BLS website into this directory. You might choose to store your files differently, but this convention will keep the files organized, it will keep the code simple, and everything will be in a folder that will be easy to clean up after. Since the BLS blocks third party applications I'll add a user-agent to identify myself in the download function that is stored in a variable called `cepumd_ua` (not shown).
+
+```{r store-ua, echo=FALSE}
+cepumd_ua <- "Arcenis Rojas (arcenis.rojas@gmail.com)"
+```
+
+```{r store-data, message=FALSE, warning=FALSE}
+ce_data_dir <- tempdir()
+
+download.file(
+  "https://www.bls.gov/cex/pumd/data/comma/intrvw19.zip",
+  fs::path(ce_data_dir, "intrvw19.zip"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+
+download.file(
+  "https://www.bls.gov/cex/pumd/data/comma/intrvw20.zip",
+  fs::path(ce_data_dir, "intrvw20.zip"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+
+download.file(
+  "https://www.bls.gov/cex/pumd/data/comma/intrvw10.zip",
+  fs::path(ce_data_dir, "intrvw10.zip"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+
+download.file(
+  "https://www.bls.gov/cex/pumd/data/comma/diary20.zip",
+  fs::path(ce_data_dir, "diary20.zip"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+
+download.file(
+  "https://www.bls.gov/cex/pumd/data/comma/diary10.zip",
+  fs::path(ce_data_dir, "diary10.zip"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+
+download.file(
+  "https://www.bls.gov/cex/pumd/stubs.zip",
+  fs::path(ce_data_dir, "stubs.zip"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+
+download.file(
+  "https://www.bls.gov/cex/pumd/ce-pumd-interview-diary-dictionary.xlsx",
+  fs::path(ce_data_dir, "ce-data-dict.xlsx"),
+  mode = "wb",
+  headers = list(
+    "User-Agent" = cepumd_ua
+  )
+)
+```
+
+## Identifying expenditure categories
+First I'll load the hierarchical grouping files for both years.
+```{r load-hg-files}
+integ10_hg <- ce_hg(
+  2010,
+  integrated,
+  hg_zip_path = file.path(ce_data_dir, "stubs.zip")
+)
+
+integ20_hg <- ce_hg(
+  2020,
+  integrated,
+  hg_zip_path = file.path(ce_data_dir, "stubs.zip")
+)
+```
+
+Now I'll filter rows that have "food away" in the title for 2010.
+```{r show-2010-food-away}
+integ10_hg |>
+  filter(str_detect(str_to_lower(title), "food away")) |>
+  gt()
+```
+
+And the same for 2020.
+```{r show-2020-food-away}
+integ20_hg |>
+  filter(str_detect(str_to_lower(title), "food away")) |>
+  gt()
+```
+
+The title is the same in both years (“Food away from home”). I’ll use that to get the UCCs for both years. But first, I'll show the UCCs that make up the "Food away from home" expenditure category in 2010 using setting the `ucc_only` argument in `ce_uccs()` to `FALSE`.
+```{r show-2010-uccs-data}
+integ10_hg |>
+  ce_uccs(expenditure = "Food away from home", uccs_only = FALSE) |>
+  gt()
+```
+
+Next I'll store the UCC's for each year as vectors to use in downstream operations.
+```{r store-uccs}
+food_away_uccs_10 <- integ10_hg |>
+  ce_uccs(expenditure = "Food away from home")
+
+food_away_uccs_20 <- integ20_hg |>
+  ce_uccs(expenditure = "Food away from home")
+```
+
+## Identifying and exploring the grouping variable
+With the UCCs secured, now I'll turn to finding the variable for household size in the CE data dictionary, which can also be downloaded from the [CE PUMD Documentation page](https://www.bls.gov/cex/pumd_doc.htm). It’s important to remember that the dictionary is stored as an “XLSX” workbook that has three worksheets named "Cover", "Variables", "Codes " (yes, the sheet name "Codes " has a space on the end). I’ll use functions from the `readxl` package to work with the dictionary.
+
+I'll first read in the "Variables" sheet and filter for any rows corresponding to the FMLI file that have "number of members" in the variable description. I also want to filter the variable data to only the FMLI where the “Last year” column is missing, i.e., the variable definition is still in use.
+```{r show-dictionary-fam-size}
+ce_variables <- read_excel(
+  file.path(ce_data_dir, "ce-data-dict.xlsx"),
+  sheet = "Variables"
+)
+
+ce_variables |>
+  filter(
+    str_detect(File, "FMLI"),
+    str_detect(
+      tolower(`Variable description`), "number of members"
+    )
+  ) |>
+  gt()
+```
+
+It looks like FAM_SIZE (from the "Variable Name" column) is the variable I want. I can see that this variable was used from 1980 through 1981 then was dropped and re-introduced in 1984 and has been in use since. So it looks like it’s available for my 2 years of interest. Next I’ll check whether the FAM_SIZE variable has any value codes associated with it. I’ll have to pull in the “Codes ” sheet.
+```{r show-fam-size-codes, message=FALSE, warning=FALSE}
+ce_codes <- read_excel(
+  file.path(ce_data_dir, "ce-data-dict.xlsx"),
+  sheet = "Codes "
+)
+
+ce_codes |>
+  filter(File %in% "FMLI", Variable %in% "FAM_SIZE") |>
+  gt()
+```
+
+## Preparing CE data
+Since there are no observations in the “Codes” sheet (empty table above), it looks like FAM_SIZE is not a coded variable, so it must be numeric. With all that, I’m ready to prepare my data. I’ll start by preparing the 2010 data and viewing a snippet of the FAM_SIZE variable.
+
+```{r show-fam-size-head}
+food_away_data_10 <- ce_prepdata(
+  2010,
+  integrated,
+  integ10_hg,
+  food_away_uccs_10,
+  dia_zp = file.path(ce_data_dir, "diary10.zip"),
+  int_zp = file.path(ce_data_dir, "intrvw10.zip"),
+  fam_size
+)
+
+str(food_away_data_10$fam_size)
+```
+
+It's stored as a character (default behavior of `prepdata()`), but the data are, in fact, numbers. Now I'll take a look at the distribution by converting the vector to a numeric vector.
+```{r show-fam-size-distribution}
+summary(as.numeric(food_away_data_10$fam_size))
+```
+
+Some households have as many as 14 people which would make for more categories than I’d like, so I’ll create a FAM_SIZE label with any number greater than 4 taking on the value “5+” (remembering, of course, that all grouping variables are read in as character types, so I’ll have to use as.numeric()). Next, I’ll prepare the 2020 data and row bind it with the 2010 data as well as create the “fam_size_label” variable. I’m also going to convert “ref_mo” and “ref_yr” to character to make it compatible with the CPI data that I’ll get later. Here’s a look at just a snippet of the data. Please take note that `ce_prepdata()` does not add the year to the data set.
+
+::: {.note style="background-color: #D3D3D3; padding-top: 1em; padding-right: 1em; padding-bottom: 1em; padding-left: 1em; width: 80%; margin: auto; margin-top: 1em; margin-bottom: 1em"}
+Note that the code to prepare the 2020 data calls two Interview zip files. This is because the Interview is a recall survey and the file from the last quarter of the previous year is required to calculate a weighted, estimated mean. In previous years the files were all stored together, but the CE changed how it organizes files in 2020. For more information, please review the [Interview Survey file conventions section of the "Getting Started Guide"](https://www.bls.gov/cex/pumd-getting-started-guide.htm#section3)
+:::
+
+```{r combine-food-away-data}
+food_away_data_20 <- ce_prepdata(
+  2020,
+  integrated,
+  integ10_hg,
+  food_away_uccs_20,
+  dia_zp = file.path(ce_data_dir, "diary20.zip"),
+  int_zp = c(
+    file.path(ce_data_dir, "intrvw19.zip"),
+    file.path(ce_data_dir, "intrvw20.zip")
+  ),
+  fam_size
+)
+
+food_away_comp_data <- food_away_data_10 |>
+  mutate(year = "2010") |>
+  bind_rows(food_away_data_20 |> mutate(year = "2020")) |>
+  mutate(
+    fam_size_label = if_else(
+      as.numeric(fam_size) > 4,
+      "5+",
+      fam_size
+    ),
+    ref_yr = as.character(ref_yr)
+  )
+
+food_away_comp_data |>
+  select(survey, year, newid, finlwt21, cost, ucc, ref_yr, ref_mo) |>
+  filter(!is.na(ucc)) |>
+  group_by(year, survey) |>
+  slice_sample(n = 3) |>
+  ungroup() |>
+  gt()
+```
+
+## Preparing CPI data
+Now that the CE PUMD are ready, I'll turn to getting CPI data for the years in the analysis and for 2023 to set December 2023 as a base using the [blsR package](https://github.com/groditi/blsR). I’ll use the “All Urban Consumers (Current Series)” series, which has series ID “CUUR0000SA0”.
+
+Below is a snapshot of the CPI data.
+
+```{r get-cpi-data}
+cpi_data <- blsR::get_series(
+  "CUUR0000SA0",
+  start_year = 2010,
+  end_year = 2023
+) |>
+  pluck("data") |>
+  map(
+    \(x) list_flatten(x) |>
+      enframe() |>
+      filter(!name %in% "footnotes") |>
+      unnest(value) |>
+      pivot_wider(values_from = value, names_from = name)
+  ) |>
+  list_rbind() |>
+  rename(cpi = "value") |>
+  mutate(month = match(periodName, month.name))
+
+cpi_base <- cpi_data |> filter(year %in% "2023", month %in% "12")
+
+cpi_data <- cpi_data |> filter(year %in% unique(food_away_comp_data$ref_yr))
+
+cpi_data |> slice(1:10) |> gt()
+```
+
+Below is the data for the base month.
+```{r show-cpi-base}
+gt(cpi_base)
+```
+
+## Merging CE and CPI data
+Next I’m going to join the CPI data to the CE data and adjust the “cost” variable for inflation. Note that I replace resulting missing values in the “cost” variable with “0”. Missing values will result when I multiply a cost of “0” by an adjustment factor and ce_mean() will not function with missing values.
+```{r show-cpi-adjusted-data}
+food_away_comp_data <- food_away_comp_data |>
+  left_join(
+    select(cpi_data, year, month, cpi),
+    by = c("ref_yr" = "year", "ref_mo" = "month")
+  ) |>
+  mutate(
+    base_cpi = pull(cpi_base, cpi),
+    across(c(base_cpi, cpi), as.numeric),
+    cost = cost * (base_cpi / cpi) |> replace_na(0)
+  )
+
+food_away_comp_data |>
+  select(survey, year, newid, finlwt21, cost, ucc, ref_yr, ref_mo) |>
+  filter(!is.na(ucc)) |>
+  group_by(year, survey) |>
+  slice_sample(n = 3) |>
+  ungroup() |>
+  gt()
+```
+
+## Calculate CE weighted mean estimate by household size
+The final step is to calculate means, for which I’ll use some more Tidyverse functions.
+```{r calculate-ce-means}
+food_away_means <- food_away_comp_data |>
+  group_nest(year, fam_size_label, .key = "data") |>
+  mutate(ce_mn_df = map(data, ce_mean)) |>
+  select(-data) |> 
+  unnest(ce_mn_df) |>
+  mutate(lower = mean_exp - cv, upper = mean_exp + cv)
+
+gt(food_away_means)
+```
+
+Plotting these data would be pretty straightforward, as well.
+```{r plot-food-away, fig.align='center', fig.height=6, fig.width=8}
+food_away_means |>
+  ggplot(aes(x = fam_size_label, y = mean_exp, fill = year, group = year)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.8) +
+  geom_errorbar(
+    aes(ymin = lower, ymax = upper),
+    width = 0.4,
+    position = position_dodge(0.75)
+  ) +
+  scale_fill_manual(values = c("red", "blue")) +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(
+    title =
+      "Estimated annual mean food away from home expenditures by CU size",
+    x = "CU size",
+    y = "Estimated, weighted, annual mean expenditure",
+    fill = "Year"
+  ) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5), legend.position = "bottom")
+```
+
+Here we can see that on an inflation-adjusted basis, households of all sizes had higher expenditures on food away from home in 2010 than they did in 2020.
+
+Finally, now that the analysis is done, I'll delete the temporary directory that contains all the CE data.
+```{r unlink-temp}
+unlink(ce_data_dir, recursive = TRUE, force = TRUE)
+```
