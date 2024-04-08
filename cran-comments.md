@@ -1,3 +1,10 @@
+## Added articles
+I have added some articles to publish on GitHub pages. These articles are not appropriate as vignettes because they do not focus only on the functions of the package, but on larger workflows that use the functions to show how they might be used in a project. This required suggesting three additional packages in the DESCRIPTION file, but no other substantive changes to the {cepumd} package.
+
+I also edited the example in ce_prepdata() to avoid an error in one of CRAN's automatic checks.
+
+The changes in this submission are purely in the documentation and no substantive changes have been made to the functionality.
+
 ## Arguments with Non-Standard Evaluation
 The exported functions of the package are designed to allow unquoted arguments, i.e., non-standard evaluation. For example, the last argument in the example in ce_prepdata() (shown below) will be read as a "..." argument and be quoted inside of the function. If the example were run with a valid file path for the "dia_zip" argument the function would run as intended.
 

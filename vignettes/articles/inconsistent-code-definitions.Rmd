@@ -20,10 +20,11 @@ library(gt)
 In this workflow I’m going to calculate estimated mean utilities expenditures for 2015 using integrated data by CU composition using the FAM_TYPE variable. In this case I’m going to start by looking at the codes for that variable to show how one might run into an inconsistency in code definitions across survey instruments.
 
 I'll need the following data and metadata sources:
-  + Interview survey data zip files for 2015
-  + Diary survey data zip files for 2015
-  + Hierarchical grouping zip files
-  + CE Data Dictionary
+
+* Interview survey data zip files for 2015
+* Diary survey data zip files for 2015
+* Hierarchical grouping zip files
+* CE Data Dictionary
 
 ## Data gathering
 Data files can be downloaded from the [CE PUMD Data Files page](https://www.bls.gov/cex/pumd_data.htm#csv) (it's easiest to use CSV) and hierarchical grouping files can be downloaded from the [CE PUMD Documentation page](https://www.bls.gov/cex/pumd_doc.htm)
